@@ -127,7 +127,7 @@
 %  *              Font sizes              *
 %  ****************************************
 %  Note these are misleadingly named - most text is not in \normalsize etc.
-
+ 
 \lineskip 1pt
 \normallineskip 1pt
 \ifSFB@referee
