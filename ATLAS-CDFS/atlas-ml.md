@@ -22,6 +22,14 @@ Norris et al. (2006) produced a catalogue of cross-identifications of 784 ATLAS 
 
 RGZ volunteers are asked to cross-identify objects in CDFS from ATLAS with their infrared counterparts in SWIRE, which has produced another catalogue of cross-identifications (Wong et al. 2017). As these cross-identifications have been based on non-expert classifications, this catalogue is expected to be lower-quality than an expert catalogue like that produced by Norris et al. (2006).
 
+- noise levels
+- wavelength
+
+# SWIRE
+
+- noise levels
+- wavelengths
+
 # Cross-identification as binary classification
 We focus on the problem of cross-identification without reference to radio morphology. Given a radio image from RGZ/ATLAS, we assume that the image represents a single, complex extended source. The radio cross-identification task then amounts to locating the host galaxy within the associated radio and infrared images, just as a RGZ volunteer would do. This is formalised as an object localisation problem: Given a radio image, locate the host galaxy.
 
@@ -68,6 +76,8 @@ Generating positive labels from a cross-identification catalogue is simple: If a
 
 There are a lot of galaxies (citation needed), so instead of using all galaxies in the CDFS field we only train and test our classifiers on infrared objects within a fixed radius of an ATLAS radio object. For this radius we choose 1 arcminute, the same radius as the images shown to volunteers in RGZ. In general this will result in cases where the host galaxy is outside the radius (such as radio objects with wide-angled tails, e.g. Banfield et al. (2016)), but this is unavoidable.
 
+- can't always magic up labels, contrived example where Norris didn't detect things
+
 # Method
 
 We divided the CDFS field into four quadrants for training and testing. The quadrants were centred on 52.8h -28.1°. For each trial, one quadrant was used to draw test examples, and the other three quadrants were used for training examples.
@@ -89,4 +99,31 @@ Each classifier was trained on the training examples and used to predict labels 
 | LR         | Norris          | Both                | 94.7 $\pm$ 1.4        |
 | LR         | RGZ             | Both                | 91.9 $\pm$ 1.1        |
 
-**Figure: Balanced accuracies for the galaxy classification task. Uncertainties represent standard deviation over the quadrants.**
+Table: Balanced accuracies for the galaxy classification task. Uncertainties represent standard deviation over the quadrants.
+
+| swire | lr(rgz) | lr(norris) |
+|-------|---------|------------|
+| SWIRE3_J032559.15-284724.2 | 0.0341784863105 | 0.015480243078  |
+| SWIRE3_J032559.91-284728.9 | 0.278541709304  | 0.020090942017  |
+| SWIRE3_J032600.02-284736.9 | 0.245365593177  | 0.014413236572  |
+| SWIRE3_J032600.13-284637.5 | 0.0813282413296 | 0.0208829692218 |
+| SWIRE3_J032600.13-284715.7 | 0.387394784166  | 0.0343210418749 |
+| SWIRE3_J032600.98-284705.4 | 0.145593835335  | 0.0658117444017 |
+| SWIRE3_J032601.03-284711.6 | 0.677611173993  | 0.131620806718  |
+| SWIRE3_J032601.75-284614.5 | 0.134551589362  | 0.0131522724495 |
+| SWIRE3_J032602.08-284713.1 | 0.741262952211  | 0.565229482364  |
+
+Table: Predicted probabilities for each SWIRE object. Predictors are logistic regression trained on RGZ labels and logistic regression trained on Norris labels. SWIRE objects that do not appear in the table have no prediction; we assume these are 0. Full table electronic.
+
+| zooniverse_id | ra | dec | lr(rgz)_swire | lr(norris)_swire | rgz_swire | rgz_consensus_radio_level | rgz_consensus_ir_level |
+|-|--|---|--------|--------|------|----------|---------|
+| ARG0003rb2 | 51.511734 | -28.785575 | SWIRE3_J032602.36-284711.5 | SWIRE3_J032602.36-284711.5 | -99 | 0.4 | 0.333333333333 |
+| ARG0003rfr | 51.564555 | -28.774847 | SWIRE3_J032615.41-284630.7 | SWIRE3_J032615.41-284630.7 | SWIRE3_J032616.14-284552.9,SWIRE3_J032615.41-284630.7 | 0.3125 | 1.0,1.0 |
+| ARG0003r8s | 51.564799 | -28.099955 | SWIRE3_J032615.52-280559.8 | SWIRE3_J032615.52-280559.8 | SWIRE3_J032616.71-280538.6,SWIRE3_J032617.94-280648.2,SWIRE3_J032615.52-280559.8 | 0.484848484848 | 0.75,0.555555555556,0.8125 |
+| ARG0003r2j | 51.572279 | -28.119491 | SWIRE3_J032615.86-280628.8 | SWIRE3_J032617.02-280638.9 | SWIRE3_J032617.89-280707.2 | 0.421052631579 | 1.0 |
+| ARG0003raz | 51.604711 | -28.152731 | SWIRE3_J032625.19-280910.1 | SWIRE3_J032625.19-280910.1 | SWIRE3_J032624.80-280915.9 | 0.3 | 0.333333333333 |
+| ARG0003ro4 | 51.621251 | -28.113924 | SWIRE3_J032629.13-280650.7 | SWIRE3_J032629.13-280650.7 | SWIRE3_J032629.13-280650.7,SWIRE3_J032626.74-280636.7 | 0.357142857143 | 0.8,1.0 |
+| ARG0003r8e | 51.623385 | -28.681315 | SWIRE3_J032629.54-284051.9 | SWIRE3_J032629.54-284051.9 | SWIRE3_J032629.54-284055.8 | 0.3 | 1.0 |
+| ARG0003r3w | 51.624653 | -28.798195 | SWIRE3_J032629.81-284754.4 | SWIRE3_J032629.81-284754.4 | SWIRE3_J032629.81-284754.4 | 1.0 | 0.666666666667 |
+| ARG0003r55 | 51.62777 | -28.615917 | SWIRE3_J032630.64-283658.0 | SWIRE3_J032630.64-283658.0 | SWIRE3_J032630.64-283658.0,SWIRE3_J032628.56-283744.8 | 0.354838709677 | 1.0,0.727272727273 |
+| ARG0003rj2 | 51.644117 | -28.339678 | SWIRE3_J032634.58-282022.8 | SWIRE3_J032634.58-282022.8 | SWIRE3_J032630.21-282025.5,SWIRE3_J032634.58-282022.8,SWIRE3_J032631.96-281941.0 | 0.59375 | 0.684210526316,0.947368421053,0.473684210526 |
