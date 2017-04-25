@@ -131,3 +131,5 @@ Table: Predicted probabilities for each SWIRE object. Predictors are logistic re
 Table: Predicted SWIRE hosts for ATLAS radio objects. Note the assumption that there is only one host galaxy per Zooniverse ID. Full table electronic.
 
 ![Classification balanced accuracy against accuracy on the cross-identification task. Cross-identification accuracy is computed from a binary comparison between the predicted host and the Norris et al. (2006) cross-identification; neither distance to the true host nor broken assumptions of one host per image are accommodated.](gct-to-xid.pdf)
+
+![Classification balanced accuracy against average distance between the predicted and the Norris et al. (2006) cross-identified host on the cross-identification task. ](gct-to-arcsec-error.pdf)
