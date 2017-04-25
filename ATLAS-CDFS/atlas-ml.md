@@ -16,19 +16,17 @@ To reduce noise, multiple volunteers are presented with each radio object; compa
 
 # ATLAS
 
-The Australia Telescope Large Area Survey (ATLAS; Franzen et al. 2013) is a wide-area radio survey of CDFS and ELAIS-S1. It is a pilot survey for the Evolutionary Map of the Universe (EMU; Norris et al. 2011) survey that will be conducted with the Australian SKA Pathfinder (ASKAP) telescope. EMU will cover the entire southern sky and is expected to detect around 70 million new radio sources. EMU will be conducted at the same depth and resolution as ATLAS, so methods developed for processing ATLAS data are expected to work for EMU.
+The Australia Telescope Large Area Survey (ATLAS; Franzen et al. 2013) is a wide-area radio survey of CDFS and ELAIS-S1 at 1.4 GHz. It is a pilot survey for the Evolutionary Map of the Universe (EMU; Norris et al. 2011) survey that will be conducted with the Australian SKA Pathfinder (ASKAP) telescope. EMU will cover the entire southern sky and is expected to detect around 70 million new radio sources. EMU will be conducted at the same depth and resolution as ATLAS, so methods developed for processing ATLAS data are expected to work for EMU. ATLAS has a sensitivity of 14 µJy on CDFS and 17 µJy on ELAIS-S1.
 
 Norris et al. (2006) produced a catalogue of cross-identifications of 784 ATLAS radio objects with their infrared counterparts in the Spitzer Wide-area Infrared Extragalactic survey (SWIRE; Lonsdale et al. 2005?).
 
 RGZ volunteers are asked to cross-identify objects in CDFS from ATLAS with their infrared counterparts in SWIRE, which has produced another catalogue of cross-identifications (Wong et al. 2017). As these cross-identifications have been based on non-expert classifications, this catalogue is expected to be lower-quality than an expert catalogue like that produced by Norris et al. (2006).
 
-- noise levels
-- wavelength
-
 # SWIRE
 
+The Spitzer Wide-area Infrared Extragalactic survey is a wide-area infrared survey at 3.6 µm, 4.5 µm, 5.8 µm, and 8.0 µm. It covers the eight SWIRE fields, particularly CDFS and ELAIS-S1, both of which were also covered by ATLAS. SWIRE is thus the source of infrared observations for cross-identification with ATLAS.
+
 - noise levels
-- wavelengths
 
 # Cross-identification as binary classification
 We focus on the problem of cross-identification without reference to radio morphology. Given a radio image from RGZ/ATLAS, we assume that the image represents a single, complex extended source. The radio cross-identification task then amounts to locating the host galaxy within the associated radio and infrared images, just as a RGZ volunteer would do. This is formalised as an object localisation problem: Given a radio image, locate the host galaxy.
@@ -50,7 +48,9 @@ There are many options for modelling $y$. In this paper we apply two different m
 
 Most binary classification methods require that the inputs to be classified are real-valued vectors. We thus need to choose a vector representation of our candidate host galaxies, also known as the "features" of the galaxies.
 
-We represent each candidate host as 1029 real-valued features. The first four of these features are taken from the SWIRE catalogue: The difference between the 3.6µm and 4.5µm magnitudes, the difference between the 4.5µm and 5.8µm magnitudes, and the stellarity index in both 3.6µm and 4.5µm. The magnitude differences are indicators of the star formation rate and amount of dust in the galaxy and might thus be predictors of whether the galaxy contains an AGN, and the stellarity index represents how likely the object is to be a star rather than a galaxy. The fifth feature is the distance across the sky between the candidate host and the nearest radio component in the ATLAS catalogue. The remaining 1024 features are the intensities of each pixel in a 32 x 32 pixel window centred on the candidate host.
+![Magnitude differences may be predictors for whether a galaxy is a host galaxy. Reproduced from Banfield et al. (2015).](magdiff.pdf)
+
+We represent each candidate host as 1029 real-valued features. The first four of these features are taken from the SWIRE catalogue: The difference between the 3.6 µm and 4.5 µm magnitudes, the difference between the 4.5 µm and 5.8 µm magnitudes, and the stellarity index in both 3.6 µm and 4.5 µm. The magnitude differences are indicators of the star formation rate and amount of dust in the galaxy and might thus be predictors of whether the galaxy contains an AGN, and the stellarity index represents how likely the object is to be a star rather than a galaxy. The fifth feature is the distance across the sky between the candidate host and the nearest radio component in the ATLAS catalogue. The remaining 1024 features are the intensities of each pixel in a 32 x 32 pixel window centred on the candidate host.
 
 ## Logistic regression
 
@@ -66,17 +66,17 @@ $$
 
 ## Convolutional neural networks
 
-[insert simple discussion of convolutional neural networks here]
+Convolutional neural networks (CNNs) are a biologically-inspired prediction model for prediction with image inputs. A number of filters are convolved with the image to produce output images, and these outputs can then be convolved again with other filters on subsequent layers, producing a network of convolutions. This whole network is differentiable with respect to the values of the filters, and so the filters can be learned by gradient methods. The final layer of the network is logistic regression, with the convolved outputs as input features.
+
+CNNs have recently produced good results on large image-based datasets, which is why we employ them in this paper. We employ only a simple model --- CNNs can be arbitrarily complex --- as this is a proof of concept.
 
 ## Labels
 
 Converting the RGZ and Norris et al. (2006) cross-identification catalogues to binary labels for infrared objects is a non-trivial task. The most obvious problem is that there is no way to capture radio morphology information in binary classification; we ignore this problem for this paper. Another problem is that there is no way to indicate *which* radio object an infrared object is associated with, only that it is associated with *some* radio object. We make the (incorrect) assumption that any given RGZ/ATLAS image contains only one host galaxy, and defer solving this problem.
 
-Generating positive labels from a cross-identification catalogue is simple: If an infrared object is mentioned in the catalogue, then it is a host galaxy, and is assigned a positive label. In principle we would then assign every other galaxy a negative label.
+Generating positive labels from a cross-identification catalogue is simple: If an infrared object is mentioned in the catalogue, then it is a host galaxy, and is assigned a positive label. In principle we would then assign every other galaxy a negative label. This has some problems --- an example is that if the cross-identifier did not observe a radio object (perhaps it was too faint) then the host galaxy of that radio object would receive a negative label. This indeed happens with Norris cross-identifications, where not all objects in the third data release of ATLAS (this is the data release associated with RGZ) were observed, and hence labels from Norris may disagree with labels from RGZ even if they are both correct.
 
-There are a lot of galaxies (citation needed), so instead of using all galaxies in the CDFS field we only train and test our classifiers on infrared objects within a fixed radius of an ATLAS radio object. For this radius we choose 1 arcminute, the same radius as the images shown to volunteers in RGZ. In general this will result in cases where the host galaxy is outside the radius (such as radio objects with wide-angled tails, e.g. Banfield et al. (2016)), but this is unavoidable.
-
-- can't always magic up labels, contrived example where Norris didn't detect things
+There are a lot of galaxies (citation needed), so instead of using all galaxies in the CDFS field we only train and test our classifiers on infrared objects within a fixed radius of an ATLAS radio object. For this radius we choose 1 arcminute, the same radius as the images shown to volunteers in RGZ. In general this will result in cases where the host galaxy is outside the radius (such as radio objects with wide-angled tails, e.g. Banfield et al. (2016)), but this is unavoidable. We may also choose a radius which is too *large*, worsening our assumption that there is only one host galaxy in this radius, but again, this is unavoidable.
 
 # Method
 
@@ -127,3 +127,7 @@ Table: Predicted probabilities for each SWIRE object. Predictors are logistic re
 | ARG0003r3w | 51.624653 | -28.798195 | SWIRE3_J032629.81-284754.4 | SWIRE3_J032629.81-284754.4 | SWIRE3_J032629.81-284754.4 | 1.0 | 0.666666666667 |
 | ARG0003r55 | 51.62777 | -28.615917 | SWIRE3_J032630.64-283658.0 | SWIRE3_J032630.64-283658.0 | SWIRE3_J032630.64-283658.0,SWIRE3_J032628.56-283744.8 | 0.354838709677 | 1.0,0.727272727273 |
 | ARG0003rj2 | 51.644117 | -28.339678 | SWIRE3_J032634.58-282022.8 | SWIRE3_J032634.58-282022.8 | SWIRE3_J032630.21-282025.5,SWIRE3_J032634.58-282022.8,SWIRE3_J032631.96-281941.0 | 0.59375 | 0.684210526316,0.947368421053,0.473684210526 |
+
+Table: Predicted SWIRE hosts for ATLAS radio objects. Note the assumption that there is only one host galaxy per Zooniverse ID. Full table electronic.
+
+![Classification balanced accuracy against accuracy on the cross-identification task. Cross-identification accuracy is computed from a binary comparison between the predicted host and the Norris et al. (2006) cross-identification; neither distance to the true host nor broken assumptions of one host per image are accommodated.](gct-to-xid.pdf)
