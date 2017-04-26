@@ -135,3 +135,5 @@ Table: Predicted SWIRE hosts for ATLAS radio objects. Note the assumption that t
 ![Classification balanced accuracy against average distance between the predicted and the Norris et al. (2006) cross-identified host on the cross-identification task. ](gct-to-arcsec-error.pdf)
 
 ![Passive learning plot for the GCT. Trained and tested on RGZ. This is so that we had maximal training data — RGZ has many more objects than Norris.](passive.pdf)
+
+![Distribution of non-image features for different subsets.](distributions.pdf)
