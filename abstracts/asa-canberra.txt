@@ -12,7 +12,5 @@ crowdsourced training data from the Radio Galaxy Zoo to train machine learning
 methods for radio host cross-identification in the CDFS field. We find that
 despite the inaccuracies in the cross-identifications provided by the crowd,
 Radio Galaxy Zoo labels are still useful for training.
-We compare several different approaches, including random forests, logistic regression,
-and neural networks.
 We show that methods trained on Radio Galaxy Zoo cross-identifications achieve
 accuracies comparable to those trained with expert cross-identifications.
