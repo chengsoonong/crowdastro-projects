@@ -1,0 +1,14 @@
+Next generation radio telescopes will produce a large amount of data, which are
+expected to require new methods to process. These methods may be
+machine-learned, but machine learning requires a large amount of labelled
+training data, which can be difficult or expensive to acquire. Radio Galaxy Zoo
+is a citizen science project which provides a large number of radio host
+cross-identifications, which may be used as training labels for machine-learned
+cross-identification algorithms. However, these cross-identifications may be
+incorrect, as they are assigned by non-experts. We investigate the use of
+crowdsourced training data from the Radio Galaxy Zoo to train machine-learned
+methods for radio host cross-identification in the CDFS field. We find that
+despite the inaccuracies in the training cross-identifications, Radio Galaxy Zoo
+labels are still useful for training, and that methods trained on Radio Galaxy
+Zoo cross-identifications achieve accuracies comparable to those trained with
+expert cross-identifications.
