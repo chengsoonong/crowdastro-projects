@@ -1,16 +1,16 @@
 Machine learning methods for radio host cross-identification with crowdsourced labels
 
-We propose a machine learning approach for radio host cross-identifications,
-the task of finding the host galaxy in infrared corresponding to the radio emissions.
-Traditional machine learning requires a large amount of labelled
-training data, which can be difficult or expensive to acquire. Radio Galaxy Zoo
-is a citizen science project that provides a large number of radio host
-cross-identifications, which may be used as training labels for machine learning
-algorithms. However, these cross-identifications may be incorrect,
-as they are assigned by non-experts. We investigate the use of
-crowdsourced training data from the Radio Galaxy Zoo to train machine learning
-methods for radio host cross-identification in the CDFS field. We find that
-despite the inaccuracies in the cross-identifications provided by the crowd,
-Radio Galaxy Zoo labels are still useful for training.
-We show that methods trained on Radio Galaxy Zoo cross-identifications achieve
-accuracies comparable to those trained with expert cross-identifications.
+We propose a machine learning approach for radio host cross-identification,
+the task of finding the infrared host galaxy corresponding to radio emissions.
+Traditional machine learning requires a large amount of labelled training
+data, which can be difficult or expensive to acquire. Radio Galaxy Zoo is a
+citizen science project that provides a large number of radio host cross-
+identifications, which may be used as training labels for machine learning
+algorithms. However, these cross-identifications may be incorrect, as they are
+assigned by non-experts. We investigate the use of crowdsourced training data
+from the Radio Galaxy Zoo to train machine learning methods for radio host
+cross-identification in the CDFS field. We find that despite the inaccuracies
+in the cross-identifications provided by the crowd, Radio Galaxy Zoo labels
+are still useful for training. We show that methods trained on Radio Galaxy
+Zoo cross-identifications achieve accuracies comparable to those trained with
+expert cross-identifications.
