@@ -1,18 +1,26 @@
 ---
-title: "Radio Galaxy Zoo: Crowdsourced labels for training machine learning methods for radio cross-identification"
-author: "M. J. Alger, J. K. Banfield, C. S. Ong"
-geometry: margin=3cm
+title: "Radio Galaxy Zoo: Crowdsourced labels for training machine learning methods for radio host cross-identification"
+author: "M. J. Alger, J. K. Banfield, C. S. Ong, others"
+geometry: margin=2cm
+classoption: a4paper
 latex-engine: xelatex
+abstract: "We propose a machine learning approach for radio host cross-identification, the task of determining the host galaxies of radio emissions detected in wide-area surveys. Training a machine learning algorithm requires a large amount of labelled training data, which can be difficult or expensive to acquire. Radio Galaxy Zoo, a citizen science project on the Zooniverse platform, provides a large number of radio host cross-identifications which may be used as labels for training. However, these cross-identifications are assigned by non-experts, and may be incorrect. We find that while machine learning algorithms trained on expert labels outperform those trained on the crowdsourced Radio Galaxy Zoo labels, the accuracies are comparable and the crowdsourced labels are still useful for training."
 ---
-# Radio cross-identification
 
-Radio cross-identification is the task of associating objects detected in wide-area radio surveys with the corresponding object in other wavelengths. In this paper we focus on cross-identification of radio objects with their infrared counterparts in the Chandra Deep Field - South (CDFS) and ESO Large Area ISO Survey - South 1 (ELAIS-S1) fields. These fields have radio observations from the Australia Telescope Large Area Survey (ATLAS; Franzen et al. 2013) and infrared observations from both Spitzer (Lonsdale et al. 2005?) and WISE (????).
+# Introduction
 
-While radio objects may be manually cross-identified by expert astronomers, this is impractical with new, larger radio surveys that may detect millions of radio objects. Algorithms exist which automate this process using astrophysical models of how radio objects are expected to look (e.g. Proctor ????, Fan et al. 2015). However, with upcoming large radio surveys such as the Evolutionary Map of the Universe (EMU; Norris et al. 2011), these algorithms are expected to fail for 10% of new-found objects.
+Next generation radio telescopes such as the Australian SKA Pathfinder (ASKAP; Johnston et al. 2007) and Apertif (Verheijen et al. 2008) will conduct increasingly wide, deep, and high-resolution surveys. These surveys will produce very large amounts of data; the Evolutionary Map of the Universe survey (EMU; Norris et al. 2011) using ASKAP and the WODAN survey (Röttgering et al. 2011) using Apertif are expected to detect over 100 million radio sources between them, compared to the 2.5 million radio sources already known (Banfield et al. 2015). An important part of processing this data is then cross-identifying observed radio emissions with observations of the host galaxy that generated them in other wavelengths, usually infrared or optical. Radio host cross-identification is a difficult task, with radio-loud AGN often having complicated structures not clearly related to the host galaxy, and these AGN expected to dominate around 30% of sources detected by EMU (Norris et al. 2011). Small surveys of a few thousand sources, such as the Australia Telescope Large Area Survey (ATLAS; Norris et al. 2006, Middelberg et al. 2008), can be cross-identified manually, but this is impractical for larger surveys. Automated algorithms exist (e.g. Fan et al. 2015) but these tend to be based on astrophysical models, and may fail for new classes of objects that may be found in surveys like EMU [todo: elaborate]. Additionally, there will be so much data produced by upcoming radio surveys that automated methods will need to be used to choose what data to keep and what to discard; for these algorithms, robust feature selection is important and model-based approaches (e.g. Proctor 2006) will likely fail [not sure where to put this].
 
-Radio Galaxy Zoo (Banfield et al. 2015) was developed to help address this problem by generating a set of cross-identifications for 175000 radio objects in ATLAS and Faint Images of the Radio Sky at Twenty-Centimeters (FIRST; ????). Volunteers are presented with an image from ATLAS or FIRST and the corresponding infrared image from Spitzer or WISE, respectively, and are asked to perform two tasks. First, they must choose which radio components are part of the same radio source; second, they must identify this radio source with the infrared host galaxy. The hope is that this large database of cross-identifications can be used to train machine learning methods for cross-identifying objects in future surveys like EMU.
+Radio Galaxy Zoo (RGZ; Banfield et al. 2015) is a citizen science project developed to help address the problem of radio host cross-identification. It provides a large dataset of around 175&nbsp;000 crowdsourced radio host cross-identifications for radio emissions detected in the Faint Images of the Radio Sky at Twenty-Centimeters survey (FIRST; White et al. 1997) and the Australia Telescope Large Area Survey (ATLAS; Franzen et al. 2015). Volunteers are presented with images from these surveys and a corresponding infrared image from the *Wide-Field Infrared Survey Explorer* (WISE; Wright et al. 2010) or the *Spitzer* Wide-Area Infrared Extragalactic Survey (SWIRE; Lonsdale et al. 2003), respectively, and asked to 1) identify which radio components belong to the same radio source, and 2) identify the associated infrared host galaxy for each source. To reduce noise, multiple volunteers are presented with each radio object; compact radio objects are shown to 5 volunteers, and extended radio objects are shown to 20 volunteers. These cross-identifications are combined to produce the final catalogue. The host galaxy locations selected by volunteers who agree with the plurality combination of radio objects are combined by maximising over the kernel density estimate of the locations. These locations are then matched to the nearest SWIRE object within 5 arcseconds (check this). [move this to its own (sub)section on RGZ data?]
 
-To reduce noise, multiple volunteers are presented with each radio object; compact radio objects are shown to 5 volunteers, and extended radio objects are shown to 20 volunteers. These cross-identifications are combined to produce the final catalogue. The host galaxy locations selected by volunteers who agree with the plurality combination of radio objects are combined by maximising over the kernel density estimate of the locations. These locations are then matched to the nearest SWIRE object within 5 arcseconds (check this).
+In this paper we focus on cross-identification of radio objects with their infrared counterparts in the Chandra Deep Field - South (CDFS) and ESO Large Area ISO Survey - South 1 (ELAIS-S1) fields. These fields have radio observations from the Australia Telescope Large Area Survey (ATLAS; Franzen et al. 2013) and infrared observations from both Spitzer (Lonsdale et al. 2005?) and WISE (????).
+
+[Worth mentioning the WTF project? Outlier detection can be done in lots of different ways including with this work and there are benefits in both. Also an example of where model-based approaches fall down.]
+<!-- 
+While radio objects may be manually cross-identified by expert astronomers, this is impractical with new, larger radio surveys that may detect millions of radio objects. Algorithms exist which automate this process using astrophysical models of how radio objects are expected to look (e.g. Proctor ????, Fan et al. 2015). However, with upcoming large radio surveys such as the Evolutionary Map of the Universe (EMU; Norris et al. 2011), these algorithms are expected to fail for 10% of new-found objects. -->
+
+<!-- First, they must choose which radio components are part of the same radio source; second, they must identify this radio source with the infrared host galaxy. The hope is that this large database of cross-identifications can be used to train machine learning methods for cross-identifying objects in future surveys like EMU.
+ -->
 
 # ATLAS
 
@@ -78,9 +86,17 @@ Generating positive labels from a cross-identification catalogue is simple: If a
 
 There are a lot of galaxies (citation needed), so instead of using all galaxies in the CDFS field we only train and test our classifiers on infrared objects within a fixed radius of an ATLAS radio object. For this radius we choose 1 arcminute, the same radius as the images shown to volunteers in RGZ. In general this will result in cases where the host galaxy is outside the radius (such as radio objects with wide-angled tails, e.g. Banfield et al. (2016)), but this is unavoidable. We may also choose a radius which is too *large*, worsening our assumption that there is only one host galaxy in this radius, but again, this is unavoidable.
 
+(TODO: Describe how we assigned labels given that RGZ only labels the first component.)
+
 # Method
 
 We divided the CDFS field into four quadrants for training and testing. The quadrants were centred on 52.8h -28.1°. For each trial, one quadrant was used to draw test examples, and the other three quadrants were used for training examples.
+
+We further split radio components in CDFS into compact and extended based on their flux; a radio component was considered compact if
+$$
+    \frac{S_{\text{int}}}{S_{\text{peak}}} \leq 1
+$$
+and extended otherwise. This split was made because we expect high accuracy on cross-identifying compact objects, as the host galaxy and the radio object directly overlap.
 
 We considered only radio objects with a cross-identification in both the Norris et al. (2006) catalogue and the RGZ catalogue. We further divided this subset into compact objects and resolved objects. Candidate hosts were then selected from the SWIRE catalogue; for a given subset of radio objects, all SWIRE objects within 1 arcminute of all radio objects in the subset were added to the associated SWIRE subset.
 
@@ -137,3 +153,7 @@ Table: Predicted SWIRE hosts for ATLAS radio objects. Note the assumption that t
 ![Passive learning plot for the GCT. Trained and tested on RGZ. This is so that we had maximal training data — RGZ has many more objects than Norris.](passive.pdf)
 
 ![Distribution of non-image features for different subsets.](distributions.pdf)
+
+![Density of colour-colour features for sampled SWIRE objects.](colour_colour_all.pdf)
+
+![Density of colour-colour features for SWIRE objects with >95% probability of being a host galaxy according to logistic regression trained on RGZ.](colour_colour_95.pdf)
