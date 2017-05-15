@@ -77,11 +77,11 @@ It is unclear what size window to choose. If we choose a very large window, then
 
 Most binary classification methods require that the inputs to be classified are real-valued vectors. We thus need to choose a vector representation of our candidate host galaxies, also known as the "features" of the galaxies.
 
-![Magnitude differences may be predictors for whether a galaxy is a host galaxy. Reproduced from Banfield et al. (2015).](magdiff.pdf)
+![Magnitude differences may be predictors for whether a galaxy is a host galaxy. Reproduced from Banfield et al. (2015).](magdiff.pdf){#fig:magdiff}
 
 Infrared observations of the CDFS field are taken from SWIRE. We use the CDFS Fall '05 SWIRE catalogue [cite] to generate candidate hosts to classify. Radio observations of the CDFS field are taken from ATLAS. As almost all infrared sources in SWIRE look essentially the same (and differences in structure are likely irrelevant to whether the galaxy is a host galaxy), the candidate host location encodes almost all information we could gain from the infrared image. We therefore only use the radio image for object localisation.
 
-We represent each candidate host as 1034 real-valued features. The first nine of these features are derived from the SWIRE catalogue: The logarithm of the ratio of fluxes in the four IRAC wavelengths, the stellarity index in both 3.6 µm and 4.5 µm, and the flux in 3.6 µm. The flux ratios are indicators of the star formation rate and amount of dust in the galaxy and might thus be predictors of whether the galaxy contains an AGN [Julie?], the stellarity index represents how likely the object is to be a star rather than a galaxy, and the flux [why? Julie?]. The tenth feature is the distance across the sky between the candidate host and the nearest radio component in the ATLAS catalogue. The remaining 1024 features are the intensities of each pixel in a 32 $\times$ 32 pixel window centred on the candidate host. We chose to use a 32 $\times$ 32 pixel window as it seemed to give a good balance between performance and computational efficiency.
+We represent each candidate host as 1034 real-valued features. The first nine of these features are derived from the SWIRE catalogue: The logarithm of the ratio of fluxes in the four IRAC wavelengths, the stellarity index in both 3.6 µm and 4.5 µm, and the flux in 3.6 µm. The flux ratios are indicators of the star formation rate and amount of dust in the galaxy and might thus be predictors of whether the galaxy contains an AGN [Julie?] (*@fig:magdiff). the stellarity index represents how likely the object is to be a star rather than a galaxy, and the flux [why? Julie?]. The tenth feature is the distance across the sky between the candidate host and the nearest radio component in the ATLAS catalogue. The remaining 1024 features are the intensities of each pixel in a 32 $\times$ 32 pixel window centred on the candidate host. We chose to use a 32 $\times$ 32 pixel window as it seemed to give a good balance between performance and computational efficiency.
 
 ## Logistic regression
 
@@ -119,17 +119,19 @@ There are a lot of galaxies (citation needed), so instead of using all galaxies 
 
 ## Experimental Setup
 
-We divided the CDFS field into four quadrants for training and testing. The quadrants were centred on 52.8h -28.1$^\circ$. For each trial, one quadrant was used to draw test examples, and the other three quadrants were used for training examples.
+![CDFS field training and testing quadrants. The central dot is located at 52.8h -28.1$^\circ$. There are similar numbers of radio sources in each quadrant.](quadrants.pdf){#fig:quadrants}
 
-We only considered resolved components, as compact components are trivially cross-identified by fitting a Gaussian (as in Norris et al. 2006). Whether a component was resolved was decided based on its flux; a radio component was considered resolved if
+We divided the CDFS field into four quadrants for training and testing. The quadrants were centred on 52.8h -28.1$^\circ$ (*@fig:quadrants). For each trial, one quadrant was used to draw test examples, and the other three quadrants were used for training examples.
+
+We further divided the radio components into compact and resolved. Compact components are trivially cross-identified by fitting a Gaussian (as in Norris et al. 2006) and we would expect any machine learning approach for host cross-identification to attain high accuracy on this set. Whether a component was resolved was decided based on its flux; a radio component was considered resolved if
 $$
-    \frac{S_{\text{int}}}{S_{\text{peak}}}  1
+    \frac{S_{\text{int}}}{S_{\text{peak}}} \leq 1
 $$
 and compact otherwise.
 
 We considered only radio objects with a cross-identification in both the Norris et al. (2006) catalogue and the RGZ catalogue. Candidate hosts were then selected from the SWIRE catalogue; for a given subset of radio objects, all SWIRE objects within 1 arcminute of all radio objects in the subset were added to the associated SWIRE subset.
 
-Each classifier was trained on the training examples and used to predict labels for the test examples. The predicted labels were compared to the labels derived from the Norris et al. (2006) cross-identifications and the balanced accuracy was computed. We used balanced accuracy as our accuracy measure due to the highly imbalanced classes --- in our total set of SWIRE objects, only 4% have positive labels. The accuracies were then averaged across all four quadrants. Classification outputs are reported for the testing quadrant. In addition to logistic regression and convolutional neural networks, we report the balanced accuracy for random forest classifiers on the classification task, as these are a common classifier in astrophysics.
+Each classifier was trained on the training examples and used to predict labels for the test examples. The predicted labels were compared to the labels derived from the Norris et al. (2006) cross-identifications and the balanced accuracy was computed. We used balanced accuracy as our accuracy measure due to the highly imbalanced classes --- in our total set of SWIRE objects, only 4% have positive labels. The accuracies were then averaged across all four quadrants. Classification outputs are reported for the testing quadrant. We report the balanced accuracy on the classification task for logistic regression, convolutional neural networks, and random forests.
 
 We then used the outputs of our classifiers to predict the host galaxy for each radio component cross-identified by both Norris et al. (2006) and Radio Galaxy Zoo. For each SWIRE object within 1 arcminute of the radio component, a probability of the object having a positive label was estimated using the trained binary classifiers. The SWIRE object with the highest probability was chosen as the host galaxy. The accuracy was then estimated by counting how many predicted host galaxies matched the Norris et al. (2006) cross-identifications.
 
@@ -137,9 +139,7 @@ The balanced accuracy provides a good proxy to the accuracy of the host cross-id
 
 # Results
 
-[TODO: Update these results]
-
-![Balanced accuracies for each quadrant in the galaxy classification task.](atlas-ml-ba.pdf)
+![Balanced accuracies for each quadrant in the galaxy classification task.](atlas-ml-ba.pdf){#fig:ba}
 
 Table: Balanced accuracies for the galaxy classification task. Uncertainties represent standard deviation over the quadrants.
 
@@ -172,13 +172,15 @@ Table: Predicted probabilities for each SWIRE object. Predictors are logistic re
 
 Table: Predicted SWIRE hosts for ATLAS radio objects. Note the assumption that there is only one host galaxy per Zooniverse ID. Full table electronic.
 
-![Classification balanced accuracy against accuracy on the cross-identification task. Cross-identification accuracy is computed from a binary comparison between the predicted host and the Norris et al. (2006) cross-identification; neither distance to the true host nor broken assumptions of one host per image are accommodated.](gct-to-xid.pdf)
+![Classification balanced accuracy against accuracy on the cross-identification task. Cross-identification accuracy is computed from a binary comparison between the predicted host and the Norris et al. (2006) cross-identification; neither distance to the true host nor broken assumptions of one host per image are accommodated.](gct-to-xid.pdf){#fig:gct-to-xid}
 
-![Classification balanced accuracy against average distance between the predicted and the Norris et al. (2006) cross-identified host on the cross-identification task. ](gct-to-arcsec-error.pdf)
+![Classification balanced accuracy against average distance between the predicted and the Norris et al. (2006) cross-identified host on the cross-identification task. ](gct-to-arcsec-error.pdf){#fig:gct-to-arcsec-error}
 
-![Passive learning plot for the GCT. Trained and tested on RGZ. This is so that we had maximal training data — RGZ has many more objects than Norris.](passive.pdf)
+![Passive learning plot for the GCT. Trained and tested on RGZ. This is so that we had maximal training data — RGZ has many more objects than Norris.](passive.pdf){#fig:passive}
 
-![Distribution of non-image features for different subsets.](distributions.pdf)
+![Distribution of non-image features for different subsets.](distributions.pdf){#fig:distributions}
+
+![Colour-colour diagrams for each classifier.](colour_colour_predictions.pdf){#fig:colour-colour}
 <!-- 
 ![Density of colour-colour features for sampled SWIRE objects.](colour_colour_all.pdf)
 
