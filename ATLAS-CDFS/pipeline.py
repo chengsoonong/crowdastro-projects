@@ -39,9 +39,9 @@ from typing import List, Sequence, Union
 import h5py
 import numpy
 
-CROWDASTRO_PATH = '~/data/Crowdastro/crowdastro-swire.h5'
-SWIRE_PATH = '~/data/SWIRE/SWIRE3_CDFS_cat_IRAC24_21Dec05.tbl'
-TABLE_PATH = '~/data/Crowdastro/one-table-to-rule-them-all.tbl'
+CROWDASTRO_PATH = '/Users/alger/data/Crowdastro/crowdastro-swire.h5'
+SWIRE_PATH = '/Users/alger/data/SWIRE/SWIRE3_CDFS_cat_IRAC24_21Dec05.tbl'
+TABLE_PATH = '/Users/alger/data/Crowdastro/one-table-to-rule-them-all.tbl'
 IMAGE_SIZE = 1024
 
 # Sensitivities of Spitzer (in µJy).
@@ -81,20 +81,23 @@ def generate_swire_features(
      N x 2 array of SWIRE RA/dec coordinates,
      N x D array of SWIRE features)
     """
-    swire_features = numpy.zeros((len(swire_coords),
-                                  6 +  # Magnitude differences
-                                  1 +  # S_3.6
-                                  2 +  # Stellarities
-                                  1 +  # Distances
-                                  32 * 32  # Image
-                                 ))
-
     with h5py.File(CROWDASTRO_PATH, 'r') as crowdastro_f:
+        # Load coordinates of SWIRE objects.
+        swire_coords = crowdastro_f['/swire/cdfs/numeric'][:, :2]
+        # Initialise features array.
+        swire_features = numpy.zeros((len(swire_coords),
+                                      6 +  # Magnitude differences
+                                      1 +  # S_3.6
+                                      2 +  # Stellarities
+                                      1 +  # Distances
+                                      32 * 32  # Image
+                                     ))
         # Load radio images of SWIRE objects.
         swire_features[:, -IMAGE_SIZE:] = \
             crowdastro_f['/swire/cdfs/numeric'][:, -IMAGE_SIZE:]
-        # Load coordinates of SWIRE objects.
-        swire_coords = crowdastro_f['/swire/cdfs/numeric'][:, :2]
+        # asinh stretch the images.
+        swire_features[:, -IMAGE_SIZE:] = numpy.arcsinh(
+            swire_features[:, -IMAGE_SIZE:] / 0.1) / numpy.arcsinh(1 / 0.1)
         # Load names of SWIRE objects.
         swire_names = crowdastro_f['/swire/cdfs/string'].value
         crowdastro_swire_names = {name: index 
@@ -160,3 +163,11 @@ def generate_swire_features(
         swire_features[crowdastro_index] = features
 
     return swire_names, swire_coords, swire_features
+
+
+def main():
+    swire_names, swire_coords, swire_features = generate_swire_features()
+
+
+if __name__ == '__main__':
+    main()
