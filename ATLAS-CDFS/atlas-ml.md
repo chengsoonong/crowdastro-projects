@@ -24,7 +24,7 @@ In order to investigate methods for efficiently and effectively classifying radi
 ## Radio Galaxy Zoo
 Radio Galaxy Zoo asks volunteers to cross-identify radio components in the ATLAS and FIRST surveys with their host galaxies in the SWIRE and WISE surveys. A more detailed description can be found in Banfield et al. (2015). In this paper we focus on the ATLAS and SWIRE surveys. There are two main reasons for this. The first is that ATLAS is the pilot study for EMU where automated methods like ours will be used. The second is that ATLAS is composed of two fields, so we can train methods on one field and test these methods on the other field to ensure that our methods apply in different areas of the sky. [TODO(Julie): Am I interpreting your comments on this correctly?]
 
-[TODO: Define "component" and "source" and "primary component".]
+[TODO: Define "component" and "source" and "primary component", "host", etc, using a figure.]
 
 Each primary component found in the ATLAS DR3 component catalogue appears in Radio Galaxy Zoo. Non-primary components may appear within the image of a primary component, but do not have their own entry in Radio Galaxy Zoo. We will henceforth only discuss the primary components. Each radio component is presented to volunteers as two overlayed images: one in radio, and one in infrared. The images are $2' \times 2'$ for ATLAS. Volunteers must first choose which radio components are associated with the same radio source. They are then able to choose the location the host galaxy in the infrared image. The coordinates of the pixel that they select as the host galaxy location are recorded and stored alongside the combination of radio components as a cross-identified radio source.
 
@@ -133,63 +133,33 @@ There are many potential host galaxies [TODO: how many galaxies in SWIRE?], so i
 
 ![CDFS field training and testing quadrants. The central dot is located at 52h48m00s -28°06m00s. There are similar numbers of radio sources in each quadrant.](quadrants.pdf){#fig:quadrants}
 
-[TODO: Fix the axis labels.]
-
-We trained cross-identifiers on radio objects from the ATLAS observations of the Chandra Deep Field - South (CDFS) using Radio Galaxy Zoo cross-identifications, and compared the trained cross-identifiers to those trained on a set of expert cross-identifications of the same field. We then applied the cross-identifiers trained on CDFS to the ESO Large Area ISO Survey - South 1 (ELAIS-S1) field [assuming we're still planning to do this].
+We trained cross-identifiers on radio objects from the ATLAS observations of the Chandra Deep Field - South (CDFS) using Radio Galaxy Zoo cross-identifications, and compared the trained cross-identifiers to those trained on a set of expert cross-identifications of the same field. We then applied the cross-identifiers trained on CDFS to the ESO Large Area ISO Survey - South 1 (ELAIS-S1) field [TODO].
 
 We divided the CDFS field into four quadrants for training and testing. The quadrants were centred on 52h48m00s -28°06m00s (*@fig:quadrants). For each trial, one quadrant was used to draw test examples, and the other three quadrants were used for training examples.
 
 We further divided the radio components into compact and resolved. Compact components are trivially cross-identified by fitting a Gaussian (as in Norris et al. 2006) and we would expect any machine learning approach for host cross-identification to attain high accuracy on this set. Whether a component was resolved was decided based on its flux; a radio component was considered resolved if
-[TODO: Fix to follow Franzen; ensure pipeline is following Franzen too]
 $$
-    \frac{S_{\text{int}}}{S_{\text{peak}}} \leq 1
+    \ln \left(\frac{S_{\text{int}}}{S_{\text{peak}}}\right) > 2\sqrt{\left(\frac{\sigma_{S_{\text{int}}}}{S_{\text{int}}}\right)^2 + \left(\frac{\sigma_{S_{\text{peak}}}}{S_{\text{peak}}}\right)^2}
 $$
-and compact otherwise.
+and compact otherwise, where $S_{\text{int}}$ is the integrated flux and $S_{\text{peak}}$ is the peak flux.
 
 We considered only radio objects with a cross-identification in both the Norris et al. (2006) catalogue and the RGZ catalogue. Candidate hosts were then selected from the SWIRE catalogue. For a given subset of radio objects, all SWIRE objects within $R$ of all radio objects in the subset were added to the associated SWIRE subset.
 
-Each classifier was trained on the training examples and used to predict labels for the test examples. The predicted labels were compared to the labels derived from the Norris et al. (2006) cross-identifications and the balanced accuracy was computed. We used balanced accuracy as our accuracy measure due to the highly imbalanced classes --- in our total set of SWIRE objects, only 4% have positive labels. The accuracies were then averaged across all four quadrants. Classification outputs are reported for the testing quadrant. We report the balanced accuracy on the classification task for logistic regression, convolutional neural networks, and random forests.
+Each classifier was trained on the training examples and used to predict labels for the test examples. The predicted labels were compared to the labels derived from the Norris et al. (2006) cross-identifications and the balanced accuracy was computed. We used balanced accuracy as our accuracy measure due to the highly imbalanced classes --- in our total set of SWIRE objects within $R$ of an ATLAS object, only 4% have positive labels. The accuracies were then averaged across all four quadrants. Classification outputs are reported for the testing quadrant. We report the balanced accuracy on the classification task for logistic regression, convolutional neural networks, and random forests.
 
-We then used the outputs of our classifiers to predict the host galaxy for each radio component cross-identified by both Norris et al. (2006) and Radio Galaxy Zoo. For each SWIRE object within 1 arcminute of the radio component, a probability of the object having a positive label was estimated using the trained binary classifiers. The SWIRE object with the highest probability was chosen as the host galaxy. The accuracy was then estimated by counting how many predicted host galaxies matched the Norris et al. (2006) cross-identifications.
+We then used the outputs of our classifiers to predict the host galaxy for each radio component cross-identified by both Norris et al. (2006) and Radio Galaxy Zoo. For each SWIRE object within $R$ of the radio component, the probability of the object having a positive label was estimated using the trained binary classifiers. The SWIRE object with the highest probability was chosen as the host galaxy. The accuracy was then estimated by counting how many predicted host galaxies matched the Norris et al. (2006) cross-identifications.
 
-The balanced accuracy provides a good proxy to the accuracy of the host cross-identification task. To check this, we selected random, small subsets of the SWIRE training objects, and for each random subset trained a logistic regression classifier. The balanced accuracy of this classifier was computed and compared with the accuracy of this classifier on the host cross-identification task. These accuracies are plotted against each other in Figure xxx. We found a positive correlation. Additionally, we compared the balanced accuracy of the classifier to the mean distance of the predicted host galaxy from the true host galaxy, also finding a positive correlation. [this is kind of a result, but it's used to describe why we chose the method we did to report --- should it go in the results and then discussion section, or here?]
+The balanced accuracy provides a good proxy to the accuracy of the host cross-identification task. To check this, we selected random, small subsets of the SWIRE training objects, and for each random subset trained a logistic regression classifier. The balanced accuracy of this classifier was computed and compared with the accuracy of this classifier on the host cross-identification task. These accuracies are plotted against each other in *@fig:gct-to-xid. We found a positive correlation. Additionally, we compared the balanced accuracy of the classifier to the mean distance of the predicted host galaxy from the true host galaxy, also finding a positive correlation. [this is kind of a result, but it's used to describe why we chose the method we did to report --- should it go in the results and then discussion section, or here?]
 
 # Results
 
 [TODO: Include images of "good" and "bad" X-IDs/GCTs.]
 
-![Balanced accuracies for each quadrant in the galaxy classification task.](atlas-ml-ba.pdf){#fig:ba}
+![Balanced accuracies for each quadrant in the galaxy classification task.](atlas-ml-ba-grid.pdf){#fig:ba}
 
-Table: Balanced accuracies for the galaxy classification task. Uncertainties represent standard deviation over the quadrants.
+[Table here: SWIRE -> predicted probability for GCT, along with consensus level from RGZ]
 
-| swire | lr(rgz) | lr(norris) |
-|-------|---------|------------|
-| SWIRE3_J032559.15-284724.2 | 0.0341784863105 | 0.015480243078  |
-| SWIRE3_J032559.91-284728.9 | 0.278541709304  | 0.020090942017  |
-| SWIRE3_J032600.02-284736.9 | 0.245365593177  | 0.014413236572  |
-| SWIRE3_J032600.13-284637.5 | 0.0813282413296 | 0.0208829692218 |
-| SWIRE3_J032600.13-284715.7 | 0.387394784166  | 0.0343210418749 |
-| SWIRE3_J032600.98-284705.4 | 0.145593835335  | 0.0658117444017 |
-| SWIRE3_J032601.03-284711.6 | 0.677611173993  | 0.131620806718  |
-| SWIRE3_J032601.75-284614.5 | 0.134551589362  | 0.0131522724495 |
-| SWIRE3_J032602.08-284713.1 | 0.741262952211  | 0.565229482364  |
-
-Table: Predicted probabilities for each SWIRE object. Predictors are logistic regression trained on RGZ labels and logistic regression trained on Norris labels. SWIRE objects that do not appear in the table have no prediction; we assume these are 0. Full table electronic.
-
-| zooniverse_id | ra | dec | lr(rgz)_swire | lr(norris)_swire | rgz_swire | rgz_consensus_radio_level | rgz_consensus_ir_level |
-|-|--|---|--------|--------|------|----------|---------|
-| ARG0003rb2 | 51.511734 | -28.785575 | SWIRE3_J032602.36-284711.5 | SWIRE3_J032602.36-284711.5 | -99 | 0.4 | 0.333333333333 |
-| ARG0003rfr | 51.564555 | -28.774847 | SWIRE3_J032615.41-284630.7 | SWIRE3_J032615.41-284630.7 | SWIRE3_J032616.14-284552.9,SWIRE3_J032615.41-284630.7 | 0.3125 | 1.0,1.0 |
-| ARG0003r8s | 51.564799 | -28.099955 | SWIRE3_J032615.52-280559.8 | SWIRE3_J032615.52-280559.8 | SWIRE3_J032616.71-280538.6,SWIRE3_J032617.94-280648.2,SWIRE3_J032615.52-280559.8 | 0.484848484848 | 0.75,0.555555555556,0.8125 |
-| ARG0003r2j | 51.572279 | -28.119491 | SWIRE3_J032615.86-280628.8 | SWIRE3_J032617.02-280638.9 | SWIRE3_J032617.89-280707.2 | 0.421052631579 | 1.0 |
-| ARG0003raz | 51.604711 | -28.152731 | SWIRE3_J032625.19-280910.1 | SWIRE3_J032625.19-280910.1 | SWIRE3_J032624.80-280915.9 | 0.3 | 0.333333333333 |
-| ARG0003ro4 | 51.621251 | -28.113924 | SWIRE3_J032629.13-280650.7 | SWIRE3_J032629.13-280650.7 | SWIRE3_J032629.13-280650.7,SWIRE3_J032626.74-280636.7 | 0.357142857143 | 0.8,1.0 |
-| ARG0003r8e | 51.623385 | -28.681315 | SWIRE3_J032629.54-284051.9 | SWIRE3_J032629.54-284051.9 | SWIRE3_J032629.54-284055.8 | 0.3 | 1.0 |
-| ARG0003r3w | 51.624653 | -28.798195 | SWIRE3_J032629.81-284754.4 | SWIRE3_J032629.81-284754.4 | SWIRE3_J032629.81-284754.4 | 1.0 | 0.666666666667 |
-| ARG0003r55 | 51.62777 | -28.615917 | SWIRE3_J032630.64-283658.0 | SWIRE3_J032630.64-283658.0 | SWIRE3_J032630.64-283658.0,SWIRE3_J032628.56-283744.8 | 0.354838709677 | 1.0,0.727272727273 |
-| ARG0003rj2 | 51.644117 | -28.339678 | SWIRE3_J032634.58-282022.8 | SWIRE3_J032634.58-282022.8 | SWIRE3_J032630.21-282025.5,SWIRE3_J032634.58-282022.8,SWIRE3_J032631.96-281941.0 | 0.59375 | 0.684210526316,0.947368421053,0.473684210526 |
-
-Table: Predicted SWIRE hosts for ATLAS radio objects. Note the assumption that there is only one host galaxy per Zooniverse ID. Full table electronic.
+[Table here: Predicted SWIRE hosts for ATLAS radio objects.]
 
 ![Classification balanced accuracy against accuracy on the cross-identification task. Cross-identification accuracy is computed from a binary comparison between the predicted host and the Norris et al. (2006) cross-identification; neither distance to the true host nor broken assumptions of one host per image are accommodated. [TODO: explain this caption better so that it is understandable to non-ML people]](gct-to-xid.pdf){#fig:gct-to-xid}
 
@@ -197,9 +167,11 @@ Table: Predicted SWIRE hosts for ATLAS radio objects. Note the assumption that t
 
 ![Passive learning plot for the GCT. Trained and tested on RGZ. This is so that we had maximal training data — RGZ has many more objects than Norris.](passive.pdf){#fig:passive}
 
-![Distribution of non-image features for different subsets.](distributions.pdf){#fig:distributions}
+![Distribution of non-image features.](distributions.pdf){#fig:distributions}
 
-[TODO: Make the distribution plot actually exist]
+![Intermediate outputs from convolutional layers of a convolutional neural network trained on quadrants 1 -- 3 with Norris et al. (2006) labels.](convolutions_42191.pdf)
+
+![Colour-colour diagram for sample of SWIRE objects within $R$ of an ATLAS object.](colour-colour-all.pdf){#fig:colour-colour-all}
 
 ![Colour-colour diagrams for each classifier.](colour_colour_predictions.pdf){#fig:colour-colour}
 
