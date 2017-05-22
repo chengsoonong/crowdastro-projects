@@ -34,14 +34,20 @@ The Australian National University
 2017
 """
 
+import errno
+import os
 from typing import List, Sequence, Union
 
 import h5py
+import matplotlib.figure
+import matplotlib.pyplot as plt
 import numpy
+import seaborn
 
 CROWDASTRO_PATH = '/Users/alger/data/Crowdastro/crowdastro-swire.h5'
 SWIRE_PATH = '/Users/alger/data/SWIRE/SWIRE3_CDFS_cat_IRAC24_21Dec05.tbl'
 TABLE_PATH = '/Users/alger/data/Crowdastro/one-table-to-rule-them-all.tbl'
+WORKING_DIR = '/tmp/atlas-ml/'
 IMAGE_SIZE = 1024
 
 # Sensitivities of Spitzer (in µJy).
@@ -55,6 +61,18 @@ SPITZER_SENSITIVITIES = {
 
 N = 'N'  # For type annotations.
 D = 'D'
+Figure = matplotlib.figure.Figure
+
+# Create working directory.
+try:
+    os.makedirs(WORKING_DIR)
+except OSError as exception:
+    if exception.errno != errno.EEXIST:
+        raise
+
+# Setup plotting style.
+seaborn.set_style('white')
+
 
 class NDArray:
     """Represent NumPy arrays."""
@@ -81,11 +99,22 @@ def generate_swire_features(
      N x 2 array of SWIRE RA/dec coordinates,
      N x D array of SWIRE features)
     """
+    try:
+        with h5py.File(os.path.join(WORKING_DIR, 'swire.h5'), 'r') as f:
+            names = [name.decode('ascii') for name in f['names']]
+            coords = f['coords'].value
+            features = f['features'].value
+            return (names, coords, features)
+    except OSError as e:
+        pass
+        # I'd love to check the errno here, but h5py hides it...
+
     with h5py.File(CROWDASTRO_PATH, 'r') as crowdastro_f:
         # Load coordinates of SWIRE objects.
         swire_coords = crowdastro_f['/swire/cdfs/numeric'][:, :2]
+        n_swire = len(swire_coords)
         # Initialise features array.
-        swire_features = numpy.zeros((len(swire_coords),
+        swire_features = numpy.zeros((n_swire,
                                       6 +  # Magnitude differences
                                       1 +  # S_3.6
                                       2 +  # Stellarities
@@ -98,8 +127,14 @@ def generate_swire_features(
         # asinh stretch the images.
         swire_features[:, -IMAGE_SIZE:] = numpy.arcsinh(
             swire_features[:, -IMAGE_SIZE:] / 0.1) / numpy.arcsinh(1 / 0.1)
+        # Load minimum distances to ATLAS objects.
+        distances = crowdastro_f['/atlas/cdfs/numeric'][:, -n_swire:].min(
+            axis=0)
+        assert distances.shape == (n_swire,)
         # Load names of SWIRE objects.
-        swire_names = crowdastro_f['/swire/cdfs/string'].value
+        swire_names = [
+            name.decode('ascii')
+            for name in crowdastro_f['/swire/cdfs/string'].value]
         crowdastro_swire_names = {name: index 
                                   for index, name in enumerate(swire_names)}
     
@@ -138,6 +173,8 @@ def generate_swire_features(
             if v == -99.0:
                 # 5 sigma is an upper-bound for flux in each band.
                 v = SPITZER_SENSITIVITIES[s]
+
+            fluxes.append(v)
             
         mags = [numpy.log10(s) for s in fluxes]
         mag_diffs = [mags[0] - mags[1], mags[0] - mags[2], mags[0] - mags[3],
@@ -153,20 +190,66 @@ def generate_swire_features(
                 stellarities.append(float('nan'))
         # We will have nan stellarities, but we will replace those with the
         # mean later.
-        features = numpy.concatenate([
+        non_image_features = numpy.concatenate([
             mag_diffs,
             mags[:1],
             stellarities,
-            [swire_distances[crowdastro_index]],
-            swire_images[crowdastro_index],
+            [distances[crowdastro_index]],
         ])
-        swire_features[crowdastro_index] = features
+        swire_features[crowdastro_index, :-IMAGE_SIZE] = non_image_features
+
+    # Set nans to the mean.
+    for feature in range(swire_features.shape[1]):
+        nan = numpy.isnan(swire_features[:, feature])
+        swire_features[:, feature][nan] = \
+            swire_features[:, feature][~nan].mean()
+    assert not numpy.any(numpy.isnan(swire_features))
+
+    # Normalise and centre the non-image features.
+    swire_features[:, :-IMAGE_SIZE] -= \
+        swire_features[:, :-IMAGE_SIZE].mean(axis=0)
+    swire_features[:, :-IMAGE_SIZE] /= \
+        swire_features[:, :-IMAGE_SIZE].std(axis=0)
+
+    # Write back to a file.
+    with h5py.File(os.path.join(WORKING_DIR, 'swire.h5'), 'w') as f:
+        names = numpy.array(swire_names, dtype='<S{}'.format(
+            max(len(i) for i in swire_names)))
+        f.create_dataset('names', data=names)
+        f.create_dataset('coords', data=swire_coords)
+        f.create_dataset('features', data=swire_features)
 
     return swire_names, swire_coords, swire_features
 
 
+def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
+    """Plot feature distributions.
+
+    Source: 107_features.ipynb
+    """
+    fig = plt.figure(figsize=(5, 10))
+    xlabels = ['$\log_{10}(S_{3.6}/S_{4.5})$', '$\log_{10}(S_{3.6}/S_{5.8})$',
+               '$\log_{10}(S_{3.6}/S_{8.0})$',
+               '$\log_{10}(S_{4.5}/S_{5.8})$', '$\log_{10}(S_{4.5}/S_{8.0})$',
+               '$\log_{10}(S_{5.8}/S_{8.0})$', '$\log_{10} S_{3.6}$',
+               'Stellarity$_{3.6}$', 'Stellarity$_{4.5}$', 'Distance']
+    for i in range(10):
+        ax = fig.add_subplot(5, 2, i + 1)
+        ax.set_xlim((-2.5, 2.5))
+        if i != 5:
+            ax.set_ylim((0, 1))
+        seaborn.distplot(swire_features[:, i][
+            numpy.logical_and(swire_features[:, i] < 2.5,
+                              swire_features[:, i] > -2.5)],
+            kde_kws={'alpha': 0.0},  # Disabling the KDE breaks things...
+            hist_kws={'facecolor': 'black', 'alpha': 1.0})
+        ax.set_xlabel(xlabels[i])
+    fig.subplots_adjust(hspace=0.5)
+
+
 def main():
     swire_names, swire_coords, swire_features = generate_swire_features()
+    plot_distributions(swire_features)
 
 
 if __name__ == '__main__':
