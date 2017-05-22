@@ -38,6 +38,7 @@ import errno
 import os
 from typing import List, Sequence, Union
 
+import astropy.io.ascii
 import h5py
 import matplotlib.figure
 import matplotlib.pyplot as plt
@@ -45,6 +46,7 @@ import numpy
 import seaborn
 
 CROWDASTRO_PATH = '/Users/alger/data/Crowdastro/crowdastro-swire.h5'
+RGZ_PATH = '/Users/alger/data/RGZ/dr1_weighted/static_rgz_host_full.csv'
 SWIRE_PATH = '/Users/alger/data/SWIRE/SWIRE3_CDFS_cat_IRAC24_21Dec05.tbl'
 TABLE_PATH = '/Users/alger/data/Crowdastro/one-table-to-rule-them-all.tbl'
 WORKING_DIR = '/tmp/atlas-ml/'
@@ -222,6 +224,30 @@ def generate_swire_features(
     return swire_names, swire_coords, swire_features
 
 
+def generate_swire_labels(swire_names: List[str]) -> NDArray(N, 2)[bool]:
+    """Generate Norris and RGZ SWIRE labels."""
+    table = astropy.io.ascii.read(TABLE_PATH)
+    swire_name_to_index = {name: index
+                           for index, name in enumerate(swire_names)}
+    n_swire = len(swire_names)
+    swire_labels = numpy.zeros((n_swire, 2), dtype=bool)
+    # Load Norris labels.
+    for row in table:
+        norris = row['Source SWIRE (Norris)']
+        if norris and norris in swire_name_to_index:
+            swire_labels[swire_name_to_index[norris], 0] = True
+    # Load RGZ labels.
+    rgz_catalogue = astropy.io.ascii.read(RGZ_PATH)
+    for row in rgz_catalogue:
+        rgz = row['SWIRE.designation']
+        if rgz in swire_name_to_index:
+            swire_labels[swire_name_to_index[rgz], 1] = True
+
+    assert numpy.any(swire_labels, axis=0).all()
+
+    return swire_labels
+
+
 def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
     """Plot feature distributions.
 
@@ -249,6 +275,8 @@ def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
 
 def main():
     swire_names, swire_coords, swire_features = generate_swire_features()
+    swire_labels = generate_swire_labels(swire_names)
+    print(swire_labels.sum(axis=0))
     plot_distributions(swire_features)
 
 
