@@ -34,15 +34,18 @@ The Australian National University
 2017
 """
 
+import collections
 import errno
+import logging
 import os
-from typing import List, Sequence, Union
+from typing import List, Sequence, Union, Dict, Set
 
 import astropy.io.ascii
 import h5py
 import matplotlib.figure
 import matplotlib.pyplot as plt
 import numpy
+from scipy.spatial import KDTree
 import seaborn
 
 CROWDASTRO_PATH = '/Users/alger/data/Crowdastro/crowdastro-swire.h5'
@@ -75,6 +78,9 @@ except OSError as exception:
 # Setup plotting style.
 seaborn.set_style('white')
 
+# Setup logging.
+log = logging.getLogger(__name__)
+
 
 class NDArray:
     """Represent NumPy arrays."""
@@ -95,14 +101,17 @@ def generate_swire_features(
         ) -> (List[str], NDArray(N, 2)[float], NDArray(N, D)[float]):
     """Generate features for SWIRE objects.
 
+    Source: 102_classification.ipynb
+    
     Returns
     -------
-    (list of SWIRE names,
-     N x 2 array of SWIRE RA/dec coordinates,
-     N x D array of SWIRE features)
+    (SWIRE names,
+     SWIRE RA/dec coordinates,
+     SWIRE features)
     """
     try:
         with h5py.File(os.path.join(WORKING_DIR, 'swire.h5'), 'r') as f:
+            log.info('Reading features from swire.h5')
             names = [name.decode('ascii') for name in f['names']]
             coords = f['coords'].value
             features = f['features'].value
@@ -214,6 +223,7 @@ def generate_swire_features(
         swire_features[:, :-IMAGE_SIZE].std(axis=0)
 
     # Write back to a file.
+    log.info('Creating new file swire.h5')
     with h5py.File(os.path.join(WORKING_DIR, 'swire.h5'), 'w') as f:
         names = numpy.array(swire_names, dtype='<S{}'.format(
             max(len(i) for i in swire_names)))
@@ -225,7 +235,18 @@ def generate_swire_features(
 
 
 def generate_swire_labels(swire_names: List[str]) -> NDArray(N, 2)[bool]:
-    """Generate Norris and RGZ SWIRE labels."""
+    """Generate Norris and RGZ SWIRE labels.
+
+    Source: 102_classification.ipynb
+    """
+    try:
+        with h5py.File(os.path.join(WORKING_DIR, 'swire_labels.h5'),
+                       'r') as f_h5:
+            log.info('Reading labels from swire_labels.h5')
+            return f_h5['labels'].value
+    except OSError:
+        pass
+
     table = astropy.io.ascii.read(TABLE_PATH)
     swire_name_to_index = {name: index
                            for index, name in enumerate(swire_names)}
@@ -245,8 +266,181 @@ def generate_swire_labels(swire_names: List[str]) -> NDArray(N, 2)[bool]:
 
     assert numpy.any(swire_labels, axis=0).all()
 
+    log.info('Creating new file swire_labels.h5')
+    with h5py.File(os.path.join(WORKING_DIR, 'swire_labels.h5'), 'w') as f_h5:
+        f_h5.create_dataset('labels', data=swire_labels)
+
     return swire_labels
 
+
+_ats_swire_tree = None  # Cache the SWIRE KDTree because generating it is slow.
+_ats_table = None  # Cache the table because reading it is slow.
+
+def atlas_to_swire(
+        swire_coords: NDArray(N, 2)[float],
+        atlas: List[int],
+        radius: float=1 / 60) -> List[int]:
+    """Convert ATLAS objects to nearby SWIRE objects.
+
+    Parameters
+    ----------
+    swire_coords
+        Array of SWIRE RA/dec.
+    atlas
+        List of table Keys.
+    radius
+        Radius to search for SWIRE objects.
+
+    Returns
+    -------
+    List of SWIRE objects.
+    """
+    global _ats_swire_tree, _ats_table
+    if _ats_swire_tree is None:
+        _ats_swire_tree = KDTree(swire_coords)
+    if _ats_table is None:
+        _ats_table = astropy.io.ascii.read(TABLE_PATH)
+    swire_tree = _ats_swire_tree
+    table = _ats_table
+
+    # Look up the coordinates of the ATLAS objects.
+    atlas = set(atlas)
+    ras = [r['Component RA (Franzen)'] for r in table if r['Key'] in atlas]
+    decs = [r['Component DEC (Franzen)'] for r in table if r['Key'] in atlas]
+    coords = numpy.vstack([ras, decs]).T
+    nearby = sorted({int(i)
+                     for i in numpy.concatenate(
+                        swire_tree.query_ball_point(coords, radius))})
+    return nearby
+
+
+def compact_test(r: Dict[str, float]) -> bool:
+    """Check if a row represents a compact component."""
+    if not r['Component S (Franzen)']:  # Why does this happen?
+        return True
+
+    R = numpy.log(r['Component S (Franzen)'] / r['Component Sp (Franzen)'])
+    R_err = numpy.sqrt(
+        (r['Component S_ERR (Franzen)'] / r['Component S (Franzen)']) ** 2 +
+        (r['Component Sp_ERR (Franzen)'] / r['Component Sp (Franzen)']) ** 2)
+    return R < 2 * R_err
+
+
+_fs_table = None  # Cache the table because reading it is slow.
+
+def filter_subset(subset: Set[int], q: int) -> Set[int]:
+    """Filter subset to just include indices of ATLAS objects in a quadrant."""
+    global _fs_table
+    if _fs_table is None:
+        _fs_table = astropy.io.ascii.read(TABLE_PATH)
+    table = _fs_table
+
+    # Where we'll split our quadrants. RA/dec.
+    middle = (52.8, -28.1)
+
+    subset_ = set()
+    for s in subset:
+        row = table[table['Key'] == s][0]
+        coords = row['Component RA (Franzen)'], row['Component DEC (Franzen)']
+
+        if (
+              (q == 0 and coords[0] >= middle[0] and coords[1] >= middle[1]) or
+              (q == 1 and coords[0] < middle[0] and coords[1] >= middle[1]) or
+              (q == 2 and coords[0] < middle[0] and coords[1] < middle[1]) or
+              (q == 3 and coords[0] >= middle[0] and coords[1] < middle[1])):
+            subset_.add(s)
+    return subset_
+
+
+def generate_data_sets(
+        swire_coords: NDArray(N, 2)
+    ) -> (NDArray(N, 6, 4)[bool], NDArray(N, 6, 4)[bool]):
+    """Generate training/testing sets.
+
+    Sets generated:
+    - RGZ & Norris & compact
+    - RGZ & Norris & resolved
+    - RGZ & Norris
+    - RGZ & compact
+    - RGZ & resolved
+    - RGZ
+
+    Source: 104_one_notebook_to_train_them_all.ipynb
+
+    Returns
+    -------
+    Two boolean arrays. Each indicates which set each SWIRE object is in. The
+    first array is training, the second array is testing.
+
+    First index: SWIRE index.
+    Second index: Set from above list.
+    Third index: Quadrant.
+    """
+    try:
+        with h5py.File(os.path.join(WORKING_DIR, 'swire_sets.h5'),
+                       'r') as f_h5:
+            log.info('Reading sets from swire_sets.h5')
+            return f_h5['train'].value, f_h5['test'].value
+    except OSError:
+        pass
+
+    table = astropy.io.ascii.read(TABLE_PATH)
+    n_swire = len(swire_coords)
+    # Generate the base ATLAS sets.
+    rgz = {r['Key'] for r in table
+           if r['Component Zooniverse ID (RGZ)'] and
+           r['Component ID (Franzen)'] == r['Primary Component ID (RGZ)'] and
+           r['Component ID (Franzen)']}
+    norris = {r['Key'] for r in table if r['Component # (Norris)'] and
+                                         r['Component ID (Franzen)']}
+    compact = {r['Key'] for r in table if r['Component ID (Franzen)'] and
+                                          compact_test(r)}
+    subsets = [
+        ('RGZ & Norris & compact', rgz & norris & compact),
+        ('RGZ & Norris & resolved', rgz & norris - compact),
+        ('RGZ & Norris', rgz & norris),
+        ('RGZ & compact', rgz & compact),
+        ('RGZ & resolved', rgz - compact),
+        ('RGZ', rgz),
+    ]
+    training_testing_atlas_sets = {s:[] for s, _ in subsets}
+    for subset_str, subset_set in subsets:
+        log.debug('Filtering ATLAS/{}'.format(subset_str))
+        for q in range(4):  # Quadrants.
+            test = filter_subset(subset_set, q)
+            train = {i for i in subset_set if i not in test}
+            training_testing_atlas_sets[subset_str].append((train, test))
+    training_testing_swire_sets = {s:[] for s, _ in subsets}
+    for subset_str, subset_set in subsets:
+        log.debug('Filtering SWIRE/{}'.format(subset_str))
+        for train, test in training_testing_atlas_sets[subset_str]:
+            train = atlas_to_swire(swire_coords, train)
+            test = atlas_to_swire(swire_coords, test)
+            log.debug('{} {} {} {} {}'.format(
+                subset_str,
+                len(set(train) & set(test)), 'out of',
+                len(set(test)), 'overlap'))
+            train = sorted(set(train) - set(test))
+            training_testing_swire_sets[subset_str].append((train, test))
+
+    # Convert sets to output format.
+    # Two arrays (train/test) of size N x 6 x 4.
+    log.debug('Converting SWIRE set format')
+    swire_sets_test = numpy.zeros((n_swire, 6, 4), dtype=bool)
+    swire_sets_train = numpy.zeros((n_swire, 6, 4), dtype=bool)
+    for s, (subset_str, subset_set) in enumerate(subsets):
+        for q in range(4):
+            for n in training_testing_swire_sets[subset_str][q][0]:
+                swire_sets_train[n, s, q] = True
+            for n in training_testing_swire_sets[subset_str][q][1]:
+                swire_sets_test[n, s, q] = True
+
+    log.info('Creating new file swire_sets.h5')
+    with h5py.File(os.path.join(WORKING_DIR, 'swire_sets.h5'), 'w') as f_h5:
+        f_h5.create_dataset('train', data=swire_sets_train)
+        f_h5.create_dataset('test', data=swire_sets_test)
+
+    return swire_sets_train, swire_sets_test
 
 def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
     """Plot feature distributions.
@@ -276,9 +470,9 @@ def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
 def main():
     swire_names, swire_coords, swire_features = generate_swire_features()
     swire_labels = generate_swire_labels(swire_names)
-    print(swire_labels.sum(axis=0))
-    plot_distributions(swire_features)
+    generate_data_sets(swire_coords)
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     main()
