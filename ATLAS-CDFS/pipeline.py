@@ -589,6 +589,31 @@ class Predictions:
     probabilities = attr.ib()  # type: NDArray(N)[float]
     labels = attr.ib()  # type: NDArray(N)[bool]
     balanced_accuracy = attr.ib()  # type: float
+    dataset_name = attr.ib()  # type: str
+    quadrant = attr.ib()  # type: int
+
+    def to_hdf5(self: 'Predictions', path: str) -> None:
+        """Serialise predictions as HDF5."""
+        with h5py.File(path, 'w') as f_h5:
+            f_h5.create_dataset('probabilities', data=self.probabilities)
+            f_h5.create_dataset('labels', data=self.labels)
+            f_h5.attrs['balanced_accuracy'] = balanced_accuracy
+            f_h5.attrs['dataset_name'] = dataset_name
+            f_h5.attrs['quadrant'] = quadrant
+
+    @classmethod
+    def from_hdf5(cls: type, path: str) -> 'Predictions':
+        with h5py.File(path, 'r') as f_h5:
+            probabilities = f_h5['probabilities'].value
+            labels = f_h5['labels'].value
+            balanced_accuracy = f_h5.attrs['balanced_accuracy']
+            dataset_name = f_h5.attrs['dataset_name']
+            quadrant = f_h5.attrs['quadrant']
+        return Predictions(probabilities=probabilities,
+                           labels=labels,
+                           balanced_accuracy=balanced_accuracy,
+                           dataset_name=dataset_name,
+                           quadrant=quadrant)
 
 
 def predict(
@@ -644,7 +669,100 @@ def predict(
     return Predictions(
         probabilities=predicted_probabilities,
         labels=predicted_labels,
-        balanced_accuracy=ba)
+        balanced_accuracy=ba,
+        dataset_name=dataset_name,
+        quadrant=quadrant)
+
+
+def train_all_quadrants(
+        Classifier: type,
+        swire_features: NDArray(N, D)[float],
+        swire_labels: NDArray(N, 2)[bool],
+        swire_train_sets: NDArray(N, 6, 4)[bool],
+        labeller: str,
+        dataset_name: str,
+        **kwargs: Dict[str, Any]) -> List[Classifier]:
+    """Train a classifier using the scikit-learn API across all quadrants.
+
+    Parameters
+    ----------
+    classifier
+        scikit-learn classifier class.
+    swire_features
+        SWIRE object features.
+    swire_labels
+        Norris, RGZ labels for each SWIRE object.
+    swire_train_sets
+        Output of generate_data_sets.
+    labeller
+        'norris' or 'rgz'.
+    dataset_name
+        'RGZ & Norris & compact' or
+        'RGZ & Norris & resolved' or
+        'RGZ & Norris' or
+        'RGZ & compact' or
+        'RGZ & resolved' or
+        'RGZ'.
+    kwargs
+        Keyword arguments for the classifier.
+
+    Returns
+    -------
+    List[Classifier]
+        List of scikit-learn classifiers (one for each quadrant).
+    """
+    return [train_classifier(
+                Classifier,
+                swire_features,
+                swire_labels,
+                swire_train_sets,
+                labeller,
+                dataset_name,
+                q) for q in range(4)]
+
+
+def predict_all_quadrants(
+        classifier: Classifier,
+        swire_features: NDArray(N, D)[float],
+        swire_labels: NDArray(N, 2)[bool],
+        swire_test_sets: NDArray(N, 6, 4)[bool],
+        dataset_name: str,
+        labeller: str='norris') -> List[Predictions]:
+    """Predict labels using a classifier across all quadrants.
+
+    Parameters
+    ----------
+    classifier
+        scikit-learn classifier.
+    swire_features
+        SWIRE object features.
+    swire_labels
+        Norris, RGZ labels for each SWIRE object.
+    swire_test_sets
+        Output of generate_data_sets.
+    dataset_name
+        'RGZ & Norris & compact' or
+        'RGZ & Norris & resolved' or
+        'RGZ & Norris' or
+        'RGZ & compact' or
+        'RGZ & resolved' or
+        'RGZ'.
+    labeller
+        Labeller to test against. 'norris' or 'rgz'.
+
+    Returns
+    -------
+    List[Predictions]
+        List of predictions of the classifier on the specified data.
+    """
+    return [predict(
+                classifier,
+                swire_features,
+                swire_labels,
+                swire_test_sets,
+                dataset_name,
+                q,
+                labeller=labeller) for q in range(4)]
 
 
 def main():
@@ -659,13 +777,12 @@ def main():
         'norris',
         'RGZ & Norris',
         0)
-    predictions = predict(
+    predictions = predict_all_quadrants(
         lr,
         swire_features,
         swire_labels,
         swire_test_sets,
-        'RGZ & Norris',
-        0)
+        'RGZ & Norris')
     print(predictions)
 
 
