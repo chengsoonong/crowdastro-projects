@@ -28,6 +28,16 @@ Wong, O. I., et al.,
     *Radio Galaxy Zoo Data Release 1: morphological classifications of 100,000
     FIRST radio sources*. 2017, in preparation.
 
+Requirements:
+    astropy
+    attrs
+    h5py
+    matplotlib
+    numpy
+    scikit-learn
+    scipy
+    seaborn
+
 Matthew Alger <matthew.alger@anu.edu.au>
 Research School of Astronomy and Astrophysics
 The Australian National University
@@ -38,7 +48,7 @@ import collections
 import errno
 import logging
 import os
-from typing import List, Sequence, Union, Dict, Set
+from typing import List, Sequence, Union, Dict, Set, Any
 
 import astropy.io.ascii
 import h5py
@@ -47,6 +57,9 @@ import matplotlib.pyplot as plt
 import numpy
 from scipy.spatial import KDTree
 import seaborn
+from sklearn.base import ClassifierMixin as Classifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 
 CROWDASTRO_PATH = '/Users/alger/data/Crowdastro/crowdastro-swire.h5'
 RGZ_PATH = '/Users/alger/data/RGZ/dr1_weighted/static_rgz_host_full.csv'
@@ -62,6 +75,16 @@ SPITZER_SENSITIVITIES = {
     58: 27.5,
     80: 32.5,
     24: 450,
+}
+
+# Names of datasets and corresponding indices.
+SET_NAMES = {
+    'RGZ & Norris & compact': 0,
+    'RGZ & Norris & resolved': 1,
+    'RGZ & Norris': 2,
+    'RGZ & compact': 3,
+    'RGZ & resolved': 4,
+    'RGZ': 5,
 }
 
 N = 'N'  # For type annotations.
@@ -354,7 +377,9 @@ def filter_subset(subset: Set[int], q: int) -> Set[int]:
 
 def generate_data_sets(
         swire_coords: NDArray(N, 2)
-    ) -> (NDArray(N, 6, 4)[bool], NDArray(N, 6, 4)[bool]):
+    ) -> (
+        NDArray(N, 6, 4)[bool],
+        NDArray(N, 6, 4)[bool]):
     """Generate training/testing sets.
 
     Sets generated:
@@ -403,6 +428,10 @@ def generate_data_sets(
         ('RGZ & resolved', rgz - compact),
         ('RGZ', rgz),
     ]
+    # Check these are in the right order...
+    for i, (ss, _) in enumerate(subsets):
+        assert SET_NAMES[ss] == i
+    assert len(SET_NAMES) == len(subsets)
     training_testing_atlas_sets = {s:[] for s, _ in subsets}
     for subset_str, subset_set in subsets:
         log.debug('Filtering ATLAS/{}'.format(subset_str))
@@ -465,6 +494,56 @@ def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
             hist_kws={'facecolor': 'black', 'alpha': 1.0})
         ax.set_xlabel(xlabels[i])
     fig.subplots_adjust(hspace=0.5)
+
+
+def train_classifier(
+        classifier: type,
+        swire_features: NDArray(N, D)[float],
+        swire_labels: NDArray(N, 2)[bool],
+        swire_train_sets: NDArray(N, 6, 4)[bool],
+        labeller: str,
+        dataset_name: str,
+        quadrant: int,
+        **kwargs: Dict[str, Any]) -> Classifier:
+    """Train a classifier using the scikit-learn API.
+
+    Parameters
+    ----------
+    classifier
+        scikit-learn classifier class.
+    swire_features
+        SWIRE object features.
+    swire_labels
+        Norris, RGZ labels for each SWIRE object.
+    swire_train_sets
+        Output of generate_data_sets.
+    labeller
+        'norris' or 'rgz'.
+    dataset_name
+        'RGZ & Norris & compact' or
+        'RGZ & Norris & resolved' or
+        'RGZ & Norris' or
+        'RGZ & compact' or
+        'RGZ & resolved' or
+        'RGZ'.
+    quadrant
+        int in [0, 4). Quadrant of CDFS to train on.
+    kwargs
+        Keyword arguments for the classifier.
+
+    Returns
+    -------
+    Classifier
+        scikit-learn classifier.
+    """
+    classifier = Classifier(class_weight='balanced', **kwargs)
+    train = swire_train_sets[:, SET_NAMES[dataset_name], quadrant]
+    features = swire_features[train]
+    # norris -> 0, rgz -> 1
+    assert labeller in {'norris', 'rgz'}
+    labels = swire_labels[train, int(labeller != 'norris')]
+    classifier.fit(features, labels)
+    return classifier
 
 
 def main():
