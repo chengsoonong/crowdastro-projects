@@ -592,6 +592,7 @@ class Predictions:
     balanced_accuracy = attr.ib()  # type: float
     dataset_name = attr.ib()  # type: str
     quadrant = attr.ib()  # type: int
+    params = attr.ib()  # type: Dict[str, Any]
 
     def to_hdf5(self: 'Predictions', path: str) -> None:
         """Serialise predictions as HDF5."""
@@ -601,6 +602,11 @@ class Predictions:
             f_h5.attrs['balanced_accuracy'] = self.balanced_accuracy
             f_h5.attrs['dataset_name'] = self.dataset_name
             f_h5.attrs['quadrant'] = self.quadrant
+            for param, value in self.params.items():
+                print(param, value)
+                if value is None:
+                    value = '__builtins__.None'
+                f_h5.attrs['param_{}'] = value
 
     @classmethod
     def from_hdf5(cls: type, path: str) -> 'Predictions':
@@ -610,11 +616,20 @@ class Predictions:
             balanced_accuracy = f_h5.attrs['balanced_accuracy']
             dataset_name = f_h5.attrs['dataset_name']
             quadrant = f_h5.attrs['quadrant']
+            params = {}
+            for attr in f_h5.attrs:
+                if attr.startswith('param_'):
+                    param = attr[6:]
+                    value = f_h5.attrs[attr]
+                    if value == '__builtins__.None':
+                        value = None
+                    params[param] = value
         return Predictions(probabilities=probabilities,
                            labels=labels,
                            balanced_accuracy=balanced_accuracy,
                            dataset_name=dataset_name,
-                           quadrant=quadrant)
+                           quadrant=quadrant,
+                           params=params)
 
 
 def predict(
@@ -672,7 +687,8 @@ def predict(
         labels=predicted_labels,
         balanced_accuracy=ba,
         dataset_name=dataset_name,
-        quadrant=quadrant)
+        quadrant=quadrant,
+        params=classifier.get_params())
 
 
 def train_all_quadrants(
@@ -878,17 +894,26 @@ def main():
     swire_names, swire_coords, swire_features = generate_swire_features()
     swire_labels = generate_swire_labels(swire_names)
     swire_train_sets, swire_test_sets = generate_data_sets(swire_coords)
-    rfs = train_all(
-        RandomForestClassifier,
-        swire_features,
-        swire_labels,
-        swire_train_sets,
-        'norris')
-    predictions = predict_all(
-        rfs,
-        swire_features,
-        swire_labels,
-        swire_test_sets)
+    try:
+        predictions = list(
+            unserialise_predictions(WORKING_DIR + 'predictions'))
+    except OSError:
+        log.debug('Training all.')
+        rfs = train_all(
+            RandomForestClassifier,
+            swire_features,
+            swire_labels,
+            swire_train_sets,
+            'norris')
+        predictions = predict_all(
+            rfs,
+            swire_features,
+            swire_labels,
+            swire_test_sets)
+        predictions = [i
+                       for quadrant_preds in predictions.values()
+                       for i in quadrant_preds]
+        serialise_predictions(predictions, WORKING_DIR + 'predictions')
     pprint(predictions)
 
 
