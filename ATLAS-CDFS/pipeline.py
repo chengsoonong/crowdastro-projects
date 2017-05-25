@@ -31,6 +31,7 @@ Wong, O. I., et al.,
 Requirements:
     astropy
     attrs
+    click
     h5py
     matplotlib
     numpy
@@ -53,6 +54,7 @@ from typing import Any, Callable, Dict, Iterable, List, Sequence, Set, Union
 
 import astropy.io.ascii
 import attr
+import click
 import h5py
 import matplotlib.figure
 import matplotlib.pyplot as plt
@@ -124,10 +126,16 @@ class NDArray:
 
 
 def generate_swire_features(
+        overwrite: bool=False,
         ) -> (List[str], NDArray(N, 2)[float], NDArray(N, D)[float]):
     """Generate features for SWIRE objects.
 
     Source: 102_classification.ipynb
+
+    Parameters
+    ----------
+    overwrite
+        Overwrite existing results.
     
     Returns
     -------
@@ -135,16 +143,17 @@ def generate_swire_features(
      SWIRE RA/dec coordinates,
      SWIRE features)
     """
-    try:
-        with h5py.File(os.path.join(WORKING_DIR, 'swire.h5'), 'r') as f:
-            log.info('Reading features from swire.h5')
-            names = [name.decode('ascii') for name in f['names']]
-            coords = f['coords'].value
-            features = f['features'].value
-            return (names, coords, features)
-    except OSError as e:
-        pass
-        # I'd love to check the errno here, but h5py hides it...
+    if not overwrite:
+        try:
+            with h5py.File(os.path.join(WORKING_DIR, 'swire.h5'), 'r') as f:
+                log.info('Reading features from swire.h5')
+                names = [name.decode('ascii') for name in f['names']]
+                coords = f['coords'].value
+                features = f['features'].value
+                return (names, coords, features)
+        except OSError as e:
+            pass
+            # I'd love to check the errno here, but h5py hides it...
 
     with h5py.File(CROWDASTRO_PATH, 'r') as crowdastro_f:
         # Load coordinates of SWIRE objects.
@@ -260,18 +269,20 @@ def generate_swire_features(
     return swire_names, swire_coords, swire_features
 
 
-def generate_swire_labels(swire_names: List[str]) -> NDArray(N, 2)[bool]:
+def generate_swire_labels(
+        swire_names: List[str], overwrite: bool=False) -> NDArray(N, 2)[bool]:
     """Generate Norris and RGZ SWIRE labels.
 
     Source: 102_classification.ipynb
     """
-    try:
-        with h5py.File(os.path.join(WORKING_DIR, 'swire_labels.h5'),
-                       'r') as f_h5:
-            log.info('Reading labels from swire_labels.h5')
-            return f_h5['labels'].value
-    except OSError:
-        pass
+    if not overwrite:
+        try:
+            with h5py.File(os.path.join(WORKING_DIR, 'swire_labels.h5'),
+                           'r') as f_h5:
+                log.info('Reading labels from swire_labels.h5')
+                return f_h5['labels'].value
+        except OSError:
+            pass
 
     table = astropy.io.ascii.read(TABLE_PATH)
     swire_name_to_index = {name: index
@@ -379,7 +390,8 @@ def filter_subset(subset: Set[int], q: int) -> Set[int]:
 
 
 def generate_data_sets(
-        swire_coords: NDArray(N, 2)
+        swire_coords: NDArray(N, 2),
+        overwrite: bool=False,
     ) -> (
         NDArray(N, 6, 4)[bool],
         NDArray(N, 6, 4)[bool]):
@@ -404,13 +416,14 @@ def generate_data_sets(
     Second index: Set from above list.
     Third index: Quadrant.
     """
-    try:
-        with h5py.File(os.path.join(WORKING_DIR, 'swire_sets.h5'),
-                       'r') as f_h5:
-            log.info('Reading sets from swire_sets.h5')
-            return f_h5['train'].value, f_h5['test'].value
-    except OSError:
-        pass
+    if not overwrite:
+        try:
+            with h5py.File(os.path.join(WORKING_DIR, 'swire_sets.h5'),
+                           'r') as f_h5:
+                log.info('Reading sets from swire_sets.h5')
+                return f_h5['train'].value, f_h5['test'].value
+        except OSError:
+            pass
 
     table = astropy.io.ascii.read(TABLE_PATH)
     n_swire = len(swire_coords)
@@ -606,7 +619,7 @@ class Predictions:
                 print(param, value)
                 if value is None:
                     value = '__builtins__.None'
-                f_h5.attrs['param_{}'] = value
+                f_h5.attrs['param_{}'.format(param)] = value
 
     @classmethod
     def from_hdf5(cls: type, path: str) -> 'Predictions':
@@ -891,37 +904,78 @@ def unserialise_predictions(
             yield Predictions.from_hdf5(filename)
 
 
-def train_and_predict(classifier: Classifier, **kwargs) -> List[Predictions]:
-    try:
-        predictions = list(
-            unserialise_predictions(WORKING_DIR + 'predictions'))
-    except OSError:
-        log.debug('Training all.')
-        rfs = train_all(
-            RandomForestClassifier,
-            swire_features,
-            swire_labels,
-            swire_train_sets,
-            'norris',
-            **kwargs)
-        predictions = predict_all(
-            rfs,
-            swire_features,
-            swire_labels,
-            swire_test_sets)
-        predictions = [i
-                       for quadrant_preds in predictions.values()
-                       for i in quadrant_preds]
-        serialise_predictions(predictions, WORKING_DIR + 'predictions')
+def train_and_predict(
+        Classifier: type,
+        swire_features: NDArray(N, D)[float],
+        swire_labels: NDArray(N, 2)[bool],
+        swire_train_sets: NDArray(N, 6, 4)[bool],
+        swire_test_sets: NDArray(N, 6, 4)[bool],
+        overwrite: bool=False,
+        **kwargs: Dict[str, Any]) -> List[Predictions]:
+    if not overwrite:
+        try:
+            return list(
+                unserialise_predictions(WORKING_DIR + Classifier.__name__ +
+                                        '_predictions'))
+        except OSError:
+            pass
+
+    log.debug('Training all.')
+    classifiers = train_all(
+        Classifier,
+        swire_features,
+        swire_labels,
+        swire_train_sets,
+        'norris',
+        **kwargs)
+    predictions = predict_all(
+        classifiers,
+        swire_features,
+        swire_labels,
+        swire_test_sets)
+    predictions = [i
+                   for quadrant_preds in predictions.values()
+                   for i in quadrant_preds]
+    serialise_predictions(predictions, WORKING_DIR + Classifier.__name__ +
+                                       '_predictions')
+    return predictions
 
 
-def main():
+@click.command()
+@click.option('-f', '--overwrite-predictions', is_flag=True,
+              help='Overwrite output predictions')
+@click.option('-F', '--overwrite-all', is_flag=True,
+              help='Overwrite all predictions and features')
+@click.option('--jobs', type=int, default=-1, help='Number of parallel jobs')
+def main(overwrite_predictions: bool=False,
+         overwrite_all: bool=False,
+         jobs: int=-1):
     # Generate SWIRE info.
-    swire_names, swire_coords, swire_features = generate_swire_features()
-    swire_labels = generate_swire_labels(swire_names)
-    swire_train_sets, swire_test_sets = generate_data_sets(swire_coords)
-    # Predict for
-    pprint(predictions)
+    swire_names, swire_coords, swire_features = generate_swire_features(overwrite=overwrite_all)
+    swire_labels = generate_swire_labels(swire_names, overwrite=overwrite_all)
+    swire_train_sets, swire_test_sets = generate_data_sets(swire_coords, overwrite=overwrite_all)
+    # Predict for LR, RF.
+    lr_pred = train_and_predict(
+        LogisticRegression,
+        swire_features,
+        swire_labels,
+        swire_train_sets,
+        swire_test_sets,
+        overwrite=overwrite_predictions or overwrite_all,
+        n_jobs=jobs,
+        C=100000.0)
+    rf_pred = train_and_predict(
+        RandomForestClassifier,
+        swire_features,
+        swire_labels,
+        swire_train_sets,
+        swire_test_sets,
+        overwrite=overwrite_predictions or overwrite_all,
+        n_jobs=jobs,
+        min_samples_leaf=45,
+        criterion='entropy')
+    pprint(lr_pred)
+    pprint(rf_pred)
 
 
 if __name__ == '__main__':
