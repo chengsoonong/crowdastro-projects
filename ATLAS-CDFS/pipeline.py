@@ -48,7 +48,8 @@ import collections
 import errno
 import logging
 import os
-from typing import List, Sequence, Union, Dict, Set, Any, Callable
+from pprint import pprint
+from typing import Any, Callable, Dict, Iterable, List, Sequence, Set, Union
 
 import astropy.io.ascii
 import attr
@@ -597,9 +598,9 @@ class Predictions:
         with h5py.File(path, 'w') as f_h5:
             f_h5.create_dataset('probabilities', data=self.probabilities)
             f_h5.create_dataset('labels', data=self.labels)
-            f_h5.attrs['balanced_accuracy'] = balanced_accuracy
-            f_h5.attrs['dataset_name'] = dataset_name
-            f_h5.attrs['quadrant'] = quadrant
+            f_h5.attrs['balanced_accuracy'] = self.balanced_accuracy
+            f_h5.attrs['dataset_name'] = self.dataset_name
+            f_h5.attrs['quadrant'] = self.quadrant
 
     @classmethod
     def from_hdf5(cls: type, path: str) -> 'Predictions':
@@ -722,18 +723,18 @@ def train_all_quadrants(
 
 
 def predict_all_quadrants(
-        classifier: Classifier,
+        classifiers: List[Classifier],
         swire_features: NDArray(N, D)[float],
         swire_labels: NDArray(N, 2)[bool],
         swire_test_sets: NDArray(N, 6, 4)[bool],
         dataset_name: str,
         labeller: str='norris') -> List[Predictions]:
-    """Predict labels using a classifier across all quadrants.
+    """Predict labels using classifiers across all quadrants.
 
     Parameters
     ----------
-    classifier
-        scikit-learn classifier.
+    classifiers
+        List of scikit-learn classifiers (one per quadrant).
     swire_features
         SWIRE object features.
     swire_labels
@@ -762,28 +763,133 @@ def predict_all_quadrants(
                 swire_test_sets,
                 dataset_name,
                 q,
-                labeller=labeller) for q in range(4)]
+                labeller=labeller) for q, classifier in enumerate(classifiers)]
+
+
+def train_all(
+        Classifier: type,
+        swire_features: NDArray(N, D)[float],
+        swire_labels: NDArray(N, 2)[bool],
+        swire_train_sets: NDArray(N, 6, 4)[bool],
+        labeller: str,
+        **kwargs: Dict[str, Any]) -> List[Classifier]:
+    """Train a classifier across all quadrants and datasets.
+
+    Parameters
+    ----------
+    classifier
+        scikit-learn classifier class.
+    swire_features
+        SWIRE object features.
+    swire_labels
+        Norris, RGZ labels for each SWIRE object.
+    swire_train_sets
+        Output of generate_data_sets.
+    labeller
+        'norris' or 'rgz'.
+    kwargs
+        Keyword arguments for the classifier.
+
+    Returns
+    -------
+    Dict[str, List[Classifier]]
+        dict mapping dataset name to a list of scikit-learn classifiers
+        (one for each quadrant).
+    """
+    return {dataset_name: [train_classifier(
+                Classifier,
+                swire_features,
+                swire_labels,
+                swire_train_sets,
+                labeller,
+                dataset_name,
+                q) for q in range(4)] for dataset_name in sorted(SET_NAMES)}
+
+
+def predict_all(
+        classifiers: Dict[str, List[Classifier]],
+        swire_features: NDArray(N, D)[float],
+        swire_labels: NDArray(N, 2)[bool],
+        swire_test_sets: NDArray(N, 6, 4)[bool],
+        labeller: str='norris') -> List[Predictions]:
+    """Predict labels using classifiers across all quadrants and datasets.
+
+    Parameters
+    ----------
+    classifiers
+        dict mapping dataset names to a list of classifiers (one per quadrant).
+    swire_features
+        SWIRE object features.
+    swire_labels
+        Norris, RGZ labels for each SWIRE object.
+    swire_test_sets
+        Output of generate_data_sets.
+    labeller
+        Labeller to test against. 'norris' or 'rgz'.
+
+    Returns
+    -------
+    Dict[str, List[Predictions]]
+        dict mapping dataset names to lists of predictions of the classifier on
+        each quadrant.
+    """
+    return {dataset_name: [predict(
+                classifier,
+                swire_features,
+                swire_labels,
+                swire_test_sets,
+                dataset_name,
+                q,
+                labeller=labeller) for q, classifier in enumerate(classifiers)]
+            for dataset_name, classifiers in classifiers.items()}
+
+
+def serialise_predictions(
+        predictions: List[Predictions], base_path: str) -> None:
+    """Serialise a list of predictions to files.
+
+    base_path will be prepended to the filename, e.g. base_path = /tmp/run
+    will give files such as /tmp/run_0_RGZ & Norris.h5.
+    """
+    for prediction in predictions:
+        filename = '{}_{}_{}.h5'.format(base_path, prediction.quadrant,
+                                        prediction.dataset_name)
+        log.debug('Writing predictions to {}'.format(filename))
+        prediction.to_hdf5(filename)
+
+
+def unserialise_predictions(
+        base_path: str,
+        quadrants: List[int]=None,
+        dataset_names: List[str]=None) -> Iterable[Predictions]:
+    """Unserialise a list of predictions."""
+    if quadrants is None:
+        quadrants = [0, 1, 2, 3]
+    if dataset_names is None:
+        dataset_names = sorted(SET_NAMES)
+    for quadrant in quadrants:
+        for dataset_name in dataset_names:
+            filename = '{}_{}_{}.h5'.format(base_path, quadrant, dataset_name)
+            log.debug('Reading predictions from {}'.format(filename))
+            yield Predictions.from_hdf5(filename)
 
 
 def main():
     swire_names, swire_coords, swire_features = generate_swire_features()
     swire_labels = generate_swire_labels(swire_names)
     swire_train_sets, swire_test_sets = generate_data_sets(swire_coords)
-    lr = train_classifier(
-        LogisticRegression,
+    rfs = train_all(
+        RandomForestClassifier,
         swire_features,
         swire_labels,
         swire_train_sets,
-        'norris',
-        'RGZ & Norris',
-        0)
-    predictions = predict_all_quadrants(
-        lr,
+        'norris')
+    predictions = predict_all(
+        rfs,
         swire_features,
         swire_labels,
-        swire_test_sets,
-        'RGZ & Norris')
-    print(predictions)
+        swire_test_sets)
+    pprint(predictions)
 
 
 if __name__ == '__main__':
