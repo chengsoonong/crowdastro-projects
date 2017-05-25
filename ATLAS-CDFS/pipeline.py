@@ -48,9 +48,10 @@ import collections
 import errno
 import logging
 import os
-from typing import List, Sequence, Union, Dict, Set, Any
+from typing import List, Sequence, Union, Dict, Set, Any, Callable
 
 import astropy.io.ascii
+import attr
 import h5py
 import matplotlib.figure
 import matplotlib.pyplot as plt
@@ -60,6 +61,7 @@ import seaborn
 from sklearn.base import ClassifierMixin as Classifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+import sklearn.metrics
 
 CROWDASTRO_PATH = '/Users/alger/data/Crowdastro/crowdastro-swire.h5'
 RGZ_PATH = '/Users/alger/data/RGZ/dr1_weighted/static_rgz_host_full.csv'
@@ -497,7 +499,7 @@ def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
 
 
 def train_classifier(
-        classifier: type,
+        Classifier: type,
         swire_features: NDArray(N, D)[float],
         swire_labels: NDArray(N, 2)[bool],
         swire_train_sets: NDArray(N, 6, 4)[bool],
@@ -527,7 +529,7 @@ def train_classifier(
         'RGZ & resolved' or
         'RGZ'.
     quadrant
-        int in [0, 4). Quadrant of CDFS to train on.
+        int in [0, 4). Held-out quadrant of CDFS.
     kwargs
         Keyword arguments for the classifier.
 
@@ -546,10 +548,125 @@ def train_classifier(
     return classifier
 
 
+def balanced_accuracy(
+        y_true: NDArray(N)[bool],
+        y_pred: NDArray(N)[bool]) -> float:
+    """Computes the balanced accuracy of a predictor.
+
+    Source: crowdastro.crowd.util.balanced_accuracy
+
+    Parameters
+    ----------
+    y_true
+        Array of true labels.
+    y_pred
+        (Masked) array of predicted labels.
+
+    Returns
+    -------
+    float
+        balanced accuracy or None if the balanced accuracy isn't defined.
+    """
+    if hasattr(y_pred, 'mask') and not isinstance(y_pred.mask, bool):
+        cm = sklearn.metrics.confusion_matrix(
+                y_true[~y_pred.mask], y_pred[~y_pred.mask]).astype(float)
+    else:
+        cm = sklearn.metrics.confusion_matrix(y_true, y_pred).astype(float)
+
+    tp = cm[1, 1]
+    n, p = cm.sum(axis=1)
+    tn = cm[0, 0]
+    if not n or not p:
+        return None
+
+    ba = (tp / p + tn / n) / 2
+    return ba
+
+
+@attr.s
+class Predictions:
+    """Represent classifier outputs."""
+    probabilities = attr.ib()  # type: NDArray(N)[float]
+    labels = attr.ib()  # type: NDArray(N)[bool]
+    balanced_accuracy = attr.ib()  # type: float
+
+
+def predict(
+        classifier: Classifier,
+        swire_features: NDArray(N, D)[float],
+        swire_labels: NDArray(N, 2)[bool],
+        swire_test_sets: NDArray(N, 6, 4)[bool],
+        dataset_name: str,
+        quadrant: int,
+        labeller: str='norris') -> Predictions:
+    """Predict labels using a classifier.
+
+    Parameters
+    ----------
+    classifier
+        scikit-learn classifier.
+    swire_features
+        SWIRE object features.
+    swire_labels
+        Norris, RGZ labels for each SWIRE object.
+    swire_test_sets
+        Output of generate_data_sets.
+    dataset_name
+        'RGZ & Norris & compact' or
+        'RGZ & Norris & resolved' or
+        'RGZ & Norris' or
+        'RGZ & compact' or
+        'RGZ & resolved' or
+        'RGZ'.
+    quadrant
+        int in [0, 4). Quadrant of CDFS to test on.
+    labeller
+        Labeller to test against. 'norris' or 'rgz'.
+
+    Returns
+    -------
+    Predictions
+        Predictions of the classifier on the specified data.
+    """
+    test = swire_test_sets[:, SET_NAMES[dataset_name], quadrant]
+    features = swire_features[test]
+    assert labeller in {'norris', 'rgz'}
+    labels = swire_labels[test, int(labeller != 'norris')]
+    predicted_labels = classifier.predict(features)
+    predicted_probabilities = classifier.predict_proba(features)
+    if len(predicted_probabilities.shape) > 1 and \
+            len(predicted_probabilities.shape) == 2:
+        # Probability of the positive class.
+        predicted_probabilities = predicted_probabilities[:, 1]
+    assert predicted_labels.shape == (test.sum(),)
+    assert predicted_probabilities.shape == (test.sum(),)
+    ba = balanced_accuracy(labels, predicted_labels)
+    return Predictions(
+        probabilities=predicted_probabilities,
+        labels=predicted_labels,
+        balanced_accuracy=ba)
+
+
 def main():
     swire_names, swire_coords, swire_features = generate_swire_features()
     swire_labels = generate_swire_labels(swire_names)
-    generate_data_sets(swire_coords)
+    swire_train_sets, swire_test_sets = generate_data_sets(swire_coords)
+    lr = train_classifier(
+        LogisticRegression,
+        swire_features,
+        swire_labels,
+        swire_train_sets,
+        'norris',
+        'RGZ & Norris',
+        0)
+    predictions = predict(
+        lr,
+        swire_features,
+        swire_labels,
+        swire_test_sets,
+        'RGZ & Norris',
+        0)
+    print(predictions)
 
 
 if __name__ == '__main__':
