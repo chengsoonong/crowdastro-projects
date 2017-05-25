@@ -735,7 +735,7 @@ def train_all_quadrants(
                 swire_train_sets,
                 labeller,
                 dataset_name,
-                q) for q in range(4)]
+                q, **kwargs) for q in range(4)]
 
 
 def predict_all_quadrants(
@@ -819,7 +819,8 @@ def train_all(
                 swire_train_sets,
                 labeller,
                 dataset_name,
-                q) for q in range(4)] for dataset_name in sorted(SET_NAMES)}
+                q, **kwargs)
+            for q in range(4)] for dataset_name in sorted(SET_NAMES)}
 
 
 def predict_all(
@@ -890,10 +891,7 @@ def unserialise_predictions(
             yield Predictions.from_hdf5(filename)
 
 
-def main():
-    swire_names, swire_coords, swire_features = generate_swire_features()
-    swire_labels = generate_swire_labels(swire_names)
-    swire_train_sets, swire_test_sets = generate_data_sets(swire_coords)
+def train_and_predict(classifier: Classifier, **kwargs) -> List[Predictions]:
     try:
         predictions = list(
             unserialise_predictions(WORKING_DIR + 'predictions'))
@@ -904,7 +902,8 @@ def main():
             swire_features,
             swire_labels,
             swire_train_sets,
-            'norris')
+            'norris',
+            **kwargs)
         predictions = predict_all(
             rfs,
             swire_features,
@@ -914,6 +913,14 @@ def main():
                        for quadrant_preds in predictions.values()
                        for i in quadrant_preds]
         serialise_predictions(predictions, WORKING_DIR + 'predictions')
+
+
+def main():
+    # Generate SWIRE info.
+    swire_names, swire_coords, swire_features = generate_swire_features()
+    swire_labels = generate_swire_labels(swire_names)
+    swire_train_sets, swire_test_sets = generate_data_sets(swire_coords)
+    # Predict for
     pprint(predictions)
 
 
