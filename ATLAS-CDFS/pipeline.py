@@ -606,6 +606,8 @@ class Predictions:
     dataset_name = attr.ib()  # type: str
     quadrant = attr.ib()  # type: int
     params = attr.ib()  # type: Dict[str, Any]
+    labeller = attr.ib()  # type: str
+    classifier = attr.ib()  # type: str
 
     def to_hdf5(self: 'Predictions', path: str) -> None:
         """Serialise predictions as HDF5."""
@@ -615,6 +617,8 @@ class Predictions:
             f_h5.attrs['balanced_accuracy'] = self.balanced_accuracy
             f_h5.attrs['dataset_name'] = self.dataset_name
             f_h5.attrs['quadrant'] = self.quadrant
+            f_h5.attrs['labeller'] = self.labeller
+            f_h5.attrs['classifier'] = self.classifier
             for param, value in self.params.items():
                 print(param, value)
                 if value is None:
@@ -629,6 +633,8 @@ class Predictions:
             balanced_accuracy = f_h5.attrs['balanced_accuracy']
             dataset_name = f_h5.attrs['dataset_name']
             quadrant = f_h5.attrs['quadrant']
+            labeller = f_h5.attrs['labeller']
+            classifier = f_h5.attrs['classifier']
             params = {}
             for attr in f_h5.attrs:
                 if attr.startswith('param_'):
@@ -642,7 +648,9 @@ class Predictions:
                            balanced_accuracy=balanced_accuracy,
                            dataset_name=dataset_name,
                            quadrant=quadrant,
-                           params=params)
+                           params=params,
+                           labeller=labeller,
+                           classifier=classifier)
 
 
 def predict(
@@ -701,7 +709,9 @@ def predict(
         balanced_accuracy=ba,
         dataset_name=dataset_name,
         quadrant=quadrant,
-        params=classifier.get_params())
+        params=classifier.get_params(),
+        labeller=labeller,
+        classifier=Classifier.__name__)
 
 
 def train_all_quadrants(
