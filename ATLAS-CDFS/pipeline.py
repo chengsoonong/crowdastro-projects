@@ -620,7 +620,6 @@ class Predictions:
             f_h5.attrs['labeller'] = self.labeller
             f_h5.attrs['classifier'] = self.classifier
             for param, value in self.params.items():
-                print(param, value)
                 if value is None:
                     value = '__builtins__.None'
                 f_h5.attrs['param_{}'.format(param)] = value
