@@ -974,8 +974,6 @@ def main(overwrite_predictions: bool=False,
         n_jobs=jobs,
         min_samples_leaf=45,
         criterion='entropy')
-    pprint(lr_pred)
-    pprint(rf_pred)
 
 
 if __name__ == '__main__':
