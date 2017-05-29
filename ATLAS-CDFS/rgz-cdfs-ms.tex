@@ -43,7 +43,18 @@ $^{3}$ Data61, CSIRO\\
 
 % Abstract of the paper
 \begin{abstract}
-  We present a machine learning approach for radio host cross-identification, the task of determining the host galaxies of radio emissions detected in wide-area radio surveys. Training a machine learning algorithm requires a large amount [TODO: how large?] of labelled training data, which can be difficult or expensive to acquire. Radio Galaxy Zoo, a citizen science project on the Zooniverse platform, provides a large number of radio host cross-identifications which may be used as labels for training. However, these cross-identifications are assigned by non-experts, and may be incorrect. We find that while machine learning algorithms trained on expert labels outperform those trained on the crowdsourced Radio Galaxy Zoo labels, the accuracies are comparable and the crowdsourced labels are still useful for training. [TODO: add balanced accuracies]
+  We present a machine learning approach for radio host cross-identification,
+  the task of determining the host galaxies of radio emissions detected in
+  wide-area radio surveys. Training a machine learning algorithm requires a
+  large amount [TODO: how large?] of labelled training data, which can be
+  difficult or expensive to acquire. Radio Galaxy Zoo, a citizen science
+  project on the Zooniverse platform, provides a large number of radio host
+  cross-identifications which may be used as labels for training. However,
+  these cross-identifications are assigned by non-experts, and may be
+  incorrect. We find that while machine learning algorithms trained on expert
+  labels outperform those trained on the crowdsourced Radio Galaxy Zoo labels,
+  the accuracies are comparable and the crowdsourced labels are still useful
+  for training. [TODO: add balanced accuracies]
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -246,30 +257,45 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \subsection{Cross-identification as binary
   classification}\label{cross-identification-as-binary-classification}
 
-    We focus on the problem of cross-identification without reference to
-    radio morphology. Given a radio component, we want to find its host
-    galaxy as a citizen scientist would using Radio Galaxy Zoo. The input is
-    thus a radio image and an infrared image, with radius \(R\). We make the
-    assumption that each radio image represents a single, complex extended
-    source. This is not the case in general and a radio image may contain
-    many different sources (e.g.~RGZ uses cutouts where \(R = 1'\), and
-    these often contain multiple sources). We also note that this will bias
-    our results against radio emission that extends beyond the \(R\) cutout
-    size. The radio cross-identification task then amounts to locating the
-    host galaxy within the associated radio and infrared images. This is
-    formalised as an object localisation problem: Given a radio image and an
-    infrared image, locate the host galaxy.
+    We focus on the problem of cross-identification without reference to radio
+    morphology. Given a radio component, we want to find its host galaxy as a
+    citizen scientist would using Radio Galaxy Zoo. The input is thus a radio
+    image and an infrared image, with radius \(R\). We make the assumption
+    that each radio image represents a single, complex extended source. This
+    is not the case in general and a radio image may contain many different
+    sources (e.g. Radio Galaxy Zoo uses cutouts where \(R = 1'\), and these
+    often contain multiple sources). We also note that this will bias our
+    results against radio emission that extends beyond the \(R\) cutout size.
+    The radio cross-identification task then amounts to locating the host
+    galaxy within the associated radio and infrared images. This is formalised
+    as an object localisation problem: Given a radio image and an infrared
+    image, locate the host galaxy.
 
-    {[}TODO: Rewrite to introduce the concept of a window. Start with the
-    concept of rating each pixel, then use the window as a feature
-    representation.{]} A common approach to such localisation problems is to
-    slide a window across the image, centred on each pixel in turn. For each
-    location the window visits, estimate the probability that the window
-    contains the object we are trying to locate. The location with the
-    highest probability is then assumed to be the location of the object.
-    Applying this to radio cross-identification, we slide a 32 by 32 pixel
-    window across a radio/infrared image and estimate the probability that
-    the sliding window is centred on the host galaxy.
+    \begin{figure}
+      \centering
+      \includegraphics[trim={5cm 0cm 4cm 5cm}, width=0.5\linewidth]{images/windows.eps}
+      \caption{Localising the host galaxy in a radio image. Red boxes
+        represent windows centred on various locations in the image. The image
+        patches from each window are shown beneath. The image patch of each
+        window represents the location the window is centred on. The
+        probabilities of each patch coinciding with the host galaxy would then
+        be estimated. The probabilities shown are for illustration only. In
+        this example, the centre window of the image would be chosen as the
+        location of the host galaxy, as the window centred on it has the
+        highest probability.}
+      \label{fig:windows}
+    \end{figure}
+
+    A common approach to object localisation is to estimate the probability
+    that each location in the image is coincident with the desired object. In
+    practice this amounts to taking fixed-size windows of the image centred on
+    each pixel and estimating the probability that each window is centred on
+    the object. The location associated with the highest probability window is
+    then assumed to be the location of the object. Applying this to radio host
+    cross-identification, we consider $32 \times 32$ pixel windows of a
+    radio/infrared image and estimate the probability that each window is
+    centred on the host galaxy. This approach is illustrated in Figure
+    \ref{fig:windows}.
 
     This task can be made greatly more efficient if we have a prior on the
     location of the object we are localising. For our prior, we assume that
@@ -365,21 +391,28 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     information we could gain from the infrared image. We therefore only use
     the radio image for object localisation.
 
-    {[}TODO: Turn into bullet points.{]} We represent each candidate host as
-    1034 real-valued features. The first nine of these features are derived
-    from the SWIRE catalogue: The logarithm of the ratio of fluxes in the
-    four IRAC wavelengths, the stellarity index in both 3.6 µm and 4.5 µm,
-    and the flux in 3.6 µm. The flux ratios are indicators of the star
-    formation rate and amount of dust in the galaxy and might thus be
-    predictors of whether the galaxy contains an AGN {[}Julie?{]}
-    (*@fig:magdiff). the stellarity index represents how likely the object
-    is to be a star rather than a galaxy, and the flux {[}why? Julie?{]}.
-    The tenth feature is the distance across the sky between the candidate
-    host and the nearest radio component in the ATLAS catalogue. The
-    remaining 1024 features are the intensities of each pixel in a 32
-    \(\times\) 32 pixel window centred on the candidate host. We chose to
-    use a 32 \(\times\) 32 pixel window as it seemed to give a good balance
-    between performance and computational efficiency.
+    We represent each candidate host as 1034 real-valued features. For a given
+    candidate host, these features are:
+    \begin{itemize}
+      \item The logarithm of the ratio of fluxes of the candidate host in the
+        four IRAC wavelengths,
+      \item The stellarity index of the host in both 3.6 $\mu$m and 4.5
+        $\mu$m,
+      \item The flux of the host in 3.6 $\mu$m,
+      \item The radial distance between the candidate host and the nearest
+        radio component in the ATLAS catalogue, and
+      \item A 32 $\times$ 32 pixel image from ATLAS, centred on the candidate
+        host.
+    \end{itemize}
+
+    The flux ratios are indicators of the star formation rate and amount of
+    dust in the galaxy and might thus be predictors of whether the galaxy
+    contains an AGN {[}Julie?{]} \ref{fig:magdiff}. The stellarity index
+    represents how likely the object is to be a star rather than a galaxy.
+    The flux {[}why? Julie?{]}.
+
+    We chose to use a 32 $\times$ 32 pixel image as it seemed to give a
+    good balance between performance and computational efficiency.
 
   \subsection{Logistic regression}\label{logistic-regression}
 
