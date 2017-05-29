@@ -919,13 +919,14 @@ def train_and_predict(
         swire_labels: NDArray(N, 2)[bool],
         swire_train_sets: NDArray(N, 6, 4)[bool],
         swire_test_sets: NDArray(N, 6, 4)[bool],
+        labeller: str,
         overwrite: bool=False,
         **kwargs: Dict[str, Any]) -> List[Predictions]:
     if not overwrite:
         try:
             return list(
                 unserialise_predictions(WORKING_DIR + Classifier.__name__ +
-                                        '_predictions'))
+                                        '_' + labeller + '_predictions'))
         except OSError:
             pass
 
@@ -935,7 +936,7 @@ def train_and_predict(
         swire_features,
         swire_labels,
         swire_train_sets,
-        'norris',
+        labeller,
         **kwargs)
     predictions = predict_all(
         classifiers,
@@ -946,7 +947,7 @@ def train_and_predict(
                    for quadrant_preds in predictions.values()
                    for i in quadrant_preds]
     serialise_predictions(predictions, WORKING_DIR + Classifier.__name__ +
-                                       '_predictions')
+                                       '_' + labeller + '_predictions')
     return predictions
 
 
@@ -964,21 +965,44 @@ def main(overwrite_predictions: bool=False,
     swire_labels = generate_swire_labels(swire_names, overwrite=overwrite_all)
     swire_train_sets, swire_test_sets = generate_data_sets(swire_coords, overwrite=overwrite_all)
     # Predict for LR, RF.
-    lr_pred = train_and_predict(
+    lr_norris_pred = train_and_predict(
         LogisticRegression,
         swire_features,
         swire_labels,
         swire_train_sets,
         swire_test_sets,
+        'norris',
         overwrite=overwrite_predictions or overwrite_all,
         n_jobs=jobs,
         C=100000.0)
-    rf_pred = train_and_predict(
+    rf_norris_pred = train_and_predict(
         RandomForestClassifier,
         swire_features,
         swire_labels,
         swire_train_sets,
         swire_test_sets,
+        'norris',
+        overwrite=overwrite_predictions or overwrite_all,
+        n_jobs=jobs,
+        min_samples_leaf=45,
+        criterion='entropy')
+    lr_rgz_pred = train_and_predict(
+        LogisticRegression,
+        swire_features,
+        swire_labels,
+        swire_train_sets,
+        swire_test_sets,
+        'rgz',
+        overwrite=overwrite_predictions or overwrite_all,
+        n_jobs=jobs,
+        C=100000.0)
+    rf_rgz_pred = train_and_predict(
+        RandomForestClassifier,
+        swire_features,
+        swire_labels,
+        swire_train_sets,
+        swire_test_sets,
+        'rgz',
         overwrite=overwrite_predictions or overwrite_all,
         n_jobs=jobs,
         min_samples_leaf=45,

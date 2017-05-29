@@ -45,26 +45,26 @@ rf_predictions = pipeline.unserialise_predictions(
     pipeline.WORKING_DIR + 'RandomForestClassifier_predictions')
 
 # Convert to the format we need. e.g. {'RGZ' -> [acc, acc, acc, acc]}
-lr_norris_accuracies = [None] * 4
-lr_rgz_accuracies = [None] * 4
-rf_norris_accuracies = [None] * 4
-rf_rgz_accuracies = [None] * 4
+lr_norris_accuracies = {sstr: [0] * 4 for sstr in pipeline.SET_NAMES}
+lr_rgz_accuracies = {sstr: [0] * 4 for sstr in pipeline.SET_NAMES}
+rf_norris_accuracies = {sstr: [0] * 4 for sstr in pipeline.SET_NAMES}
+rf_rgz_accuracies = {sstr: [0] * 4 for sstr in pipeline.SET_NAMES}
 for predictions in lr_predictions:
+    dataset_name = predictions.dataset_name
     if predictions.labeller == 'norris':
-        lr_norris_accuracies[predictions.quadrant] = predictions.balanced_accuracy
+        lr_norris_accuracies[dataset_name][predictions.quadrant] = predictions.balanced_accuracy
     else:
-        lr_rgz_accuracies[predictions.quadrant] = predictions.balanced_accuracy
+        lr_rgz_accuracies[dataset_name][predictions.quadrant] = predictions.balanced_accuracy
 for predictions in rf_predictions:
+    dataset_name = predictions.dataset_name
     if predictions.labeller == 'norris':
-        rf_norris_accuracies[predictions.quadrant] = predictions.balanced_accuracy
+        rf_norris_accuracies[dataset_name][predictions.quadrant] = predictions.balanced_accuracy
     else:
-        rf_rgz_accuracies[predictions.quadrant] = predictions.balanced_accuracy
-print(lr_norris_accuracies)
-raise
+        rf_rgz_accuracies[dataset_name][predictions.quadrant] = predictions.balanced_accuracy
 
 colours = ['blue', 'red', 'green', 'orange']
 handles = []
-plt.figure(figsize=(8, 5))
+plt.figure(figsize=(8, 7))
 for j, (classifier_name, classifier_set) in enumerate([
         ('LR', [lr_norris_accuracies, lr_rgz_accuracies]),
         ('RF', [rf_norris_accuracies, rf_rgz_accuracies]),
@@ -78,7 +78,7 @@ for j, (classifier_name, classifier_set) in enumerate([
             ax.scatter([1], classifier_set[1][set_name][k] * 100, color=colours[k], marker='x')
             ax.scatter([2], classifier_set[1][fullmap[set_name]][k] * 100, color=colours[k], marker='x')
 
-        ax.set_ylim((85, 100))
+        ax.set_ylim((80, 100))
         ax.set_xlim((-0.5, 2.5))
         ax.set_xticks([0, 1, 2])
         ax.set_xticklabels(['Norris',
@@ -94,15 +94,15 @@ for j, (classifier_name, classifier_set) in enumerate([
 
         ax.title.set_fontsize(16)
         ax.xaxis.label.set_fontsize(12)
-        ax.yaxis.label.set_fontsize(12)
+        ax.yaxis.label.set_fontsize(9)
         for tick in ax.get_xticklabels() + ax.get_yticklabels():
             tick.set_fontsize(10)
 
         ax.grid(which='major', axis='y', color='#EEEEEE')
 
-plt.figlegend(handles, map(str, range(4)), 'lower center', ncol=4, fontsize=20)
-plt.subplots_adjust(top=1, bottom=0.12, right=1, left=0, 
-                    hspace=0.2, wspace=0.15)
+plt.figlegend(handles, map(str, range(4)), 'lower center', ncol=4, fontsize=10)
+plt.subplots_adjust(top=1, bottom=0.15, right=1, left=0, 
+                    hspace=0.2, wspace=0.35)
 plt.margins(0, 0)
 plt.savefig('images/cdfs_ba_grid.pdf',
             bbox_inches='tight', pad_inches=0)
