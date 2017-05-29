@@ -44,15 +44,15 @@ Each primary component found in the ATLAS DR3 component catalogue appears in Rad
 
 ## ATLAS
 
-The Australia Telescope Large Area Survey (ATLAS; Franzen et al. 2013) is a wide-area radio survey of the *Chandra* Deep Field - South (CDFS) and the ESO Large Area ISO Survey - South 1 (ELAIS-S1) fields at 1.4 GHz. It is a pilot survey for the Evolutionary Map of the Universe (EMU; Norris et al. 2011) survey that will be conducted with ASKAP. EMU will cover the entire southern sky and is expected to detect approximately 70 million new radio sources. EMU will be conducted at the same depth and resolution as ATLAS, so methods developed for processing ATLAS data are expected to work for EMU. [TODO: How large are CDFS and ELAIS-S1? How many radio objects do they contain?] ATLAS has a sensitivity of 14 µJy on CDFS and 17 µJy on ELAIS-S1 (Franzen et al. 2013).
+ATLAS (Franzen et al. 2013) is a wide-area radio survey of the *Chandra* Deep Field - South (CDFS) and the ESO Large Area ISO Survey - South 1 (ELAIS-S1) fields at 1.4 GHz. It is a pilot survey for the EMU (Norris et al. 2011) survey that will be conducted with ASKAP. EMU will cover the entire southern sky and is expected to detect approximately 70 million new radio sources. EMU will be conducted at the same depth and resolution as ATLAS, so methods developed for processing ATLAS data are expected to work for EMU. [TODO: How large are CDFS and ELAIS-S1? How many radio objects do they contain?] ATLAS has a sensitivity of 14 µJy on CDFS and 17 µJy on ELAIS-S1 (Franzen et al. 2013).
 
-Norris et al. (2006) produced a catalogue of cross-identifications of 784 ATLAS radio objects with their infrared counterparts in the Spitzer Wide-area Infrared Extragalactic survey (SWIRE; Lonsdale et al. 2005?).
+Norris et al. (2006) produced a catalogue of cross-identifications of 784 radio sources with their infrared counterparts in SWIRE [Section ????]. Middelberg et al. (2007) produced a catalogue of cross-identifications of [NNNN] radio sources with their infrared counterparts in SWIRE. [TODO: Make this less clunky and talk about Fan et al.]
 
-RGZ volunteers are asked to cross-identify objects in CDFS from ATLAS with their infrared counterparts in SWIRE, which has produced another catalogue of cross-identifications (Wong et al. 2017). As these cross-identifications have been based on non-expert classifications, this catalogue is expected to be lower-quality than an expert catalogue like that produced by Norris et al. (2006). [TODO: Discuss this paragraph with Julie]
+Radio Galaxy Zoo [Section ???] produced a catalogue of crowdsourced cross-identifications of 2460 ATLAS radio objects in CDFS (Wong et al. 2017). As these cross-identifications have been based on volunteer classifications, this catalogue is expected to be less accurate than an expert catalogue like that produced by Norris et al. (2006). [TODO: Discuss this paragraph with Julie]
 
 ## SWIRE
 
-The Spitzer Wide-area Infrared Extragalactic survey is a wide-area infrared survey at the four IRAC wavelengths 3.6 µm, 4.5 µm, 5.8 µm, and 8.0 µm. It covers the eight SWIRE fields, particularly CDFS and ELAIS-S1, both of which were also covered by ATLAS. SWIRE is thus the source of infrared observations for cross-identification with ATLAS.
+The Spitzer Wide-area Infrared Extragalactic survey (Lonsdale et al., ????) is a wide-area infrared survey at the four IRAC wavelengths 3.6 µm, 4.5 µm, 5.8 µm, and 8.0 µm. It covers the eight SWIRE fields, particularly CDFS and ELAIS-S1, both of which were also covered by ATLAS. SWIRE is thus the source of infrared observations for cross-identification with ATLAS.
 
 - noise levels
 
@@ -143,7 +143,7 @@ There are many potential host galaxies [TODO: how many galaxies in SWIRE?], so i
 
 ## Experimental Setup
 
-![CDFS field training and testing quadrants. The central dot is located at 52h48m00s -28°06m00s. There are similar numbers of radio sources in each quadrant.](quadrants.pdf){#fig:quadrants}
+![CDFS field training and testing quadrants. The central dot is located at 52h48m00s -28°06m00s. There are similar numbers of radio sources in each quadrant.](images/quadrants.pdf){#fig:quadrants}
 
 We trained cross-identifiers on radio objects from the ATLAS observations of the Chandra Deep Field - South (CDFS) using Radio Galaxy Zoo cross-identifications, and compared the trained cross-identifiers to those trained on a set of expert cross-identifications of the same field. We then applied the cross-identifiers trained on CDFS to the ESO Large Area ISO Survey - South 1 (ELAIS-S1) field [TODO].
 
