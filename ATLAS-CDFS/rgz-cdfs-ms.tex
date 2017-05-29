@@ -301,15 +301,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     location of the object we are localising. For our prior, we assume that
     the host galaxy is always visible in the infrared and thus we only need
     consider windows centred on infrared sources. This assumption usually
-    holds, except for a rare class of infrared-faint radio sources (Norris
-    et al. 2006) {[}TODO: How many? I think it was 10{]}. This leads us to a
-    binary classification task: Given an infrared source, compute the
-    probability that it is a host galaxy. To find the host galaxy given a
-    radio source, classify each galaxy within \(R\) of the source and select
-    the galaxy with the highest probability of being a host galaxy. This is
-    a good formulation as binary classification is a very common problem in
-    machine learning and there are many different methods readily available
-    to solve it.
+    holds, except for a rare class of infrared-faint radio sources. Norris et
+    al. (2006) found 22 such radio sources in their sample of 784 bright ATLAS
+    components in CDFS. This leads us to a binary classification task: Given
+    an infrared source, compute the probability that it is a host galaxy. To
+    find the host galaxy given a radio source, classify each galaxy within
+    \(R\) of the source and select the galaxy with the highest probability of
+    being a host galaxy. This is a good formulation as binary classification
+    is a very common problem in machine learning and there are many different
+    methods readily available to solve it.
 
     Solving the radio cross-identification task amounts to modelling a
     function \(f\) from infrared sources \(\mathcal{X}\) to binary
@@ -317,14 +317,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         f : \mathcal{X} \to \mathcal{Y}
     \] There are many options for modelling \(f\). In this paper we apply
     three different models: logistic regression, random forests, and
-    convolutional neural networks. As a linear method, logistic regression
-    is the simplest classification approach we can take. Convolutional
-    neural networks have recently shown strong results on image-based
-    classification tasks. Random forests {[}something something{]}.
+    convolutional neural networks. As a linear method, logistic regression is
+    the simplest classification approach we can take. Convolutional neural
+    networks have recently shown strong results on image-based classification
+    tasks [TODO: citation needed]. Random forests are widely used in
+    astrophysics due to their simplicity.
 
     The space of infrared sources \(\mathcal{X}\) needs to be encoded as a
-    vector for the models we will use. We describe this in {[}Section
-    Representation{]}.
+    vector for the models we will use. We describe this in Section
+    \ref{vector-representation-of-infrared-sources}.
 
     The key problem with this approach is our assumption that the radio sky
     within radius \(R\) contains only one, complete radio source. The
@@ -345,14 +346,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     radio source information, and vice versa.
 
     For our experiments, we take \(R = 1'\), as in the images presented to
-    RGZ volunteers. Our assumptions impose an upper bound on how well we can
-    cross-identify radio sources, which can be estimated by considering how
-    accurately a \emph{perfect} binary classifier cross-identifies radio
-    sources under our method. Using the Norris et al. (2006) labels
-    (Section: Labels) to classify SWIRE objects to 100\% accuracy on the
-    binary classification task results in a cross-identification accuracy of
-    89\% {[}method? where do I put this{]}, which we take as an upper bound
-    on our cross-identification accuracy.
+    Radio Galaxy Zoo volunteers. Our assumptions impose an upper bound on how
+    well we can cross-identify radio sources, which can be estimated by
+    considering how accurately a \emph{perfect} binary classifier cross-
+    identifies radio sources under our method. Using the Norris et al. (2006)
+    labels (Section \ref{labels}) to classify SWIRE objects to 100\% accuracy
+    on the binary classification task results in a cross-identification
+    accuracy of 89\% with our assumptions, which we take as an upper bound on
+    our cross-identification accuracy.
 
     It is unclear what size window to choose. If we choose a very large
     window, then we may get windows that contain multiple radio objects, or
