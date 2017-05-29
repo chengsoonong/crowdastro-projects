@@ -271,7 +271,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     as an object localisation problem: Given a radio image and an infrared
     image, locate the host galaxy.
 
-    \begin{figure}
+    \begin{figure}[htbp]
       \centering
       \includegraphics[trim={5cm 0cm 4cm 5cm}, width=0.5\linewidth]{images/windows.eps}
       \caption{Localising the host galaxy in a radio image. Red boxes
@@ -499,9 +499,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{Experimental Setup}\label{experimental-setup}
 
-    \begin{figure}
+    \begin{figure}[htbp]
     \centering
-    \includegraphics{images/quadrants.pdf}
+    \includegraphics[width=\columnwidth]{images/quadrants.pdf}
     \caption{CDFS field training and testing quadrants. The central dot is
     located at 52h48m00s -28°06m00s. There are similar numbers of radio
     sources in each quadrant.\label{fig:quadrants}}
@@ -574,9 +574,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   {[}TODO: Include images of ``good'' and ``bad'' X-IDs/GCTs.{]}
 
-  \begin{figure}
+  \begin{figure}[htbp]
   \centering
-  \includegraphics{atlas-ml-ba-grid.pdf}
+  \includegraphics[width=\columnwidth]{atlas-ml-ba-grid.pdf}
   \caption{Balanced accuracies for each quadrant in the galaxy
   classification task.\label{fig:ba}}
   \end{figure}
@@ -586,9 +586,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   {[}Table here: Predicted SWIRE hosts for ATLAS radio objects.{]}
 
-  \begin{figure}
+  \begin{figure}[htbp]
   \centering
-  \includegraphics{gct-to-xid.pdf}
+  \includegraphics[width=\columnwidth]{gct-to-xid.pdf}
   \caption{Classification balanced accuracy against accuracy on the
   cross-identification task. Cross-identification accuracy is computed
   from a binary comparison between the predicted host and the Norris et
@@ -598,58 +598,58 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   people{]}\label{fig:gct-to-xid}}
   \end{figure}
 
-  \begin{figure}
+  \begin{figure}[htbp]
   \centering
-  \includegraphics{gct-to-arcsec-error.pdf}
+  \includegraphics[width=\columnwidth]{gct-to-arcsec-error.pdf}
   \caption{Classification balanced accuracy against average radial
   distance{[}TODO(Julie): Is this correct?{]} between the predicted and
   the Norris et al. (2006) cross-identified host on the
   cross-identification task.\label{fig:gct-to-arcsec-error}}
   \end{figure}
 
-  \begin{figure}
+  \begin{figure}[htbp]
   \centering
-  \includegraphics{passive.pdf}
+  \includegraphics[width=\columnwidth]{passive.pdf}
   \caption{Passive learning plot for the GCT. Trained and tested on RGZ.
   This is so that we had maximal training data --- RGZ has many more
   objects than Norris.\label{fig:passive}}
   \end{figure}
 
-  \begin{figure}
+  \begin{figure}[htbp]
   \centering
-  \includegraphics{distributions.pdf}
+  \includegraphics[width=\columnwidth]{distributions.pdf}
   \caption{Distribution of non-image features.\label{fig:distributions}}
   \end{figure}
 
-  \begin{figure}
+  \begin{figure}[htbp]
   \centering
-  \includegraphics{convolutions_42191.pdf}
+  \includegraphics[width=\columnwidth]{convolutions_42191.pdf}
   \caption{Intermediate outputs from convolutional layers of a
   convolutional neural network trained on quadrants 1 -- 3 with Norris et
   al. (2006) labels.}
   \end{figure}
 
-  \begin{figure}
+  \begin{figure}[htbp]
   \centering
-  \includegraphics{colour-colour-all.pdf}
+  \includegraphics[width=\columnwidth]{colour-colour-all.pdf}
   \caption{Colour-colour diagram for sample of SWIRE objects within \(R\)
   of an ATLAS object.\label{fig:colour-colour-all}}
   \end{figure}
 
-  \begin{figure}
+  \begin{figure}[htbp]
   \centering
-  \includegraphics{colour_colour_predictions.pdf}
+  \includegraphics[width=\columnwidth]{colour_colour_predictions.pdf}
   \caption{Colour-colour diagrams for each
   classifier.\label{fig:colour-colour}}
   \end{figure}
 
   {[}TODO: Axis labels should say e.g. \(\log_{10}(S_{5.8}/S_{3.6})\);
-  include the SWIRE wedges from Lacy et al. 2004.{]} 
+  include the SWIRE wedges from Lacy et al. 2004.{]}
 
 \section{Application to ATLAS-ELAIS}
 
 \section{Summary}
-% 
+%
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
 \bibliographystyle{mnras}
 \bibliography{./rgz-cdfs-ms.bbl}
