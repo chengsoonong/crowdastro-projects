@@ -9,7 +9,9 @@
 %\usepackage{ae,aecompl}
 %%%%% AUTHORS - PLACE YOUR OWN PACKAGES HERE %%%%%
 \usepackage{graphicx}	% Including figure files
-\usepackage{hyperref}	% hyperlinks
+\usepackage{hyperref} % hyperlinks
+\usepackage{natbib}
+\usepackage{aastexmacros}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%% AUTHORS - PLACE YOUR OWN COMMANDS HERE %%%%%
@@ -69,13 +71,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 \section{Introduction}\label{introduction}
 
   Next generation radio telescopes such as the Australian SKA Pathfinder
-  (ASKAP; Johnston et al. 2007) and Apertif (Verheijen et al. 2008) will
+  \citep[ASKAP;][]{johnston07} and Apertif \citep{verheijen08} will
   conduct increasingly wide, deep, and high-resolution surveys. These
   surveys will produce very large amounts of data. The Evolutionary Map of
-  the Universe survey (EMU; Norris et al. 2011) using ASKAP and the WODAN
-  survey (Röttgering et al. 2011) using Apertif are expected to detect
+  the Universe survey \citep[EMU;][]{norris11} using ASKAP and the WODAN
+  survey \citep{rottgering11} using Apertif are expected to detect
   over 100 million radio sources between them, compared to the 2.5 million
-  radio sources already known (Banfield et al. 2015).
+  radio sources already known \citep{banfield15}.
 
   An important part of processing this data is cross-identifying observed
   radio emission regions with observations of their host galaxy in surveys
@@ -271,9 +273,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     as an object localisation problem: Given a radio image and an infrared
     image, locate the host galaxy.
 
-    \begin{figure}[htbp]
+    \begin{figure}
       \centering
-      \includegraphics[trim={5cm 0cm 4cm 5cm}, width=0.5\linewidth]{images/windows.eps}
+      \includegraphics[width=0.8\columnwidth]{images/windows.eps}
       \caption{Localising the host galaxy in a radio image. Red boxes
         represent windows centred on various locations in the image. The image
         patches from each window are shown beneath. The image patch of each
@@ -336,6 +338,16 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \label{fig:broken-isolation}
     \end{figure}
 
+    The key problem with this approach is our assumption that the radio sky
+    within radius $R$ contains only one, complete radio source. The problem is
+    two-fold: This radius may contain multiple sources, or it may not contain
+    the entirety of the source. If the radius contains multiple sources then
+    there will also be multiple hosts in our input images (which breaks our
+    assumption that there is only one); even a perfect classifier can only
+    accurately cross-identify \emph{one} host in an image with multiple. An
+    example of a radio source that breaks the assumption in this way is shown
+    in Figure \ref{fig:broken-isolation}.
+
     \begin{figure}
       \centering
       \includegraphics[width=0.45\linewidth]{images/ARG0000u0h_radio.jpg}
@@ -348,27 +360,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         radio double.}
       \label{fig:broken-contains}
     \end{figure}
-
-    \begin{figure}
-      \centering
-      \includegraphics[width=0.5\linewidth]{images/ARG0003sky_radio.eps}
-      \caption{A radio image centred on 51.663, -28.133 [TODO: convert]
-        (ARG0003sky). This is an example of a radio source where the window
-        centred on the host galaxy, shown as a rectangle, does not contain
-        enough radio information to correctly identify the galaxy as the
-        host.}
-      \label{fig:broken-window-size}
-    \end{figure}
-
-    The key problem with this approach is our assumption that the radio sky
-    within radius $R$ contains only one, complete radio source. The problem is
-    two-fold: This radius may contain multiple sources, or it may not contain
-    the entirety of the source. If the radius contains multiple sources then
-    there will also be multiple hosts in our input images (which breaks our
-    assumption that there is only one); even a perfect classifier can only
-    accurately cross-identify \emph{one} host in an image with multiple. An
-    example of a radio source that breaks the assumption in this way is shown
-    in Figure \ref{fig:broken-isolation}.
 
     If the radius does not contain the whole source, then we are missing radio
     information useful for finding the host galaxy. This is a difficult
@@ -395,6 +386,17 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     accuracy of 89\% with our assumptions, which we take as an upper bound on
     our cross-identification accuracy.
 
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.5\linewidth]{images/ARG0003sky_radio.eps}
+      \caption{A radio image centred on 51.663, -28.133 [TODO: convert]
+        (ARG0003sky). This is an example of a radio source where the window
+        centred on the host galaxy, shown as a rectangle, does not contain
+        enough radio information to correctly identify the galaxy as the
+        host.}
+      \label{fig:broken-window-size}
+    \end{figure}
+
     A related issue is that we need to choose a window size for the image
     representations of each SWIRE object. If this image is too small, radio
     emission may extend past the edges of the window, and it may be impossible
@@ -405,13 +407,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     efficiency. An example of a radio source which extends over this window
     size is shown in Figure \ref{fig:broken-window-size}.
 
-    {[}TODO: Explicitly list assumptions and show examples of where they
-    break. Will likely need to combine this with the above three
-    paragraphs.{]}
-
-    {[}TODO: add a diagram of this pipeline since while it's a very common
-    approach to object localisation it's not all that common in
-    astrophysics{]}
+    [TODO: Confirm with Julie that this is understandable.]
 
   \subsection{Vector representation of infrared
   sources}\label{vector-representation-of-infrared-sources}
@@ -539,7 +535,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{Experimental Setup}\label{experimental-setup}
 
-    \begin{figure}[htbp]
+    \begin{figure}
     \centering
     \includegraphics[width=\columnwidth]{images/quadrants.pdf}
     \caption{CDFS field training and testing quadrants. The central dot is
@@ -614,7 +610,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   {[}TODO: Include images of ``good'' and ``bad'' X-IDs/GCTs.{]}
 
-  \begin{figure}[htbp]
+  \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{atlas-ml-ba-grid.pdf}
   \caption{Balanced accuracies for each quadrant in the galaxy
@@ -626,7 +622,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   {[}Table here: Predicted SWIRE hosts for ATLAS radio objects.{]}
 
-  \begin{figure}[htbp]
+  \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{gct-to-xid.pdf}
   \caption{Classification balanced accuracy against accuracy on the
@@ -638,7 +634,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   people{]}\label{fig:gct-to-xid}}
   \end{figure}
 
-  \begin{figure}[htbp]
+  \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{gct-to-arcsec-error.pdf}
   \caption{Classification balanced accuracy against average radial
@@ -647,7 +643,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   cross-identification task.\label{fig:gct-to-arcsec-error}}
   \end{figure}
 
-  \begin{figure}[htbp]
+  \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{passive.pdf}
   \caption{Passive learning plot for the GCT. Trained and tested on RGZ.
@@ -655,13 +651,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   objects than Norris.\label{fig:passive}}
   \end{figure}
 
-  \begin{figure}[htbp]
+  \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{distributions.pdf}
   \caption{Distribution of non-image features.\label{fig:distributions}}
   \end{figure}
 
-  \begin{figure}[htbp]
+  \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{convolutions_42191.pdf}
   \caption{Intermediate outputs from convolutional layers of a
@@ -669,14 +665,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   al. (2006) labels.}
   \end{figure}
 
-  \begin{figure}[htbp]
+  \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{colour-colour-all.pdf}
   \caption{Colour-colour diagram for sample of SWIRE objects within \(R\)
   of an ATLAS object.\label{fig:colour-colour-all}}
   \end{figure}
 
-  \begin{figure}[htbp]
+  \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{colour_colour_predictions.pdf}
   \caption{Colour-colour diagrams for each
@@ -692,7 +688,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 %
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
 \bibliographystyle{mnras}
-\bibliography{./rgz-cdfs-ms.bbl}
+\bibliography{rgz-cdfs-ms}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
