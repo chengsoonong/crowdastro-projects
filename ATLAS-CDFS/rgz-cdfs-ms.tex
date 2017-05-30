@@ -12,10 +12,12 @@
 \usepackage{hyperref} % hyperlinks
 \usepackage{natbib}
 \usepackage{aastexmacros}
+\usepackage{tikz}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%% AUTHORS - PLACE YOUR OWN COMMANDS HERE %%%%%
 \newcommand{\text}{\mathrm}
+\usetikzlibrary{shapes,arrows}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%% TITLE PAGE %%%%%%%%%%%%%%%%%%%
@@ -407,6 +409,42 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     efficiency. An example of a radio source which extends over this window
     size is shown in Figure \ref{fig:broken-window-size}.
 
+    \begin{figure}
+      \centering
+      % http://www.texample.net/tikz/examples/simple-flow-chart/
+      \tikzstyle{decision} = [diamond, draw, fill=white, 
+          text width=4.5em, text badly centered, inner sep=0pt]
+      \tikzstyle{block} = [rectangle, draw, fill=white, 
+          text width=5em, text centered, rounded corners, minimum height=4em]
+      \tikzstyle{line} = [draw, -latex']
+      \begin{tikzpicture}[node distance=2.4cm, auto]
+        \node [block] (init) {input radio source};
+        \node [decision, below of=init] (iscompact) {compact?};
+        \node [block, below of=iscompact] (compact) {find nearest infrared object};
+        \node [block, right of=iscompact] (resolved) {find nearby infrared objects};
+        \node [block, fill=black!10, right of=resolved] (classify) {classify objects};
+        \node [block, below of=classify] (best) {find highest probability object};
+        \node [block, right of=compact, fill=green!10] (done) {\textbf{host galaxy}};
+        \path [line] (init) -- (iscompact);
+        \path [line] (iscompact) -- (compact) node [midway] {yes};
+        \path [line] (compact) -- (done);
+        \path [line] (iscompact) -- (resolved) node [midway] {no};
+        \path [line] (resolved) -- (classify);
+        \path [line] (classify) -- (best);
+        \path [line] (best) -- (done);
+      \end{tikzpicture}
+      \caption{A cross-identification method employing a binary classifier. As
+        input we accept a radio source. If the source is compact, we select
+        the nearest infrared object as the host galaxy. If the source is
+        resolved, we classify all infrared objects nearby within radius $R$
+        and select the highest probability object as the host galaxy. The grey
+        box is the classifier, which can be any binary classifier that outputs
+        a probability.}
+      \label{fig:flowchart}
+    \end{figure}
+
+    We can improve upon this cross-identification method by filtering out compact radio sources, which are much easier to cross-identify --- the nearest SWIRE object may be identified as the host galaxy, or a more complex method such as likelihood ratios may be applied \citep[see][]{weston17}. A full cross-identification pipeline making use of this alongside a binary classifier is shown in Figure \ref{fig:flowchart}.
+
     [TODO: Confirm with Julie that this is understandable.]
 
   \subsection{Vector representation of infrared
@@ -479,11 +517,18 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     network is logistic regression, with the convolved outputs as input
     features.
 
+    \begin{figure*}
+      \centering
+      \includegraphics[width=\textwidth]{convnet.pdf}
+      \caption{Convolutional neural network model.}
+      \label{fig:cnn}
+    \end{figure*}
+
     CNNs have recently produced good results on large image-based datasets,
     which is why we employ them in this paper. We employ only a simple model
-    --- CNNs can be arbitrarily complex --- as this is a proof of concept.
+    --- CNNs can be arbitrarily complex --- as this is a proof of concept. The model we used is shown in Figure \ref{convolutional-neural-networks}.
 
-    {[}TODO: Add CNN diagram and example of a CNN reducing a radio image.{]}
+    {[}TODO: Add example of a CNN reducing a radio image.{]}
 
   \subsection{Random Forests}\label{random-forests}
 
@@ -536,11 +581,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \subsection{Experimental Setup}\label{experimental-setup}
 
     \begin{figure}
-    \centering
-    \includegraphics[width=\columnwidth]{images/quadrants.pdf}
-    \caption{CDFS field training and testing quadrants. The central dot is
-    located at 52h48m00s -28°06m00s. There are similar numbers of radio
-    sources in each quadrant.\label{fig:quadrants}}
+      \centering
+      \includegraphics[width=\columnwidth]{images/quadrants.pdf}
+      \caption{CDFS field training and testing quadrants. The central dot is
+        located at 52h48m00s -28$^\circ$06m00s. There are similar numbers of
+        radio sources in each quadrant.\label{fig:quadrants}}
     \end{figure}
 
     We trained cross-identifiers on radio objects from the ATLAS
@@ -561,8 +606,18 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     (as in Norris et al. 2006) and we would expect any machine learning
     approach for host cross-identification to attain high accuracy on this
     set. Whether a component was resolved was decided based on its flux; a
-    radio component was considered resolved if \[
-        \ln \left(\frac{S_{\text{int}}}{S_{\text{peak}}}\right) > 2\sqrt{\left(\frac{\sigma_{S_{\text{int}}}}{S_{\text{int}}}\right)^2 + \left(\frac{\sigma_{S_{\text{peak}}}}{S_{\text{peak}}}\right)^2}
+    radio component was considered resolved if
+    \[
+        \ln \left(
+          \frac{S_{\text{int}}}
+               {S_{\text{peak}}}
+        \right) > 2\sqrt{\left(
+          \frac{\sigma_{S_{\text{int}}}}
+               {S_{\text{int}}}
+        \right)^2 + \left(
+          \frac{\sigma_{S_{\text{peak}}}}
+               {S_{\text{peak}}}
+        \right)^2}
     \] and compact otherwise, where \(S_{\text{int}}\) is the integrated
     flux and \(S_{\text{peak}}\) is the peak flux.
 
