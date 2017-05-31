@@ -90,16 +90,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   emissions from radio-loud active galactic nuclei (AGN) may be
   complicated structures not clearly related to the host galaxy, and are
   often composed of multiple, separate components. These AGN are expected
-  to dominate approximately 30\% of sources detected by EMU (Norris et al.
-  2011). Small surveys of a few thousand sources such as the Australia
-  Telescope Large Area Survey (ATLAS; Norris et al. 2006, Middelberg et
-  al. 2008) can be cross-identified manually, but this is impractical for
+  to dominate approximately 30\% of sources detected by EMU \citep{norris11}. Small surveys of a few thousand sources such as the Australia
+  Telescope Large Area Survey \citep[ATLAS;][]{norris06,middelberg08} can be cross-identified manually, but this is impractical for
   larger surveys.
 
   One approach to cross-identification is crowdsourcing, where members of
   the public volunteer to cross-identify radio emissions with their host
-  galaxies. This is the premise of Radio Galaxy Zoo (RGZ; Banfield et al.
-  2015, Wong et al. 2017), a citizen science project hosted on the highly
+  galaxies. This is the premise of Radio Galaxy Zoo \citep[RGZ;][]{banfield15,wong17}, a citizen science project hosted on the highly
   successful Zooniverse platform (Lintott et al. ?). Volunteers are shown
   images of the radio sky, and are asked to identify the morphology of
   radio sources in each image. They are then asked to cross-identify each
@@ -443,7 +440,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \label{fig:flowchart}
     \end{figure}
 
-    We can improve upon this cross-identification method by filtering out compact radio sources, which are much easier to cross-identify --- the nearest SWIRE object may be identified as the host galaxy, or a more complex method such as likelihood ratios may be applied \citep[see][]{weston17}. A full cross-identification pipeline making use of this alongside a binary classifier is shown in Figure \ref{fig:flowchart}.
+    We can improve upon this cross-identification method by filtering out
+    compact radio sources, which are much easier to cross-identify --- the
+    nearest SWIRE object may be identified as the host galaxy, or a more
+    complex method such as likelihood ratios may be applied
+    \citep[see][]{weston17}. A full cross-identification pipeline making use
+    of this alongside a binary classifier is shown in Figure
+    \ref{fig:flowchart}.
 
     [TODO: Confirm with Julie that this is understandable.]
 
@@ -504,18 +507,18 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \sigma(a) = (1 + \mathrm{exp}(-a))^{-1}.
     \]
 
+    The logistic regression model is fully differentiable, and the weight vector $\vec w$ can therefore be learned by gradient methods.
+
   \subsection{Convolutional neural
   networks}\label{convolutional-neural-networks}
 
     Convolutional neural networks (CNNs) are a biologically-inspired
     prediction model for prediction with image inputs. A number of filters
-    are convolved with the image to produce output images, and these outputs
-    can then be convolved again with other filters on subsequent layers,
-    producing a network of convolutions. This whole network is
+    are convolved with an input image to produce output images called *feature maps*, and these feature maps can then be convolved again with other filters on subsequent layers. This produces a network of convolutions. The whole network is
     differentiable with respect to the values of the filters, and so the
     filters can be learned by gradient methods. The final layer of the
     network is logistic regression, with the convolved outputs as input
-    features.
+    features. For more detail, see \citeauthor[\S II.A]{lecun98}.
 
     \begin{figure*}
       \centering
@@ -524,9 +527,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \label{fig:cnn}
     \end{figure*}
 
-    CNNs have recently produced good results on large image-based datasets,
-    which is why we employ them in this paper. We employ only a simple model
-    --- CNNs can be arbitrarily complex --- as this is a proof of concept. The model we used is shown in Figure \ref{convolutional-neural-networks}.
+    CNNs have recently produced good results on large image-based datasets [citation needed]. We employ only a simple CNN model in this paper
+    --- CNNs can be arbitrarily complex --- as a proof of concept that CNNs
+    may be used for prediction on radio images. The model we used is shown
+    in Figure \ref{convolutional-neural-networks}.
 
     {[}TODO: Add example of a CNN reducing a radio image.{]}
 
