@@ -93,6 +93,7 @@ SET_NAMES = {
 }
 
 N = 'N'  # For type annotations.
+M = 'M'
 D = 'D'
 Figure = matplotlib.figure.Figure
 
@@ -393,8 +394,10 @@ def generate_data_sets(
         swire_coords: NDArray(N, 2),
         overwrite: bool=False,
     ) -> (
-        NDArray(N, 6, 4)[bool],
-        NDArray(N, 6, 4)[bool]):
+        (NDArray(N, 6, 4)[bool],
+         NDArray(N, 6, 4)[bool]),
+        (NDArray(M, 6, 4)[bool],
+         NDArray(M, 6, 4)[bool])):
     """Generate training/testing sets.
 
     Sets generated:
@@ -409,10 +412,14 @@ def generate_data_sets(
 
     Returns
     -------
-    Two boolean arrays. Each indicates which set each SWIRE object is in. The
-    first array is training, the second array is testing.
+    Two tuples of two boolean arrays.
 
-    First index: SWIRE index.
+    For the first tuple: Each indicates which set each ATLAS object is in. The
+    first array is training, the second array is testing.
+    For the second tuple: Each indicates which set each SWIRE object is in.
+    The first array is training, the second array is testing.
+
+    First index: ATLAS key/SWIRE index.
     Second index: Set from above list.
     Third index: Quadrant.
     """
@@ -421,7 +428,16 @@ def generate_data_sets(
             with h5py.File(os.path.join(WORKING_DIR, 'swire_sets.h5'),
                            'r') as f_h5:
                 log.info('Reading sets from swire_sets.h5')
-                return f_h5['train'].value, f_h5['test'].value
+                swire_train_sets = f_h5['train'].value
+                swire_test_sets = f_h5['test'].value
+            with h5py.File(os.path.join(WORKING_DIR, 'atlas_sets.h5'),
+                           'r') as f_h5:
+                log.info('Reading sets from atlas_sets.h5')
+                atlas_train_sets = f_h5['train'].value
+                atlas_test_sets = f_h5['test'].value
+            return ((atlas_train_sets, atlas_test_sets),
+                    (swire_train_sets, swire_test_sets))
+
         except OSError:
             pass
 
@@ -448,6 +464,7 @@ def generate_data_sets(
     for i, (ss, _) in enumerate(subsets):
         assert SET_NAMES[ss] == i
     assert len(SET_NAMES) == len(subsets)
+    n_atlas = max(table['Key']) + 1
     training_testing_atlas_sets = {s:[] for s, _ in subsets}
     for subset_str, subset_set in subsets:
         log.debug('Filtering ATLAS/{}'.format(subset_str))
@@ -479,13 +496,27 @@ def generate_data_sets(
                 swire_sets_train[n, s, q] = True
             for n in training_testing_swire_sets[subset_str][q][1]:
                 swire_sets_test[n, s, q] = True
+    log.debug('Converting ATLAS set format')
+    atlas_sets_test = numpy.zeros((n_atlas, 6, 4), dtype=bool)
+    atlas_sets_train = numpy.zeros((n_atlas, 6, 4), dtype=bool)
+    for s, (subset_str, subset_set) in enumerate(subsets):
+        for q in range(4):
+            for n in training_testing_atlas_sets[subset_str][q][0]:
+                atlas_sets_train[n, s, q] = True
+            for n in training_testing_atlas_sets[subset_str][q][1]:
+                atlas_sets_test[n, s, q] = True
 
     log.info('Creating new file swire_sets.h5')
     with h5py.File(os.path.join(WORKING_DIR, 'swire_sets.h5'), 'w') as f_h5:
         f_h5.create_dataset('train', data=swire_sets_train)
         f_h5.create_dataset('test', data=swire_sets_test)
+    log.info('Creating new file atlas_sets.h5')
+    with h5py.File(os.path.join(WORKING_DIR, 'atlas_sets.h5'), 'w') as f_h5:
+        f_h5.create_dataset('train', data=atlas_sets_train)
+        f_h5.create_dataset('test', data=atlas_sets_test)
 
-    return swire_sets_train, swire_sets_test
+    return ((atlas_sets_train, atlas_sets_test),
+            (swire_sets_train, swire_sets_test))
 
 def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
     """Plot feature distributions.
@@ -652,6 +683,65 @@ class Predictions:
                            classifier=classifier)
 
 
+@attr.s
+class CrossIdentifications:
+    """Represent cross-identifications."""
+    radio_names = attr.ib()  # type: List[str]
+    ir_names = attr.ib()  # type: List[str]
+    accuracy = attr.ib()  # type: float
+    dataset_name = attr.ib()  # type: str
+    quadrant = attr.ib()  # type: int
+    labeller = attr.ib()  # type: str
+    classifier = attr.ib()  # type: str
+    params = attr.ib()  # type: Dict[str, Any]
+
+    def to_hdf5(self: 'CrossIdentifications', path: str) -> None:
+        """Serialise predictions as HDF5."""
+        with h5py.File(path, 'w') as f_h5:
+            radio_dtype = '<S{}'.format(max(len(i) for i in self.radio_names) + 10)
+            ir_dtype = '<S{}'.format(max(len(i) for i in self.ir_names) + 10)
+            f_h5.create_dataset('radio_names', data=numpy.array(self.radio_names, dtype=radio_dtype))
+            f_h5.create_dataset('ir_names', data=numpy.array(self.ir_names, dtype=ir_dtype))
+            f_h5.attrs['accuracy'] = self.accuracy
+            f_h5.attrs['dataset_name'] = self.dataset_name
+            f_h5.attrs['quadrant'] = self.quadrant
+            f_h5.attrs['labeller'] = self.labeller
+            f_h5.attrs['classifier'] = self.classifier
+            for param, value in self.params.items():
+                if value is None:
+                    value = '__builtins__.None'
+                f_h5.attrs['param_{}'.format(param)] = value
+
+    @classmethod
+    def from_hdf5(cls: type, path: str) -> 'CrossIdentifications':
+        with h5py.File(path, 'r') as f_h5:
+            radio_names = [i.decode('ascii')
+                             for i in f_h5['radio_names'].value]
+            ir_names = [i.decode('ascii')
+                             for i in f_h5['ir_names'].value]
+            accuracy = f_h5.attrs['accuracy']
+            dataset_name = f_h5.attrs['dataset_name']
+            quadrant = f_h5.attrs['quadrant']
+            labeller = f_h5.attrs['labeller']
+            classifier = f_h5.attrs['classifier']
+            params = {}
+            for attr in f_h5.attrs:
+                if attr.startswith('param_'):
+                    param = attr[6:]
+                    value = f_h5.attrs[attr]
+                    if value == '__builtins__.None':
+                        value = None
+                    params[param] = value
+        return cls(radio_names=radio_names,
+                   ir_names=ir_names,
+                   accuracy=accuracy,
+                   dataset_name=dataset_name,
+                   quadrant=quadrant,
+                   params=params,
+                   labeller=labeller,
+                   classifier=classifier)
+
+
 def predict(
         classifier: Classifier,
         swire_features: NDArray(N, D)[float],
@@ -661,6 +751,9 @@ def predict(
         quadrant: int,
         labeller: str='norris') -> Predictions:
     """Predict labels using a classifier.
+
+    Note that predictions will be made for all SWIRE objects in RGZ,
+    regardless of training dataset.
 
     Parameters
     ----------
@@ -689,7 +782,7 @@ def predict(
     Predictions
         Predictions of the classifier on the specified data.
     """
-    test = swire_test_sets[:, SET_NAMES[dataset_name], quadrant]
+    test = swire_test_sets[:, SET_NAMES['RGZ'], quadrant]
     features = swire_features[test]
     assert labeller in {'norris', 'rgz'}
     labels = swire_labels[test, int(labeller != 'norris')]
@@ -768,6 +861,9 @@ def predict_all_quadrants(
         dataset_name: str,
         labeller: str='norris') -> List[Predictions]:
     """Predict labels using classifiers across all quadrants.
+
+    Note that predictions will be made for all SWIRE objects in RGZ,
+    regardless of training dataset.
 
     Parameters
     ----------
@@ -851,7 +947,10 @@ def predict_all(
         swire_labels: NDArray(N, 2)[bool],
         swire_test_sets: NDArray(N, 6, 4)[bool],
         labeller: str='norris') -> List[Predictions]:
-    """Predict labels using classifiers across all quadrants and datasets.
+    """Predict labels using classifiers across all quadrants.
+
+    Note that predictions will be made for all SWIRE objects in RGZ,
+    regardless of training dataset.
 
     Parameters
     ----------
@@ -895,6 +994,37 @@ def serialise_predictions(
                                         prediction.dataset_name)
         log.debug('Writing predictions to {}'.format(filename))
         prediction.to_hdf5(filename)
+
+
+def serialise_cross_identifications(
+        cross_identifications: List[CrossIdentifications],
+        base_path: str) -> None:
+    """Serialise a list of cross-identifications to files.
+
+    base_path will be prepended to the filename, e.g. base_path = /tmp/run
+    will give files such as /tmp/run_0_RGZ & Norris.h5.
+    """
+    for cid in cross_identifications:
+        filename = '{}_{}_{}.h5'.format(base_path, cid.quadrant,
+                                        cid.dataset_name)
+        log.debug('Writing cross-identifications to {}'.format(filename))
+        cid.to_hdf5(filename)
+
+
+def unserialise_cross_identifications(
+        base_path: str,
+        quadrants: List[int]=None,
+        dataset_names: List[str]=None) -> Iterable[Predictions]:
+    """Unserialise a list of predictions."""
+    if quadrants is None:
+        quadrants = [0, 1, 2, 3]
+    if dataset_names is None:
+        dataset_names = sorted(SET_NAMES)
+    for quadrant in quadrants:
+        for dataset_name in dataset_names:
+            filename = '{}_{}_{}.h5'.format(base_path, quadrant, dataset_name)
+            log.debug('Reading cross-identifications from {}'.format(filename))
+            yield CrossIdentifications.from_hdf5(filename)
 
 
 def unserialise_predictions(
@@ -951,6 +1081,113 @@ def train_and_predict(
     return predictions
 
 
+def cross_identify_all(
+        swire_names: List[str],
+        swire_coords: NDArray(N, 2)[float]) -> Iterable[CrossIdentifications]:
+    """Cross-identify with all predictors."""
+    for classifier in ['RandomForestClassifier', 'LogisticRegression']:
+        for labeller in ['norris', 'rgz']:
+            # Cross-identification of all ATLAS sources begins here. We
+            # ideally get non-overlapping quadrants, so each
+            # classifier+labeller pair is fully described by four predictors,
+            # one per quadrant.
+            path = WORKING_DIR + classifier + '_' + labeller
+            try:
+                all_cids = unserialise_cross_identifications(
+                    path + '_cross_ids')
+            except OSError:
+                predictions = unserialise_predictions(path + '_predictions')
+                all_cids = []
+                for pred in predictions:
+                    log.debug('Cross-identifying quadrant {} with {}'.format(
+                        pred.quadrant, pred.dataset_name))
+                    cids = cross_identify(swire_names, swire_coords, pred)
+                    all_cids.append(cids)
+                serialise_cross_identifications(all_cids, path + '_cross_ids')
+            yield from all_cids
+
+
+def cross_identify(
+        swire_names: List[str],
+        swire_coords: NDArray(N, 2)[float],
+        predictions: Predictions,
+        radius: float=1 / 60) -> CrossIdentifications:
+    """Cross-identify radio objects in a quadrant."""
+    (_, atlas_test_sets), (_, swire_test_sets) = generate_data_sets(
+        swire_coords, overwrite=False)
+    atlas_names = []
+    table = astropy.io.ascii.read(TABLE_PATH)
+    atlas_coords = []
+    norris_truth = []
+    for i, row in enumerate(table):
+        assert i == row['Key']
+        atlas_names.append(row['Component Name (Franzen)'])
+        atlas_coords.append((row['Component RA (Franzen)'], row['Component DEC (Franzen)']))
+        norris_truth.append((row['Source SWIRE (Norris)']))
+    atlas_coords = numpy.array(atlas_coords)
+    quadrant = predictions.quadrant
+    dataset_name = predictions.dataset_name
+    labeller = predictions.labeller
+    classifier = predictions.classifier
+    params = predictions.params
+    atlas_set = atlas_test_sets[:, SET_NAMES['RGZ'], quadrant].nonzero()[0]  # Cross-identify against *everything*.
+    swire_set = swire_test_sets[:, SET_NAMES['RGZ'], quadrant].nonzero()[0]  # Note that this is independent from dataset_name.
+    swire_tree = KDTree(swire_coords[swire_set])
+
+    radio_names_ = []
+    ir_names_ = []
+
+    print(predictions)
+    print(len(predictions.probabilities), len(swire_set))
+    assert len(predictions.probabilities) == len(swire_set)
+    radio_to_ir = {}
+
+    no_matches = set()
+
+    for atlas_i in atlas_set:
+        coords = atlas_coords[atlas_i]
+        nearby = swire_tree.query_ball_point(coords, radius)  # indices of swire_set
+        nearby_predictions = predictions.probabilities[nearby]  # probabilities matches swire_set indices
+        radio_name = atlas_names[atlas_i]
+        if len(nearby_predictions) == 0:
+            log.warning('No nearby SWIRE found for {}'.format(radio_name))
+            no_matches.add(radio_name)
+            continue
+        argmax = numpy.argmax(nearby_predictions)  # index of nearby_predictions
+        ir_name = swire_names[swire_set[nearby[argmax]]]
+        radio_names_.append(radio_name)
+        ir_names_.append(ir_name)
+        radio_to_ir[radio_name] = ir_name
+
+    # Compute accuracy.
+    n_correct = 0
+    n_total = 0
+    for row in table:
+        if not (row['Key'] in atlas_set and
+                row['Source SWIRE (Norris)'] and
+                row['Source SWIRE (Norris)'].startswith('SWIRE')):
+            continue
+
+        assert row['Component Name (Franzen)'].startswith('ATLAS')
+        if row['Component Name (Franzen)'] in no_matches:
+            continue
+
+        n_correct += row['Source SWIRE (Norris)'] == radio_to_ir[row['Component Name (Franzen)']]
+        n_total += 1
+
+    accuracy = n_correct / n_total
+
+    return CrossIdentifications(
+        radio_names=radio_names_,
+        ir_names=ir_names_,
+        quadrant=quadrant,
+        dataset_name=dataset_name,
+        labeller=labeller,
+        classifier=classifier,
+        params=params,
+        accuracy=accuracy)
+
+
 @click.command()
 @click.option('-f', '--overwrite-predictions', is_flag=True,
               help='Overwrite output predictions')
@@ -963,7 +1200,7 @@ def main(overwrite_predictions: bool=False,
     # Generate SWIRE info.
     swire_names, swire_coords, swire_features = generate_swire_features(overwrite=overwrite_all)
     swire_labels = generate_swire_labels(swire_names, overwrite=overwrite_all)
-    swire_train_sets, swire_test_sets = generate_data_sets(swire_coords, overwrite=overwrite_all)
+    _, (swire_train_sets, swire_test_sets) = generate_data_sets(swire_coords, overwrite=overwrite_all)
     # Predict for LR, RF.
     lr_norris_pred = train_and_predict(
         LogisticRegression,
@@ -1007,6 +1244,7 @@ def main(overwrite_predictions: bool=False,
         n_jobs=jobs,
         min_samples_leaf=45,
         criterion='entropy')
+    cids = list(cross_identify_all(swire_names, swire_coords))
 
 
 if __name__ == '__main__':
