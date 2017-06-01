@@ -60,6 +60,7 @@ import matplotlib.figure
 import matplotlib.pyplot as plt
 import numpy
 from scipy.spatial import KDTree
+import scipy.special
 import seaborn
 from sklearn.base import ClassifierMixin as Classifier
 from sklearn.ensemble import RandomForestClassifier
@@ -275,6 +276,10 @@ def generate_swire_labels(
     """Generate Norris and RGZ SWIRE labels.
 
     Source: 102_classification.ipynb
+
+    Returns
+    -------
+    N x 2 NDArray; first column Norris label, second column RGZ label.
     """
     if not overwrite:
         try:
@@ -449,7 +454,10 @@ def generate_data_sets(
            r['Component ID (Franzen)'] == r['Primary Component ID (RGZ)'] and
            r['Component ID (Franzen)']}
     norris = {r['Key'] for r in table if r['Component # (Norris)'] and
-                                         r['Component ID (Franzen)']}
+                                         r['Component ID (Franzen)'] and
+                                         r['Source SWIRE (Norris)'] and
+                                         r['Source SWIRE (Norris)'].startswith(
+                                            'SWIRE')}
     compact = {r['Key'] for r in table if r['Component ID (Franzen)'] and
                                           compact_test(r)}
     subsets = [
@@ -543,6 +551,10 @@ def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
     fig.subplots_adjust(hspace=0.5)
 
 
+class CNN:
+    __name__ = 'CNN'
+
+
 def train_classifier(
         Classifier: type,
         swire_features: NDArray(N, D)[float],
@@ -583,6 +595,26 @@ def train_classifier(
     Classifier
         scikit-learn classifier.
     """
+    if Classifier == CNN:
+        import keras.models
+        with open('/Users/alger/data/Crowdastro/model_22_05_17_5conv.json') as f:
+            classifier = keras.models.model_from_json(f.read())
+        weights_map = {
+            ('norris', 'RGZ & Norris & compact'): 'weights_{}_norris_compact.h5'.format(quadrant),
+            ('norris', 'RGZ & Norris & resolved'): 'weights_{}_norris_resolved.h5'.format(quadrant),
+            ('norris', 'RGZ & Norris'): 'weights_{}_norris.h5'.format(quadrant),
+            ('rgz', 'RGZ & Norris & compact'): 'weights_{}_rgz_compact.h5'.format(quadrant),
+            ('rgz', 'RGZ & Norris & resolved'): 'weights_{}_rgz_resolved.h5'.format(quadrant),
+            ('rgz', 'RGZ & Norris'): 'weights_{}_rgz.h5'.format(quadrant),
+            ('rgz', 'RGZ & compact'): 'weights_{}_rgz_full.h5'.format(quadrant),
+            ('rgz', 'RGZ & resolved'): 'weights_{}_rgz_full.h5'.format(quadrant),
+            ('rgz', 'RGZ'): 'weights_{}_rgz_full.h5'.format(quadrant),
+        }
+        if (labeller, dataset_name) in weights_map:
+            weights_file = weights_map[labeller, dataset_name]
+            classifier.load_weights('/Users/alger/data/Crowdastro/weights_22_05_17/{}'.format(weights_file))
+        return classifier
+
     classifier = Classifier(class_weight='balanced', **kwargs)
     train = swire_train_sets[:, SET_NAMES[dataset_name], quadrant]
     features = swire_features[train]
@@ -749,11 +781,13 @@ def predict(
         swire_test_sets: NDArray(N, 6, 4)[bool],
         dataset_name: str,
         quadrant: int,
-        labeller: str='norris') -> Predictions:
+        labeller: str) -> Predictions:
     """Predict labels using a classifier.
 
     Note that predictions will be made for all SWIRE objects in RGZ,
     regardless of training dataset.
+
+    Note that testing will be performed against Norris labels.
 
     Parameters
     ----------
@@ -775,7 +809,7 @@ def predict(
     quadrant
         int in [0, 4). Quadrant of CDFS to test on.
     labeller
-        Labeller to test against. 'norris' or 'rgz'.
+        Labeller that the classifier was trained against. 'norris' or 'rgz'.
 
     Returns
     -------
@@ -785,9 +819,16 @@ def predict(
     test = swire_test_sets[:, SET_NAMES['RGZ'], quadrant]
     features = swire_features[test]
     assert labeller in {'norris', 'rgz'}
-    labels = swire_labels[test, int(labeller != 'norris')]
-    predicted_labels = classifier.predict(features)
-    predicted_probabilities = classifier.predict_proba(features)
+    labels = swire_labels[test, 0]  # Test on Norris.
+    if classifier.__class__.__name__ == 'Model':
+        as_features = features[:, :-1024]
+        im_features = features[:, -1024:].reshape((-1, 1, 32, 32))
+        predicted_probabilities = classifier.predict([as_features, im_features]).ravel()
+        predicted_labels = predicted_probabilities.round()
+        predicted_probabilities = scipy.special.logit(predicted_probabilities)
+    else:
+        predicted_labels = classifier.predict(features)
+        predicted_probabilities = classifier.predict_proba(features)
     if len(predicted_probabilities.shape) > 1 and \
             len(predicted_probabilities.shape) == 2:
         # Probability of the positive class.
@@ -801,7 +842,7 @@ def predict(
         balanced_accuracy=ba,
         dataset_name=dataset_name,
         quadrant=quadrant,
-        params=classifier.get_params(),
+        params=classifier.get_params() if classifier.__class__.__name__ != 'Model' else {},
         labeller=labeller,
         classifier=Classifier.__name__)
 
@@ -859,7 +900,7 @@ def predict_all_quadrants(
         swire_labels: NDArray(N, 2)[bool],
         swire_test_sets: NDArray(N, 6, 4)[bool],
         dataset_name: str,
-        labeller: str='norris') -> List[Predictions]:
+        labeller: str) -> List[Predictions]:
     """Predict labels using classifiers across all quadrants.
 
     Note that predictions will be made for all SWIRE objects in RGZ,
@@ -883,7 +924,7 @@ def predict_all_quadrants(
         'RGZ & resolved' or
         'RGZ'.
     labeller
-        Labeller to test against. 'norris' or 'rgz'.
+        Labeller the classifier was trained against. 'norris' or 'rgz'.
 
     Returns
     -------
@@ -946,7 +987,7 @@ def predict_all(
         swire_features: NDArray(N, D)[float],
         swire_labels: NDArray(N, 2)[bool],
         swire_test_sets: NDArray(N, 6, 4)[bool],
-        labeller: str='norris') -> List[Predictions]:
+        labeller: str) -> List[Predictions]:
     """Predict labels using classifiers across all quadrants.
 
     Note that predictions will be made for all SWIRE objects in RGZ,
@@ -963,7 +1004,7 @@ def predict_all(
     swire_test_sets
         Output of generate_data_sets.
     labeller
-        Labeller to test against. 'norris' or 'rgz'.
+        Labeller the classifier was trained against. 'norris' or 'rgz'.
 
     Returns
     -------
@@ -1072,7 +1113,8 @@ def train_and_predict(
         classifiers,
         swire_features,
         swire_labels,
-        swire_test_sets)
+        swire_test_sets,
+        labeller)
     predictions = [i
                    for quadrant_preds in predictions.values()
                    for i in quadrant_preds]
@@ -1085,7 +1127,7 @@ def cross_identify_all(
         swire_names: List[str],
         swire_coords: NDArray(N, 2)[float]) -> Iterable[CrossIdentifications]:
     """Cross-identify with all predictors."""
-    for classifier in ['RandomForestClassifier', 'LogisticRegression']:
+    for classifier in ['RandomForestClassifier', 'LogisticRegression', 'CNN']:
         for labeller in ['norris', 'rgz']:
             # Cross-identification of all ATLAS sources begins here. We
             # ideally get non-overlapping quadrants, so each
@@ -1093,8 +1135,11 @@ def cross_identify_all(
             # one per quadrant.
             path = WORKING_DIR + classifier + '_' + labeller
             try:
-                all_cids = unserialise_cross_identifications(
-                    path + '_cross_ids')
+                all_cids = list(unserialise_cross_identifications(
+                    path + '_cross_ids'))
+                for cid in all_cids:
+                    cid.classifier = classifier
+                    cid.labeller = labeller
             except OSError:
                 predictions = unserialise_predictions(path + '_predictions')
                 all_cids = []
@@ -1102,6 +1147,8 @@ def cross_identify_all(
                     log.debug('Cross-identifying quadrant {} with {}'.format(
                         pred.quadrant, pred.dataset_name))
                     cids = cross_identify(swire_names, swire_coords, pred)
+                    cids.classifier = classifier  # scikit-learn __name__ :(
+                    assert cids.labeller == labeller
                     all_cids.append(cids)
                 serialise_cross_identifications(all_cids, path + '_cross_ids')
             yield from all_cids
@@ -1137,8 +1184,6 @@ def cross_identify(
     radio_names_ = []
     ir_names_ = []
 
-    print(predictions)
-    print(len(predictions.probabilities), len(swire_set))
     assert len(predictions.probabilities) == len(swire_set)
     radio_to_ir = {}
 
@@ -1223,6 +1268,14 @@ def main(overwrite_predictions: bool=False,
         n_jobs=jobs,
         min_samples_leaf=45,
         criterion='entropy')
+    cnn_norris_pred = train_and_predict(
+        CNN,
+        swire_features,
+        swire_labels,
+        swire_train_sets,
+        swire_test_sets,
+        'norris',
+        overwrite=overwrite_predictions or overwrite_all)
     lr_rgz_pred = train_and_predict(
         LogisticRegression,
         swire_features,
@@ -1244,6 +1297,14 @@ def main(overwrite_predictions: bool=False,
         n_jobs=jobs,
         min_samples_leaf=45,
         criterion='entropy')
+    cnn_rgz_pred = train_and_predict(
+        CNN,
+        swire_features,
+        swire_labels,
+        swire_train_sets,
+        swire_test_sets,
+        'rgz',
+        overwrite=overwrite_predictions or overwrite_all)
     cids = list(cross_identify_all(swire_names, swire_coords))
 
 
