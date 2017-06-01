@@ -514,7 +514,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     Convolutional neural networks (CNNs) are a biologically-inspired
     prediction model for prediction with image inputs. A number of filters
-    are convolved with an input image to produce output images called *feature maps*, and these feature maps can then be convolved again with other filters on subsequent layers. This produces a network of convolutions. The whole network is
+    are convolved with an input image to produce output images called \emph{feature maps}, and these feature maps can then be convolved again with other filters on subsequent layers. This produces a network of convolutions. The whole network is
     differentiable with respect to the values of the filters, and so the
     filters can be learned by gradient methods. The final layer of the
     network is logistic regression, with the convolved outputs as input
@@ -527,12 +527,19 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \label{fig:cnn}
     \end{figure*}
 
+    \begin{figure}
+    \centering
+    \includegraphics[width=0.6\columnwidth]{convolutions_42191.pdf}
+    \caption{Feature maps from convolutional layers of a convolutional neural
+      network trained on quadrants 1 -- 3 of CDFS with labels derived from
+      \citeauthor{norris06}}
+    \label{fig:cnn-outputs}
+    \end{figure}
+
     CNNs have recently produced good results on large image-based datasets [citation needed]. We employ only a simple CNN model in this paper
     --- CNNs can be arbitrarily complex --- as a proof of concept that CNNs
     may be used for prediction on radio images. The model we used is shown
-    in Figure \ref{convolutional-neural-networks}.
-
-    {[}TODO: Add example of a CNN reducing a radio image.{]}
+    in Figure \ref{fig:cnn}. An example of this model reducing a radio image is shown in Figure \ref{fig:cnn-outputs}.
 
   \subsection{Random Forests}\label{random-forests}
 
@@ -714,14 +721,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \centering
   \includegraphics[width=\columnwidth]{distributions.pdf}
   \caption{Distribution of non-image features.\label{fig:distributions}}
-  \end{figure}
-
-  \begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{convolutions_42191.pdf}
-  \caption{Intermediate outputs from convolutional layers of a
-  convolutional neural network trained on quadrants 1 -- 3 with Norris et
-  al. (2006) labels.}
   \end{figure}
 
   \begin{figure}
