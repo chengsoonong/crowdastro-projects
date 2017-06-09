@@ -356,13 +356,18 @@ def atlas_to_swire(
 
 def compact_test(r: Dict[str, float]) -> bool:
     """Check if a row represents a compact component."""
-    if not r['Component S (Franzen)']:  # Why does this happen?
-        return True
+    S = r['Component S (Franzen)']
+    Sp = r['Component Sp (Franzen)']
+    S_ERR = r['Component S_ERR (Franzen)']
+    Sp_ERR = r['Component Sp_ERR (Franzen)']
+    if not S:
+        S = Sp
+        S_ERR = Sp_ERR
 
-    R = numpy.log(r['Component S (Franzen)'] / r['Component Sp (Franzen)'])
+    R = numpy.log(S / Sp)
     R_err = numpy.sqrt(
-        (r['Component S_ERR (Franzen)'] / r['Component S (Franzen)']) ** 2 +
-        (r['Component Sp_ERR (Franzen)'] / r['Component Sp (Franzen)']) ** 2)
+        (S_ERR / S) ** 2 +
+        (Sp_ERR / Sp) ** 2)
     return R < 2 * R_err
 
 
@@ -1194,7 +1199,9 @@ def train_and_predict(
 
 def cross_identify_all(
         swire_names: List[str],
-        swire_coords: NDArray(N, 2)[float]) -> Iterable[CrossIdentifications]:
+        swire_coords: NDArray(N, 2)[float],
+        swire_sets: NDArray(N, 6, 4)[bool],
+        norris_labels: NDArray(N)[bool]) -> Iterable[CrossIdentifications]:
     """Cross-identify with all predictors."""
     for classifier in ['RandomForestClassifier', 'LogisticRegression', 'CNN']:
         for labeller in ['norris', 'rgz']:
@@ -1222,12 +1229,59 @@ def cross_identify_all(
                 serialise_cross_identifications(all_cids, path + '_cross_ids')
             yield from all_cids
 
+    # "Perfect" classifier (reads groundtruth).
+    try:
+        all_cids = list(unserialise_cross_identifications(
+            WORKING_DIR + 'groundtruth_norris_cross_ids'))
+    except OSError:
+        all_cids = []
+        for q in range(4):
+            predictions = Predictions(
+                probabilities=norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]],
+                labels=norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]],
+                balanced_accuracy=1.0,
+                dataset_name='RGZ & Norris',
+                quadrant=q,
+                params={},
+                labeller='norris',
+                classifier='Groundtruth')
+            cids = cross_identify(swire_names, swire_coords, predictions)
+            all_cids.append(cids)
+        serialise_cross_identifications(all_cids, WORKING_DIR + 'groundtruth_norris_cross_ids')
+    yield from all_cids
+
+    # Random classifier.
+    numpy.random.seed(0)
+    for trial in range(10):
+        try:
+            all_cids = list(unserialise_cross_identifications(
+                WORKING_DIR + 'random_{}_norris_cross_ids'.format(trial)))
+        except OSError:
+            all_cids = []
+            for q in range(4):
+                pshape = norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]].shape
+                random_probabilities = numpy.random.uniform(size=pshape)
+                predictions = Predictions(
+                    probabilities=random_probabilities,
+                    labels=norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]],
+                    balanced_accuracy=1.0,
+                    dataset_name='RGZ & Norris',
+                    quadrant=q,
+                    params={},
+                    labeller='norris',
+                    classifier='Random')
+                cids = cross_identify(swire_names, swire_coords, predictions)
+                all_cids.append(cids)
+            serialise_cross_identifications(all_cids, WORKING_DIR + 'random_{}_norris_cross_ids'.format(trial))
+        yield from all_cids
+
 
 def cross_identify(
         swire_names: List[str],
         swire_coords: NDArray(N, 2)[float],
         predictions: Predictions,
-        radius: float=1 / 60) -> CrossIdentifications:
+        radius: float=1 / 60,
+        compact_split: bool=True) -> CrossIdentifications:
     """Cross-identify radio objects in a quadrant."""
     (_, atlas_test_sets), (_, swire_test_sets) = generate_data_sets(
         swire_coords, overwrite=False)
@@ -1235,11 +1289,15 @@ def cross_identify(
     table = astropy.io.ascii.read(TABLE_PATH)
     atlas_coords = []
     norris_truth = []
+    atlas_name_to_compact = {}
     for i, row in enumerate(table):
         assert i == row['Key']
-        atlas_names.append(row['Component Name (Franzen)'])
+        name = row['Component Name (Franzen)']
+        atlas_names.append(name)
         atlas_coords.append((row['Component RA (Franzen)'], row['Component DEC (Franzen)']))
         norris_truth.append((row['Source SWIRE (Norris)']))
+        if name:
+            atlas_name_to_compact[name] = compact_test(row)
     atlas_coords = numpy.array(atlas_coords)
     quadrant = predictions.quadrant
     dataset_name = predictions.dataset_name
@@ -1260,15 +1318,25 @@ def cross_identify(
 
     for atlas_i in atlas_set:
         coords = atlas_coords[atlas_i]
-        nearby = swire_tree.query_ball_point(coords, radius)  # indices of swire_set
-        nearby_predictions = predictions.probabilities[nearby]  # probabilities matches swire_set indices
         radio_name = atlas_names[atlas_i]
-        if len(nearby_predictions) == 0:
-            log.warning('No nearby SWIRE found for {}'.format(radio_name))
-            no_matches.add(radio_name)
-            continue
-        argmax = numpy.argmax(nearby_predictions)  # index of nearby_predictions
-        ir_name = swire_names[swire_set[nearby[argmax]]]
+        if compact_split and atlas_name_to_compact[radio_name]:
+            # Compact, so find nearest neighbour.
+            distance, nearest = swire_tree.query(coords)
+            if distance > 5 / 60 / 60:  # 5 arcsec
+                log.debug('No SWIRE host found for compact {}'.format(radio_name))
+                no_matches.add(radio_name)
+                continue
+            ir_name = swire_names[swire_set[nearest]]
+        else:
+            # Resolved - ML pipeline.
+            nearby = swire_tree.query_ball_point(coords, radius)  # indices of swire_set
+            nearby_predictions = predictions.probabilities[nearby]  # probabilities matches swire_set indices
+            if len(nearby_predictions) == 0:
+                log.warning('No nearby SWIRE found for {}'.format(radio_name))
+                no_matches.add(radio_name)
+                continue
+            argmax = numpy.argmax(nearby_predictions)  # index of nearby_predictions
+            ir_name = swire_names[swire_set[nearby[argmax]]]
         radio_names_.append(radio_name)
         ir_names_.append(ir_name)
         radio_to_ir[radio_name] = ir_name
@@ -1374,7 +1442,7 @@ def main(overwrite_predictions: bool=False,
         swire_test_sets,
         'rgz',
         overwrite=overwrite_predictions or overwrite_all)
-    cids = list(cross_identify_all(swire_names, swire_coords))
+    cids = list(cross_identify_all(swire_names, swire_coords, swire_test_sets, swire_labels[:, 0]))
 
 
 if __name__ == '__main__':
