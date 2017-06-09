@@ -253,11 +253,8 @@ def generate_swire_features(
             swire_features[:, feature][~nan].mean()
     assert not numpy.any(numpy.isnan(swire_features))
 
-    # Normalise and centre the non-image features.
-    swire_features[:, :-IMAGE_SIZE] -= \
-        swire_features[:, :-IMAGE_SIZE].mean(axis=0)
-    swire_features[:, :-IMAGE_SIZE] /= \
-        swire_features[:, :-IMAGE_SIZE].std(axis=0)
+    # Normalise and centre the features.
+    swire_features = process(swire_features)
 
     # Write back to a file.
     log.info('Creating new file swire.h5')
@@ -552,7 +549,73 @@ def plot_distributions(swire_features: NDArray(N, D)[float]) -> Figure:
 
 
 class CNN:
-    __name__ = 'CNN'
+    """Modified convolutional neural network"""
+
+    def __init__(self, classifier: Classifier):
+        self._cnn = classifier
+
+    def _transform(self, features: NDArray(N, M)[float]) -> NDArray(N, M)[float]:
+        as_features = features[:, :-IMAGE_SIZE]
+        im_features = features[:, -IMAGE_SIZE:].reshape((-1, 1, 32, 32))
+        assert im_features.shape[0] == as_features.shape[0]
+        return [as_features, im_features]
+
+    def fit(self, features: NDArray(N, M)[float], labels: NDArray(N)[bool]):
+        pass
+
+    def predict(self, features: NDArray(N, M)[float]) -> NDArray(N)[bool]:
+        return self.predict_proba(features) > 0.5
+
+    def predict_proba(self, features: NDArray(N, M)[float]) -> NDArray(N)[float]:
+        features = self._transform(features)
+        return self._cnn.predict(features).ravel()
+
+    def get_params(self):
+        return {}
+
+
+class CNNLR(CNN):
+    """Modified convolutional neural network with logistic regression on the end for fine-tuning."""
+
+    def __init__(self, classifier: Classifier):
+        super().__init__(classifier)
+
+        # Take the CNN as a feature extractor.
+        import keras.backend # :(
+        self._extractor = keras.backend.function(
+            [self._cnn.layers[0].input],  # Input 1
+            [self._cnn.layers[4].output])  # Pool 2
+        # 1 x 32 x 32 -> 32 x 5 x 5
+        self._lr = LogisticRegression(
+            class_weight='balanced',
+            C=100000.0)
+
+    def _transform(self, features: NDArray(N, M)[float]) -> NDArray(N, M)[float]:
+        as_features, im_features = super()._transform(features)
+        im_features = self._extractor([im_features])[0].reshape((-1, 32 * 5 * 5))
+        features = numpy.concatenate([as_features, im_features], axis=1)
+        return features
+
+    def fit(self, features: NDArray(N, M)[float], labels: NDArray(N)[bool]):
+        # Extract features.
+        features = self._transform(features)
+        self._lr.fit(features, labels)
+
+    def predict(self, features: NDArray(N, M)[float]) -> NDArray(N)[bool]:
+        features = self._transform(features)
+        return self._lr.predict(features)
+
+    def predict_proba(self, features: NDArray(N, M)[float]) -> NDArray(N)[float]:
+        features = self._transform(features)
+        return self._lr.predict_proba(features)
+
+
+def process(features: NDArray(N, M)[float]) -> NDArray(N, M)[float]:
+    """Normalise and centre non-image features."""
+    features = features.copy()
+    features[:, :-IMAGE_SIZE] -= features[:, :-IMAGE_SIZE].mean(axis=0)
+    features[:, :-IMAGE_SIZE] /= features[:, :-IMAGE_SIZE].std(axis=0)
+    return features
 
 
 def train_classifier(
@@ -595,9 +658,15 @@ def train_classifier(
     Classifier
         scikit-learn classifier.
     """
+    train = swire_train_sets[:, SET_NAMES[dataset_name], quadrant]
+    features = swire_features[train]
+    # norris -> 0, rgz -> 1
+    assert labeller in {'norris', 'rgz'}
+    labels = swire_labels[train, int(labeller != 'norris')]
+
     if Classifier == CNN:
         import keras.models
-        with open('/Users/alger/data/Crowdastro/model_22_05_17_5conv.json') as f:
+        with open('/Users/alger/data/Crowdastro/model_03_06_17.json') as f:
             classifier = keras.models.model_from_json(f.read())
         weights_map = {
             ('norris', 'RGZ & Norris & compact'): 'weights_{}_norris_compact.h5'.format(quadrant),
@@ -612,16 +681,23 @@ def train_classifier(
         }
         if (labeller, dataset_name) in weights_map:
             weights_file = weights_map[labeller, dataset_name]
-            classifier.load_weights('/Users/alger/data/Crowdastro/weights_22_05_17/{}'.format(weights_file))
-        return classifier
+            path = '/Users/alger/data/Crowdastro/weights_03_06_17/{}'.format(weights_file)
+            log.debug('Loading weights {}'.format(path))
+            classifier.load_weights(path)
+        else:
+            log.warning('Missing weights for {}, {}'.format(labeller, dataset_name))
+        classifier = Classifier(classifier)
+    else:
+        classifier = Classifier(class_weight='balanced', **kwargs)
 
-    classifier = Classifier(class_weight='balanced', **kwargs)
-    train = swire_train_sets[:, SET_NAMES[dataset_name], quadrant]
-    features = swire_features[train]
-    # norris -> 0, rgz -> 1
-    assert labeller in {'norris', 'rgz'}
-    labels = swire_labels[train, int(labeller != 'norris')]
     classifier.fit(features, labels)
+
+    # A quick accuracy check.
+    predictions = classifier.predict(features)
+    log.debug('Balanced accuracy on {}/{}/{}/{} training set: {:.02%}'.format(
+        classifier, labeller, dataset_name, quadrant,
+        balanced_accuracy(labels, predictions)))
+
     return classifier
 
 
@@ -820,15 +896,8 @@ def predict(
     features = swire_features[test]
     assert labeller in {'norris', 'rgz'}
     labels = swire_labels[test, 0]  # Test on Norris.
-    if classifier.__class__.__name__ == 'Model':
-        as_features = features[:, :-1024]
-        im_features = features[:, -1024:].reshape((-1, 1, 32, 32))
-        predicted_probabilities = classifier.predict([as_features, im_features]).ravel()
-        predicted_labels = predicted_probabilities.round()
-        predicted_probabilities = scipy.special.logit(predicted_probabilities)
-    else:
-        predicted_labels = classifier.predict(features)
-        predicted_probabilities = classifier.predict_proba(features)
+    predicted_labels = classifier.predict(features)
+    predicted_probabilities = classifier.predict_proba(features)
     if len(predicted_probabilities.shape) > 1 and \
             len(predicted_probabilities.shape) == 2:
         # Probability of the positive class.
@@ -842,7 +911,7 @@ def predict(
         balanced_accuracy=ba,
         dataset_name=dataset_name,
         quadrant=quadrant,
-        params=classifier.get_params() if classifier.__class__.__name__ != 'Model' else {},
+        params=classifier.get_params(),
         labeller=labeller,
         classifier=Classifier.__name__)
 
