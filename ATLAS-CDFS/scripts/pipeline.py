@@ -1216,7 +1216,9 @@ def cross_identify_all(
                 for cid in all_cids:
                     cid.classifier = classifier
                     cid.labeller = labeller
+                log.debug('Loaded {}/{} cross-identifications'.format(classifier, labeller))
             except OSError:
+                log.debug('Generating {}/{} cross-identifications'.format(classifier, labeller))
                 predictions = unserialise_predictions(path + '_predictions')
                 all_cids = []
                 for pred in predictions:
@@ -1232,8 +1234,11 @@ def cross_identify_all(
     # "Perfect" classifier (reads groundtruth).
     try:
         all_cids = list(unserialise_cross_identifications(
-            WORKING_DIR + 'groundtruth_norris_cross_ids'))
+            WORKING_DIR + 'groundtruth_norris_cross_ids',
+            dataset_names=['RGZ & Norris']))
+        log.debug('Loaded groundtruth cross-identifications')
     except OSError:
+        log.debug('Generating groundtruth cross-identifications')
         all_cids = []
         for q in range(4):
             predictions = Predictions(
@@ -1255,8 +1260,11 @@ def cross_identify_all(
     for trial in range(10):
         try:
             all_cids = list(unserialise_cross_identifications(
-                WORKING_DIR + 'random_{}_norris_cross_ids'.format(trial)))
+                WORKING_DIR + 'random_{}_norris_cross_ids'.format(trial),
+                dataset_names=['RGZ & Norris']))
+            log.debug('Loaded random cross-identifications {}'.format(trial))
         except OSError:
+            log.debug('Generating random cross-identifications {}'.format(trial))
             all_cids = []
             for q in range(4):
                 pshape = norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]].shape

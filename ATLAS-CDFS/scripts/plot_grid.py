@@ -83,21 +83,20 @@ for predictions in cnn_predictions:
     else:
         cnn_rgz_accuracies[dataset_name][predictions.quadrant] = predictions.balanced_accuracy
 
-colours = ['blue', 'red', 'green', 'orange']
-handles = []
-plt.figure(figsize=(8, 7))
+colours = ['grey', 'magenta', 'blue', 'orange']
+handles = {}
+plt.figure(figsize=(3, 6))
 for j, (classifier_name, classifier_set) in enumerate([
         ('LR', [lr_norris_accuracies, lr_rgz_accuracies]),
-        ('RF', [rf_norris_accuracies, rf_rgz_accuracies]),
         ('CNN', [cnn_norris_accuracies, cnn_rgz_accuracies]),
+        ('RF', [rf_norris_accuracies, rf_rgz_accuracies]),
         ]):
     for i, set_name in enumerate(norris_labelled_sets):
-        ax = plt.subplot(3, 4, 1 + j + i * 4)
+        ax = plt.subplot(3, 1, 1 + i)
         for k in range(4):
-            handles.append(
-                ax.scatter([0], classifier_set[0][set_name][k] * 100, color=colours[k], marker='x'))
-            ax.scatter([1], classifier_set[1][set_name][k] * 100, color=colours[k], marker='x')
-            ax.scatter([2], classifier_set[1][fullmap[set_name]][k] * 100, color=colours[k], marker='x')
+            handles[j] = ax.scatter([0 + (j - 1) / 5], classifier_set[0][set_name][k] * 100, color=colours[j], marker='x')
+            ax.scatter([1 + (j - 1) / 5], classifier_set[1][set_name][k] * 100, color=colours[j], marker='x')
+            ax.scatter([2 + (j - 1) / 5], classifier_set[1][fullmap[set_name]][k] * 100, color=colours[j], marker='x')
 
         ax.set_ylim((80, 100))
         ax.set_xlim((-0.5, 2.5))
@@ -108,10 +107,7 @@ for j, (classifier_name, classifier_set) in enumerate([
                            ], rotation='horizontal')
         if i == 2:
             plt.xlabel('Labels')
-        if j == 0:
-            plt.ylabel('{}\nBalanced accuracy (%)'.format(titlemap[set_name]))
-        if i == 0:
-            ax.set_title(classifier_name)
+        plt.ylabel('{}\nBalanced accuracy (%)'.format(titlemap[set_name]))
 
         ax.title.set_fontsize(16)
         ax.xaxis.label.set_fontsize(12)
@@ -121,11 +117,8 @@ for j, (classifier_name, classifier_set) in enumerate([
 
         ax.grid(which='major', axis='y', color='#EEEEEE')
 
-plt.figlegend(handles, map(str, range(4)), 'lower center', ncol=4, fontsize=10)
-plt.subplots_adjust(top=1, bottom=0.15, right=1, left=0, 
-                    hspace=0.2, wspace=0.35)
-plt.margins(0, 0)
-# plt.show()
+plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'], 'lower center', ncol=3, fontsize=10)
+plt.subplots_adjust(bottom=0.15, hspace=0.25)
 plt.savefig('../images/cdfs_ba_grid.pdf',
             bbox_inches='tight', pad_inches=0)
 plt.savefig('../images/cdfs_ba_grid.png',
