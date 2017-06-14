@@ -1257,7 +1257,7 @@ def cross_identify_all(
 
     # Random classifier.
     numpy.random.seed(0)
-    for trial in range(10):
+    for trial in range(25):
         try:
             all_cids = list(unserialise_cross_identifications(
                 WORKING_DIR + 'random_{}_norris_cross_ids'.format(trial),

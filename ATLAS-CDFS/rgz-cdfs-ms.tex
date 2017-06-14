@@ -654,28 +654,34 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     We considered only radio objects with a cross-identification in both the
     \citet{norris06} catalogue and the RGZ catalogue. Candidate hosts
     were then selected from the SWIRE catalogue. For a given subset of radio
-    objects, all SWIRE objects within \(R\) of all radio objects in the
+    objects, all SWIRE objects within $1'$ of all radio objects in the
     subset were added to the associated SWIRE subset.
 
     Each classifier was trained on the training examples and used to predict
     labels for the test examples. The predicted labels were compared to the
-    labels derived from the \citet{norris06} cross-identifications and
-    the balanced accuracy was computed. We used balanced accuracy as our
-    accuracy measure due to the highly imbalanced classes --- in our total
-    set of SWIRE objects within \(R\) of an ATLAS object, only 4\% have
-    positive labels. The accuracies were then averaged across all four
-    quadrants. Classification outputs are reported for the testing quadrant.
-    We report the balanced accuracy on the classification task for logistic
-    regression, convolutional neural networks, and random forests.
+    labels derived from the \citet{norris06} cross-identifications and the
+    balanced accuracy was computed. We used balanced accuracy as our accuracy
+    measure due to the highly imbalanced classes --- in our total set of SWIRE
+    objects within $1'$ of an ATLAS object, only 4\% have positive labels.
+    Only examples within $1'$ of ATLAS objects in the first ATLAS data release
+    \citep{norris06} were used to compute accuracy, as these were the only
+    ATLAS objects with \citet{norris06} labels. We report the balanced
+    accuracy on the classification task for logistic regression, convolutional
+    neural networks, and random forests. We also report the predictions for
+    each SWIRE object. The reported predictions for a given object are made by
+    classifiers tested on the quadrant containing that object.
 
     We then used the outputs of our classifiers to predict the host galaxy
     for each radio component cross-identified by both \citet{norris06}
-    and Radio Galaxy Zoo. For each SWIRE object within \(R\) of the radio
+    and Radio Galaxy Zoo. For each SWIRE object within $1'$ of the radio
     component, the probability of the object having a positive label was
     estimated using the trained binary classifiers. The SWIRE object with
     the highest probability was chosen as the host galaxy. The accuracy was
     then estimated by counting how many predicted host galaxies matched the
-    \citet{norris06} cross-identifications.
+    \citet{norris06} cross-identifications. We report the accuracies and the
+    cross-identifications. As with SWIRE predictions, reported
+    cross-identifications for a given object are made by classifiers tested
+    on the quadrant containing that object.
 
     The balanced accuracy provides a good proxy to the accuracy of the host
     cross-identification task. To check this, we selected random, small
@@ -696,14 +702,22 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \centering
   \includegraphics[width=\columnwidth]{images/cdfs_ba_grid.pdf}
   \caption{Balanced accuracies for each quadrant in the galaxy
-  classification task.\label{fig:ba}}
+    classification task. The maximum attainable balanced accuracy
+    is 100\%, when every galaxy label matches the labels derived
+    from \citet{norris06} cross-identifications.\label{fig:ba}}
   \end{figure}
 
   \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
   \caption{Accuracies for each quadrant in the cross-identification
-    task.\label{fig:cross-id-accuracy}}
+    task. The horizontal line indicates the accuracy of a "perfect" classifier
+    on the cross-identification task, with the dashed lines indicating the
+    standard deviation across CDFS quadrants. A "perfect" classifier simply
+    reads the correct labels, in this case the labels derived from
+    \citet{norris06}. This represents the maximum attainable cross-identification
+    accuracy under our assumptions.
+    \label{fig:cross-id-accuracy}}
   \end{figure}
 
   \begin{table*}
@@ -764,7 +778,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       indicates that the component has multiple nearby components (and thus is
       more impacted by our assumption that the source is isolated), and low
       infrared consensus indicates that the host galaxy is unclear in the SWIRE
-      image (possibly due to multiple nearby candidate host galaxies).}
+      image (possibly due to multiple nearby candidate host galaxies). Full table
+      electronic.}
     \label{tab:cids}
   \end{table*}
 
@@ -777,23 +792,24 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   al. (2006) cross-identification; neither distance to the true host nor
   broken assumptions of one host per image are accommodated. {[}TODO:
   explain this caption better so that it is understandable to non-ML
-  people{]}\label{fig:gct-to-xid}}
+  people; regenerate this with the new pipeline{]}\label{fig:gct-to-xid}}
   \end{figure}
 
-  \begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{gct-to-arcsec-error.pdf}
-  \caption{Classification balanced accuracy against average radial
-  distance between the predicted and the \citet{norris06} cross-identified
-  host on the cross-identification task.\label{fig:gct-to-arcsec-error}}
-  \end{figure}
+  % \begin{figure}
+  % \centering
+  % \includegraphics[width=\columnwidth]{gct-to-arcsec-error.pdf}
+  % \caption{Classification balanced accuracy against average radial
+  % distance between the predicted and the \citet{norris06} cross-identified
+  % host on the cross-identification task.\label{fig:gct-to-arcsec-error}}
+  % \end{figure}
 
   \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{passive.pdf}
   \caption{Passive learning plot for the GCT. Trained and tested on RGZ.
-  This is so that we had maximal training data --- RGZ has many more
-  objects than Norris.\label{fig:passive}}
+    This is so that we had maximal training data --- RGZ has many more
+    objects than Norris. [TODO: Regenerate with Norris testing data]
+    \label{fig:passive}}
   \end{figure}
 
   \begin{figure}

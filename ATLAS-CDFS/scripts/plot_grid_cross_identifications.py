@@ -41,6 +41,15 @@ fullmap = {
     'RGZ & Norris': 'RGZ',
 }
 
+whatset = {
+    'RGZ & Norris & compact': 'RGZ & Norris & compact',
+    'RGZ & Norris & resolved': 'RGZ & Norris & resolved',
+    'RGZ & Norris': 'RGZ & Norris',
+    'RGZ & compact': 'RGZ & Norris & compact',
+    'RGZ & resolved': 'RGZ & Norris & resolved',
+    'RGZ': 'RGZ & Norris',
+}
+
 norris_labelled_sets = [
     'RGZ & Norris & compact',
     'RGZ & Norris & resolved',
@@ -69,9 +78,12 @@ for cid in cids:
     if cid.labeller == 'norris' and 'Norris' not in cid.dataset_name:
         continue
 
+    if cid.classifier in {'Groundtruth', 'Random'}:
+        continue
+
     atlas_to_swire_predictor = dict(zip(cid.radio_names, cid.ir_names))
     # For each ATLAS object in RGZ & Norris...
-    atlas_keys = atlas_test_sets[:, pipeline.SET_NAMES['RGZ & Norris'], cid.quadrant].nonzero()[0]
+    atlas_keys = atlas_test_sets[:, pipeline.SET_NAMES[whatset[cid.dataset_name]], cid.quadrant].nonzero()[0]
     n_total = 0
     n_correct = 0
     n_skipped = 0
@@ -94,30 +106,85 @@ for cid in cids:
     else:
         labeller = 'Norris'
     labeller_classifier_to_accuracies[labeller, cid.classifier, titlemap[cid.dataset_name]].append(n_correct / n_total)
-    # print(cid.labeller, cid.classifier, cid.quadrant, '{:<20}'.format(cid.dataset_name),
-    #       n_correct, n_total, n_skipped, '{:.02%}'.format(n_correct / n_total),
-    #       sep='\t')
+
+# Groundtruth and random classifiers exist only for the RGZ & Norris set, but we want to test on all subsets.
+# This section duplicates the classifiers and evaluates them on all subsets.
+for cid in cids:
+    if cid.classifier not in {'Groundtruth', 'Random'}:
+        continue
+
+    for dataset_name in ['RGZ & Norris', 'RGZ & Norris & resolved', 'RGZ & Norris & compact']:
+        atlas_to_swire_predictor = dict(zip(cid.radio_names, cid.ir_names))
+        # For each ATLAS object in RGZ & Norris...
+        atlas_keys = atlas_test_sets[:, pipeline.SET_NAMES[dataset_name], cid.quadrant].nonzero()[0]
+        n_total = 0
+        n_correct = 0
+        n_skipped = 0
+        for i in atlas_keys:
+            name = key_to_atlas[i]
+            if name not in atlas_to_swire_norris:
+                n_skipped += 1
+                continue
+            if name not in atlas_to_swire_predictor:
+                n_skipped += 1
+                continue
+            swire_norris = atlas_to_swire_norris[name]
+            swire_predictor = atlas_to_swire_predictor[name]
+            n_correct += swire_norris == swire_predictor
+            n_total += 1
+        if 'Norris' in cid.dataset_name and cid.labeller == 'rgz':
+            labeller = 'RGZ N'
+        elif cid.labeller == 'rgz':
+            labeller = 'RGZ'
+        else:
+            labeller = 'Norris'
+        labeller_classifier_to_accuracies[labeller, cid.classifier, titlemap[dataset_name]].append(n_correct / n_total)
 
 labeller_classifier_to_accuracy = {}
 labeller_classifier_to_stdev = {}
 for key, accuracies in labeller_classifier_to_accuracies.items():
     labeller_classifier_to_accuracy[key] = numpy.mean(accuracies)
-    labeller_classifier_to_stdev[key] = numpy.mean(accuracies)
+    labeller_classifier_to_stdev[key] = numpy.std(accuracies)
 
-plt.figure(figsize=(3, 6))
+random_acc = {k[2]: v * 100
+              for k, v in labeller_classifier_to_accuracy.items()
+              if k[1] == 'Random'}
+random_stdev = {k[2]: v * 100
+                for k, v in labeller_classifier_to_stdev.items()
+                if k[1] == 'Random'}
+best_acc = {k[2]: v * 100
+            for k, v in labeller_classifier_to_accuracy.items()
+            if k[1] == 'Groundtruth'}
+best_stdev = {k[2]: v * 100
+              for k, v in labeller_classifier_to_stdev.items()
+              if k[1] == 'Groundtruth'}
+
+print('Best: {} +- {}'.format(best_acc, best_stdev))
+print('Random: {} +- {}'.format(random_acc, random_stdev))
+
+plt.figure(figsize=(3, 4))
 colours = ['grey', 'magenta', 'blue', 'orange']
 handles = {}
-for k, set_name in enumerate(norris_labelled_sets):
-    ax = plt.subplot(3, 1, 1 + k)
+for k, set_name in enumerate(norris_labelled_sets[1:]):
+    ax = plt.subplot(2, 1, 1 + k)
+    plt.hlines(best_acc[titlemap[set_name]], -0.5, 2.5, linestyles='solid', colors='green', linewidth=1, zorder=1, alpha=0.7)
+    plt.hlines(best_acc[titlemap[set_name]] + best_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='green', linewidth=1, zorder=1, alpha=0.7)
+    plt.hlines(best_acc[titlemap[set_name]] - best_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='green', linewidth=1, zorder=1, alpha=0.7)
+    plt.hlines(random_acc[titlemap[set_name]], -0.5, 2.5, linestyles='solid', colors='blue', linewidth=1, zorder=1, alpha=0.7)
+    plt.hlines(random_acc[titlemap[set_name]] + random_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='blue', linewidth=1, zorder=1, alpha=0.7)
+    plt.hlines(random_acc[titlemap[set_name]] - random_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='blue', linewidth=1, zorder=1, alpha=0.7)
     for i, labeller in enumerate(['Norris', 'RGZ N', 'RGZ']):
         for j, classifier in enumerate(['LogisticRegression', 'CNN', 'RandomForestClassifier']):
             ys = numpy.array(labeller_classifier_to_accuracies[labeller, classifier, titlemap[set_name]]) * 100
             xs = [i + (j - 1) / 5] * len(ys)
             ax.set_xlim((-0.5, 2.5))
-            ax.set_ylim((80, 100))
+            if k == 0:
+                ax.set_ylim((0, 100))
+            else:
+                ax.set_ylim((70, 100))
             ax.set_xticks([0, 1, 2])
             ax.set_xticklabels(['Norris', 'RGZ N', 'RGZ'])
-            handles[j] = plt.scatter(xs, ys, color=colours[j], marker='x')
+            handles[j] = plt.scatter(xs, ys, color=colours[j], marker='x', zorder=2)
         if k == 2:
             plt.xlabel('Labels')
         plt.ylabel('{}\nAccuracy (%)'.format(titlemap[set_name]))
