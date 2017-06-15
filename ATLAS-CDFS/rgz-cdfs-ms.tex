@@ -16,8 +16,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%% AUTHORS - PLACE YOUR OWN COMMANDS HERE %%%%%
+\usetikzlibrary{shapes,arrows,calc,positioning}
+
 \newcommand{\text}{\mathrm}
-\usetikzlibrary{shapes,arrows}
+\newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng:~{#1}}]} }
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%% TITLE PAGE %%%%%%%%%%%%%%%%%%%
@@ -71,6 +74,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 %%%%%%%%%%%%%%%%% BODY OF PAPER %%%%%%%%%%%%%%%%%%
 
 \section{Introduction}\label{introduction}
+
+  \cheng{Avoid using words like simple, easy, obvious, etc.}
 
   Next generation radio telescopes such as the Australian SKA Pathfinder
   \citep[ASKAP;][]{johnston07} and Apertif \citep{verheijen08} will
@@ -289,6 +294,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     infrared images. This is formalised as an object localisation problem:
     Given a radio image and an infrared image, locate the host galaxy.
 
+    \cheng{How would radio morphology help?}
+
+    \cheng{Say something about IR and radio images are of the same patch of sky.}
+
     \begin{figure}
       \centering
       \includegraphics[width=0.8\columnwidth]{images/windows.eps}
@@ -314,6 +323,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     cross-identification, we consider windows of a radio/infrared image and
     estimate the probability that each window is centred on the host galaxy.
     This approach is illustrated in Figure \ref{fig:windows}.
+    In computer vision a sliding window is commonly used: every possible patch
+    in the image is considered.
+
+    \cheng{Make a list of assumptions, then justify them in paragraphs afterwards.
+      I suggest a separate subsection ``Limitations of our approach''}
 
     This task can be made greatly more efficient if we have a prior on the
     location of the object we are localising. For our prior, we assume that
@@ -329,6 +343,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     is a very common problem in machine learning and there are many different
     methods readily available to solve it.
 
+    \cheng{Be careful about the difference between a binary classifier and
+      a class probability estimator. $\mathcal{Y}$ can be binary or in the unit interval.}
     Solving the radio cross-identification task amounts to modelling a
     function \(f\) from infrared sources \(\mathcal{X}\) to binary
     \(\mathcal{Y} = \{0, 1\}\): \[
@@ -430,19 +446,20 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \begin{figure}
       \centering
       % http://www.texample.net/tikz/examples/simple-flow-chart/
-      \tikzstyle{decision} = [diamond, draw, fill=white, 
+      \tikzstyle{decision} = [diamond, draw, fill=white,
           text width=4.5em, text badly centered, inner sep=0pt]
-      \tikzstyle{block} = [rectangle, draw, fill=white, 
+      \tikzstyle{block} = [rectangle, draw, fill=white,
           text width=5em, text centered, rounded corners, minimum height=4em]
       \tikzstyle{line} = [draw, -latex']
-      \begin{tikzpicture}[node distance=2.4cm, auto]
+      \begin{tikzpicture}[node distance=6mm, auto]
         \node [block] (init) {input radio source};
-        \node [decision, right of=init] (iscompact) {compact?};
-        \node [block, below of=iscompact] (compact) {find nearest infrared object};
-        \node [block, right of=iscompact] (resolved) {find nearby infrared objects};
-        \node [block, fill=black!10, below of=resolved] (classify) {classify objects};
-        \node [block, below of=classify] (best) {find highest probability object};
-        \node [block, below of=best, fill=green!10] (done) {\textbf{host galaxy}};
+        \node [decision, right= of init] (iscompact) {compact?};
+        \node [block, below= of iscompact] (compact) {find nearest infrared object};
+        \node [block, right= of iscompact] (resolved) {find nearby infrared objects};
+        \node [block, fill=black!10, right= of resolved] (classify) {classify objects};
+        \node [block, below= of classify] (best) {find highest probability object};
+        \coordinate (middle) at ($(compact)!0.5!(best)$);
+        \node [block, below= of middle, fill=green!10] (done) {\textbf{host galaxy}};
         \path [line] (init) -- (iscompact);
         \path [line] (iscompact) -- (compact) node [midway] {yes};
         \path [line] (compact) -- (done);
@@ -472,6 +489,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \subsection{Vector representation of infrared
   sources}\label{vector-representation-of-infrared-sources}
 
+  \cheng{I suggest not using the word ``vector''. Either ``feature vector'',
+  or ``an array of real values''. Definitely not ``real valued vector''.}
     {[}TODO: Discuss comments on ``vector'' with Julie{]}
 
     Most binary classification methods require that the inputs to be
@@ -562,7 +581,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{Random Forests}\label{random-forests}
 
-    Random forests are an ensemble of decision trees. {[}todo{]}
+    Random forests are an ensemble of decision trees~\citep{breiman01random-forest}.
+    It considers multiple subsamples
+    of the training set, where each bootstrap subsample is sampled with replacement
+    from the training set. For each subsample a decision tree classifier is constructed,
+    which builds an axis parallel split based on individual features in a greedy fashion.
+    In a random forest the split decision is taken based on a random subset of features.
+    For each test point, the random forest takes the weighted average of all the
+    classifications produced by each decision tree.
 
   \subsection{Labels}\label{labels}
 
@@ -697,7 +723,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 \section{Results}\label{results}
 
   {[}TODO: Include images of ``good'' and ``bad'' X-IDs/GCTs.{]}
-
   \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{images/cdfs_ba_grid.pdf}
@@ -719,6 +744,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     accuracy under our assumptions.
     \label{fig:cross-id-accuracy}}
   \end{figure}
+
+  \cheng{Generate results and plots for accuracy, for the supplement}
 
   \begin{table*}
     \begin{tabular}{cccccccccccccccccccccccccccccc}

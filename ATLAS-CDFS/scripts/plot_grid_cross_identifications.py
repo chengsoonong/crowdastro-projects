@@ -164,6 +164,7 @@ print('Random: {} +- {}'.format(random_acc, random_stdev))
 
 plt.figure(figsize=(3, 4))
 colours = ['grey', 'magenta', 'blue', 'orange']
+markers = ['o', 's', 'x', '^']
 handles = {}
 for k, set_name in enumerate(norris_labelled_sets[1:]):
     ax = plt.subplot(2, 1, 1 + k)
@@ -184,7 +185,7 @@ for k, set_name in enumerate(norris_labelled_sets[1:]):
                 ax.set_ylim((70, 100))
             ax.set_xticks([0, 1, 2])
             ax.set_xticklabels(['Norris', 'RGZ N', 'RGZ'])
-            handles[j] = plt.scatter(xs, ys, color=colours[j], marker='x', zorder=2)
+            handles[j] = plt.scatter(xs, ys, color=colours[j], marker=markers[j], zorder=2)
         if k == 2:
             plt.xlabel('Labels')
         plt.ylabel('{}\nAccuracy (%)'.format(titlemap[set_name]))
