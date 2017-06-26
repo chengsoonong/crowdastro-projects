@@ -54,15 +54,15 @@ $^{4}$International Centre for Radio Astronomy Research-M468, The University of 
   We present a machine learning approach for radio host cross-identification,
   the task of determining the host galaxies of radio emissions detected in
   wide-area radio surveys. Training a machine learning algorithm requires a
-  large amount [TODO: how large?] of labelled training data, which can be
-  difficult or expensive to acquire. Radio Galaxy Zoo, a citizen science
-  project on the Zooniverse platform, provides a large number of radio host
-  cross-identifications which may be used as labels for training. However,
-  these cross-identifications are assigned by non-experts, and may be
-  incorrect. We find that while machine learning algorithms trained on expert
-  labels outperform those trained on the crowdsourced Radio Galaxy Zoo labels,
-  the accuracies are comparable and the crowdsourced labels are still useful
-  for training. [TODO: add balanced accuracies]
+  large amount of labelled training data, which can be difficult or expensive
+  to acquire. Radio Galaxy Zoo, a citizen science project on the Zooniverse
+  platform, provides a large number of radio host cross-identifications which
+  may be used as labels for training. However, these cross-identifications are
+  assigned by non-experts, and may be incorrect. We find that while machine
+  learning algorithms trained on expert labels outperform those trained on the
+  crowdsourced Radio Galaxy Zoo labels, the accuracies are comparable and the
+  crowdsourced labels are still useful for training. [TODO: add balanced
+  accuracies]
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -129,8 +129,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \citet{weston17} developed a modification of the likelihood ratio method of
   cross-identification \citep{richter75} for application to EMU. However, this
   method is only intended to cross-identify ``simple'' sources consisting of a
-  single, isolated radio component (Norris 2016). {[}TODO(Julie): Can you
-  elaborate on this?{]}
+  single, isolated radio component \citep{norris17unexpected}. [TODO(Julie):
+  Can you elaborate on this?]
 
   ASKAP is expected to generate approximately 70 PB yearly
   \citep{norris17unexpected}. Automated methods will be needed to choose what
@@ -143,12 +143,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   Outliers can be detected in a variety of ways, including imposing a
   similarity metric on radio components and looking for objects very distant
   from other objects \citep{polsterer15pink}, looking for objects that do not
-  reliably fit existing models \citep[potentially an extension of][]{fan15}, or
-  generating a model of radio galaxies from existing data and looking for
+  reliably fit existing models \citep[potentially an extension of][]{fan15},
+  or generating a model of radio galaxies from existing data and looking for
   objects that do not fit this model. These methods all require a way of
-  encoding the [TODO: Feature selection] For these algorithms, robust feature
-  selection is important and model-based approaches \citep[e.g.][]{proctor06}
-  will likely fail.
+  encoding objects, a process called \emph{feature selection}. Given that EMU
+  is expected to find unusual objects, robust feature selection is important.
+  Model-based approaches \citep[e.g.][]{proctor06} will likely fail. [TODO: Discuss with Julie whether we even need this paragraph.]
 
   {[}TODO: literature review: paper Ivy sent, PINK, WTF, Fan (done),
   Proctor, Park et al. 2017{]}
@@ -157,10 +157,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   ways including with this work and there are benefits in both. Also an
   example of where model-based approaches fall down. Elaborate on this?{]}
 
-  In order to investigate methods for efficiently and effectively
-  classifying radio galaxy hosts for upcoming large radio surveys, we have
-  developed a machine learning approach for radio host
-  cross-identification using standard machine learning techniques.
+  In order to investigate methods for efficiently and effectively classifying
+  radio galaxy hosts for upcoming large radio surveys, we have developed a
+  machine learning approach for radio host cross-identification using standard
+  machine learning techniques.
 
   \begin{figure}
     \includegraphics[width=\linewidth]{images/placeholder.png}
@@ -232,7 +232,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     as ATLAS, so methods developed for processing ATLAS data are expected to
     work for EMU. [TODO: How large are CDFS and ELAIS-S1? How many radio
     objects do they contain?] ATLAS has a sensitivity of 14 $\mu$Jy on CDFS and
-    17 $\mu$Jy on ELAIS-S1 \citep{franzen15}.
+    17 $\mu$Jy on ELAIS-S1. CDFS contains 3034 radio components and ELAIS-S1 contains 2084 radio components above 5$\sigma$ \citep{franzen15}.
 
     \begin{table}
       \center
@@ -270,12 +270,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{SWIRE}\label{sec:swire}
 
-    The Spitzer Wide-area Infrared Extragalactic survey (Lonsdale et al.,
-    ????) is a wide-area infrared survey at the four IRAC wavelengths 3.6
-    $\mu$m, 4.5 $\mu$m, 5.8 $\mu$m, and 8.0 $\mu$m. It covers the eight SWIRE fields,
-    particularly CDFS and ELAIS-S1, both of which were also covered by
-    ATLAS. SWIRE is thus the source of infrared observations for
-    cross-identification with ATLAS. [TODO: Sensitivity? Count?]
+    The Spitzer Wide-area Infrared Extragalactic survey
+    \citep[SWIRE;][]{lonsdale03swire,surace05swire} is a wide-area infrared
+    survey at the four IRAC wavelengths 3.6 $\mu$m, 4.5 $\mu$m, 5.8 $\mu$m,
+    and 8.0 $\mu$m. It covers eight fields, including CDFS and ELAIS-S1 which
+    were also covered by ATLAS. SWIRE is thus the source of infrared
+    observations for cross-identification with ATLAS. [TODO: Sensitivity?
+    Count?]
 
   \section{Method}\label{method}
 
@@ -288,16 +289,16 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     image and an infrared image with a given radius. We choose a radius of
     $1'$ to match Radio Galaxy Zoo. We make the assumption that each radio
     image represents a single, complex extended source. This is not the case
-    in general and a radio image may contain many different sources. We also
-    note that this will bias our results against radio emission that extends
-    beyond the $1'$ cutout size. The radio cross-identification task then
-    amounts to locating the host galaxy within the associated radio and
-    infrared images. This is formalised as an object localisation problem:
-    Given a radio image and an infrared image, locate the host galaxy.
-
-    \cheng{How would radio morphology help?}
-
-    \cheng{Say something about IR and radio images are of the same patch of sky.}
+    in general and a radio image may contain many different sources. If we had
+    access to radio morphology information, we could use this to isolate
+    relevant components and hence more accurately cross-identify sources, but
+    this is outside the scope of this paper. We also note that this assumption
+    will bias our results against radio emission that extends beyond the $1'$
+    cutout size. The radio cross-identification task then amounts to locating
+    the host galaxy within the associated radio and infrared images. This is
+    formalised as an object localisation problem: Given a radio image and an
+    infrared image centred on a radio source, locate the host galaxy of the
+    radio source.
 
     \begin{figure}
       \centering
@@ -310,8 +311,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         be estimated. The probabilities shown are for illustration only. In
         this example, the centre window of the image would be chosen as the
         location of the host galaxy, as the window centred on it has the
-        highest probability. [TODO: Make this into subfigures, and use FITS
-        images]}
+        highest probability. [TODO: Use FITS images]}
       \label{fig:windows}
     \end{figure}
 
