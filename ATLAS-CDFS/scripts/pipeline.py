@@ -50,9 +50,12 @@ import errno
 import logging
 import os
 from pprint import pprint
+import re
 from typing import Any, Callable, Dict, Iterable, List, Sequence, Set, Union
 
 import astropy.io.ascii
+import astropy.io.fits
+import astropy.coordinates
 import attr
 import click
 import h5py
@@ -69,7 +72,11 @@ import sklearn.metrics
 
 CROWDASTRO_PATH = '/Users/alger/data/Crowdastro/crowdastro-swire.h5'
 RGZ_PATH = '/Users/alger/data/RGZ/dr1_weighted/static_rgz_host_full.csv'
-SWIRE_PATH = '/Users/alger/data/SWIRE/SWIRE3_CDFS_cat_IRAC24_21Dec05.tbl'
+MIDDELBERG_TABLE5_PATH = '/Users/alger/data/SWIRE/middelberg_2008_table5.dat'
+MIDDELBERG_TABLE4_PATH = '/Users/alger/data/SWIRE/middelberg_2008_table4.fits'
+FRANZEN_PATH = '/Users/alger/data/SWIRE/middelberg_2008_table5.dat'
+SWIRE_CDFS_PATH = '/Users/alger/data/SWIRE/SWIRE3_CDFS_cat_IRAC24_21Dec05.tbl'
+SWIRE_ELAIS_PATH = '/Users/alger/data/SWIRE/SWIRE3_ELAIS_cat_IRAC24_21Dec05.tbl'
 TABLE_PATH = '/Users/alger/data/Crowdastro/one-table-to-rule-them-all.tbl'
 WORKING_DIR = '/tmp/atlas-ml/'
 IMAGE_SIZE = 1024
@@ -129,6 +136,7 @@ class NDArray:
 
 def generate_swire_features(
         overwrite: bool=False,
+        field: str='cdfs',
         ) -> (List[str], NDArray(N, 2)[float], NDArray(N, D)[float]):
     """Generate features for SWIRE objects.
 
@@ -138,6 +146,8 @@ def generate_swire_features(
     ----------
     overwrite
         Overwrite existing results.
+    field
+        'cdfs' or 'elais'
     
     Returns
     -------
@@ -147,8 +157,8 @@ def generate_swire_features(
     """
     if not overwrite:
         try:
-            with h5py.File(os.path.join(WORKING_DIR, 'swire.h5'), 'r') as f:
-                log.info('Reading features from swire.h5')
+            with h5py.File(os.path.join(WORKING_DIR, 'swire_{}.h5'.format(field)), 'r') as f:
+                log.info('Reading features from swire_{}.h5'.format(field))
                 names = [name.decode('ascii') for name in f['names']]
                 coords = f['coords'].value
                 features = f['features'].value
@@ -159,7 +169,7 @@ def generate_swire_features(
 
     with h5py.File(CROWDASTRO_PATH, 'r') as crowdastro_f:
         # Load coordinates of SWIRE objects.
-        swire_coords = crowdastro_f['/swire/cdfs/numeric'][:, :2]
+        swire_coords = crowdastro_f['/swire/{}/numeric'.format(field)][:, :2]
         n_swire = len(swire_coords)
         # Initialise features array.
         swire_features = numpy.zeros((n_swire,
@@ -171,25 +181,26 @@ def generate_swire_features(
                                      ))
         # Load radio images of SWIRE objects.
         swire_features[:, -IMAGE_SIZE:] = \
-            crowdastro_f['/swire/cdfs/numeric'][:, -IMAGE_SIZE:]
+            crowdastro_f['/swire/{}/numeric'.format(field)][:, -IMAGE_SIZE:]
         # asinh stretch the images.
         swire_features[:, -IMAGE_SIZE:] = numpy.arcsinh(
             swire_features[:, -IMAGE_SIZE:] / 0.1) / numpy.arcsinh(1 / 0.1)
         # Load minimum distances to ATLAS objects.
-        distances = crowdastro_f['/atlas/cdfs/numeric'][:, -n_swire:].min(
+        distances = crowdastro_f['/atlas/{}/numeric'.format(field)][:, -n_swire:].min(
             axis=0)
         assert distances.shape == (n_swire,)
         # Load names of SWIRE objects.
         swire_names = [
             name.decode('ascii')
-            for name in crowdastro_f['/swire/cdfs/string'].value]
+            for name in crowdastro_f['/swire/{}/string'.format(field)].value]
         crowdastro_swire_names = {name: index 
                                   for index, name in enumerate(swire_names)}
     
     # Load features from SWIRE catalogue.
     # The catalogue is too big for AstroPy, so we parse it ourselves.
     headers = []
-    for row_num, line in enumerate(open(SWIRE_PATH)):
+    path = SWIRE_CDFS_PATH if field == 'cdfs' else SWIRE_ELAIS_PATH
+    for row_num, line in enumerate(open(path)):
         if line.startswith('\\'):
             continue
         
@@ -258,7 +269,7 @@ def generate_swire_features(
 
     # Write back to a file.
     log.info('Creating new file swire.h5')
-    with h5py.File(os.path.join(WORKING_DIR, 'swire.h5'), 'w') as f:
+    with h5py.File(os.path.join(WORKING_DIR, 'swire_{}.h5'.format(field)), 'w') as f:
         names = numpy.array(swire_names, dtype='<S{}'.format(
             max(len(i) for i in swire_names)))
         f.create_dataset('names', data=names)
@@ -269,7 +280,10 @@ def generate_swire_features(
 
 
 def generate_swire_labels(
-        swire_names: List[str], overwrite: bool=False) -> NDArray(N, 2)[bool]:
+        swire_names: List[str],
+        swire_coords: NDArray(N, 2)[float],
+        overwrite: bool=False,
+        field: str='cdfs') -> NDArray(N, 2)[bool]:
     """Generate Norris and RGZ SWIRE labels.
 
     Source: 102_classification.ipynb
@@ -280,9 +294,9 @@ def generate_swire_labels(
     """
     if not overwrite:
         try:
-            with h5py.File(os.path.join(WORKING_DIR, 'swire_labels.h5'),
+            with h5py.File(os.path.join(WORKING_DIR, 'swire_labels_{}.h5'.format(field)),
                            'r') as f_h5:
-                log.info('Reading labels from swire_labels.h5')
+                log.info('Reading labels from swire_labels_{}.h5'.format(field))
                 return f_h5['labels'].value
         except OSError:
             pass
@@ -292,22 +306,36 @@ def generate_swire_labels(
                            for index, name in enumerate(swire_names)}
     n_swire = len(swire_names)
     swire_labels = numpy.zeros((n_swire, 2), dtype=bool)
-    # Load Norris labels.
-    for row in table:
-        norris = row['Source SWIRE (Norris)']
-        if norris and norris in swire_name_to_index:
-            swire_labels[swire_name_to_index[norris], 0] = True
-    # Load RGZ labels.
-    rgz_catalogue = astropy.io.ascii.read(RGZ_PATH)
-    for row in rgz_catalogue:
-        rgz = row['SWIRE.designation']
-        if rgz in swire_name_to_index:
-            swire_labels[swire_name_to_index[rgz], 1] = True
+    if field == 'cdfs':
+        # Load Norris labels.
+        for row in table:
+            norris = row['Source SWIRE (Norris)']
+            if norris and norris in swire_name_to_index:
+                swire_labels[swire_name_to_index[norris], 0] = True
+        # Load RGZ labels.
+        rgz_catalogue = astropy.io.ascii.read(RGZ_PATH)
+        for row in rgz_catalogue:
+            rgz = row['SWIRE.designation']
+            if rgz in swire_name_to_index:
+                swire_labels[swire_name_to_index[rgz], 1] = True
+    else:
+        with open(MIDDELBERG_TABLE5_PATH) as f_middelberg:
+            swires = re.findall(r'SWIRE4J(\d\d)(\d\d)(\d\d\.\d\d)(-\d\d)(\d\d)(\d\d\.\d)', f_middelberg.read())
+            swire_tree = KDTree(swire_coords)
+            for swire in swires:
+                coord = astropy.coordinates.SkyCoord(ra='{} {} {}'.format(*swire[:3]), dec='{} {} {}'.format(*swire[3:6]),
+                                                     unit=('hourangle', 'deg'))
+                distance, nearest = swire_tree.query([coord.ra.deg, coord.dec.deg])
+                if distance > 5 / 60 / 60:  # 5" tolerance:
+                    log.warning('No match within 5" for SWIRE4J{}{}{}{}{}{} in SWIRE3, nearest is {} deg'.format(*swire, distance))
+                    continue
+                swire = swire_names[nearest]
+                swire_labels[swire_name_to_index[swire], 0] = True
 
-    assert numpy.any(swire_labels, axis=0).all()
+    assert numpy.any(swire_labels)
 
-    log.info('Creating new file swire_labels.h5')
-    with h5py.File(os.path.join(WORKING_DIR, 'swire_labels.h5'), 'w') as f_h5:
+    log.info('Creating new file swire_labels_{}.h5'.format(field))
+    with h5py.File(os.path.join(WORKING_DIR, 'swire_labels_{}.h5'.format(field)), 'w') as f_h5:
         f_h5.create_dataset('labels', data=swire_labels)
 
     return swire_labels
@@ -354,6 +382,17 @@ def atlas_to_swire(
     return nearby
 
 
+def compactness(r: Dict[str, float]) -> float:
+    """Check how compact a component is. Higher = less compact."""
+    aa = 10.0
+    bb = 1.3
+    s = r['Component S (Franzen)'] if r['Component S (Franzen)'] != 0.0 else r['Component Sp (Franzen)']
+    ssp = s / r['Component Sp (Franzen)']
+    aasnrbb = aa / (r['Component SNR (Franzen)'] ** bb)
+    return ssp / aasnrbb
+
+
+
 def compact_test(r: Dict[str, float]) -> bool:
     """Check if a row represents a compact component."""
     S = r['Component S (Franzen)']
@@ -398,8 +437,10 @@ def filter_subset(subset: Set[int], q: int) -> Set[int]:
 
 
 def generate_data_sets(
-        swire_coords: NDArray(N, 2),
+        swire_coords: NDArray(N, 2)[float],
+        swire_labels: NDArray(N, 2)[bool],
         overwrite: bool=False,
+        field: str='cdfs',
     ) -> (
         (NDArray(N, 6, 4)[bool],
          NDArray(N, 6, 4)[bool]),
@@ -407,13 +448,15 @@ def generate_data_sets(
          NDArray(M, 6, 4)[bool])):
     """Generate training/testing sets.
 
-    Sets generated:
+    Sets generated for CDFS:
     - RGZ & Norris & compact
     - RGZ & Norris & resolved
     - RGZ & Norris
     - RGZ & compact
     - RGZ & resolved
     - RGZ
+
+    Only one set is generated for ELAIS-S1.
 
     Source: 104_one_notebook_to_train_them_all.ipynb
 
@@ -432,14 +475,14 @@ def generate_data_sets(
     """
     if not overwrite:
         try:
-            with h5py.File(os.path.join(WORKING_DIR, 'swire_sets.h5'),
+            with h5py.File(os.path.join(WORKING_DIR, 'swire_sets_{}.h5'.format(field)),
                            'r') as f_h5:
-                log.info('Reading sets from swire_sets.h5')
+                log.info('Reading sets from swire_sets_{}.h5'.format(field))
                 swire_train_sets = f_h5['train'].value
                 swire_test_sets = f_h5['test'].value
-            with h5py.File(os.path.join(WORKING_DIR, 'atlas_sets.h5'),
+            with h5py.File(os.path.join(WORKING_DIR, 'atlas_sets_{}.h5'.format(field)),
                            'r') as f_h5:
-                log.info('Reading sets from atlas_sets.h5')
+                log.info('Reading sets from atlas_sets_{}.h5'.format(field))
                 atlas_train_sets = f_h5['train'].value
                 atlas_test_sets = f_h5['test'].value
             return ((atlas_train_sets, atlas_test_sets),
@@ -448,80 +491,114 @@ def generate_data_sets(
         except OSError:
             pass
 
-    table = astropy.io.ascii.read(TABLE_PATH)
-    n_swire = len(swire_coords)
-    # Generate the base ATLAS sets.
-    rgz = {r['Key'] for r in table
-           if r['Component Zooniverse ID (RGZ)'] and
-           r['Component ID (Franzen)'] == r['Primary Component ID (RGZ)'] and
-           r['Component ID (Franzen)']}
-    norris = {r['Key'] for r in table if r['Component # (Norris)'] and
-                                         r['Component ID (Franzen)'] and
-                                         r['Source SWIRE (Norris)'] and
-                                         r['Source SWIRE (Norris)'].startswith(
-                                            'SWIRE')}
-    compact = {r['Key'] for r in table if r['Component ID (Franzen)'] and
-                                          compact_test(r)}
-    subsets = [
-        ('RGZ & Norris & compact', rgz & norris & compact),
-        ('RGZ & Norris & resolved', rgz & norris - compact),
-        ('RGZ & Norris', rgz & norris),
-        ('RGZ & compact', rgz & compact),
-        ('RGZ & resolved', rgz - compact),
-        ('RGZ', rgz),
-    ]
-    # Check these are in the right order...
-    for i, (ss, _) in enumerate(subsets):
-        assert SET_NAMES[ss] == i
-    assert len(SET_NAMES) == len(subsets)
-    n_atlas = max(table['Key']) + 1
-    training_testing_atlas_sets = {s:[] for s, _ in subsets}
-    for subset_str, subset_set in subsets:
-        log.debug('Filtering ATLAS/{}'.format(subset_str))
-        for q in range(4):  # Quadrants.
-            test = filter_subset(subset_set, q)
-            train = {i for i in subset_set if i not in test}
-            training_testing_atlas_sets[subset_str].append((train, test))
-    training_testing_swire_sets = {s:[] for s, _ in subsets}
-    for subset_str, subset_set in subsets:
-        log.debug('Filtering SWIRE/{}'.format(subset_str))
-        for train, test in training_testing_atlas_sets[subset_str]:
-            train = atlas_to_swire(swire_coords, train)
-            test = atlas_to_swire(swire_coords, test)
-            log.debug('{} {} {} {} {}'.format(
-                subset_str,
-                len(set(train) & set(test)), 'out of',
-                len(set(test)), 'overlap'))
-            train = sorted(set(train) - set(test))
-            training_testing_swire_sets[subset_str].append((train, test))
+    if field == 'cdfs':
+        table = astropy.io.ascii.read(TABLE_PATH)
+        n_swire = len(swire_coords)
+        # Generate the base ATLAS sets.
+        rgz = {r['Key'] for r in table
+               if r['Component Zooniverse ID (RGZ)'] and
+               r['Component ID (Franzen)'] == r['Primary Component ID (RGZ)'] and
+               r['Component ID (Franzen)']}
+        norris = {r['Key'] for r in table if r['Component # (Norris)'] and
+                                             r['Component ID (Franzen)'] and
+                                             r['Source SWIRE (Norris)'] and
+                                             r['Source SWIRE (Norris)'].startswith(
+                                                'SWIRE')}
+        compact = {r['Key'] for r in table if r['Component ID (Franzen)'] and
+                                              compact_test(r)}
+        subsets = [
+            ('RGZ & Norris & compact', rgz & norris & compact),
+            ('RGZ & Norris & resolved', rgz & norris - compact),
+            ('RGZ & Norris', rgz & norris),
+            ('RGZ & compact', rgz & compact),
+            ('RGZ & resolved', rgz - compact),
+            ('RGZ', rgz),
+        ]
+        # Check these are in the right order...
+        for i, (ss, _) in enumerate(subsets):
+            assert SET_NAMES[ss] == i
+        assert len(SET_NAMES) == len(subsets)
+        n_atlas = max(table['Key']) + 1
+        training_testing_atlas_sets = {s:[] for s, _ in subsets}
+        for subset_str, subset_set in subsets:
+            log.debug('Filtering ATLAS/{}'.format(subset_str))
+            for q in range(4):  # Quadrants.
+                test = filter_subset(subset_set, q)
+                train = {i for i in subset_set if i not in test}
+                training_testing_atlas_sets[subset_str].append((train, test))
+        training_testing_swire_sets = {s:[] for s, _ in subsets}
+        for subset_str, subset_set in subsets:
+            log.debug('Filtering SWIRE/{}'.format(subset_str))
+            for train, test in training_testing_atlas_sets[subset_str]:
+                train = atlas_to_swire(swire_coords, train)
+                test = atlas_to_swire(swire_coords, test)
+                log.debug('{} {} {} {} {}'.format(
+                    subset_str,
+                    len(set(train) & set(test)), 'out of',
+                    len(set(test)), 'overlap'))
+                train = sorted(set(train) - set(test))
+                training_testing_swire_sets[subset_str].append((train, test))
 
-    # Convert sets to output format.
-    # Two arrays (train/test) of size N x 6 x 4.
-    log.debug('Converting SWIRE set format')
-    swire_sets_test = numpy.zeros((n_swire, 6, 4), dtype=bool)
-    swire_sets_train = numpy.zeros((n_swire, 6, 4), dtype=bool)
-    for s, (subset_str, subset_set) in enumerate(subsets):
-        for q in range(4):
-            for n in training_testing_swire_sets[subset_str][q][0]:
-                swire_sets_train[n, s, q] = True
-            for n in training_testing_swire_sets[subset_str][q][1]:
-                swire_sets_test[n, s, q] = True
-    log.debug('Converting ATLAS set format')
-    atlas_sets_test = numpy.zeros((n_atlas, 6, 4), dtype=bool)
-    atlas_sets_train = numpy.zeros((n_atlas, 6, 4), dtype=bool)
-    for s, (subset_str, subset_set) in enumerate(subsets):
-        for q in range(4):
-            for n in training_testing_atlas_sets[subset_str][q][0]:
-                atlas_sets_train[n, s, q] = True
-            for n in training_testing_atlas_sets[subset_str][q][1]:
-                atlas_sets_test[n, s, q] = True
+        # Convert sets to output format.
+        # Two arrays (train/test) of size N x 6 x 4.
+        log.debug('Converting SWIRE set format')
+        swire_sets_test = numpy.zeros((n_swire, 6, 4), dtype=bool)
+        swire_sets_train = numpy.zeros((n_swire, 6, 4), dtype=bool)
+        for s, (subset_str, subset_set) in enumerate(subsets):
+            for q in range(4):
+                for n in training_testing_swire_sets[subset_str][q][0]:
+                    swire_sets_train[n, s, q] = True
+                for n in training_testing_swire_sets[subset_str][q][1]:
+                    swire_sets_test[n, s, q] = True
+        log.debug('Converting ATLAS set format')
+        atlas_sets_test = numpy.zeros((n_atlas, 6, 4), dtype=bool)
+        atlas_sets_train = numpy.zeros((n_atlas, 6, 4), dtype=bool)
+        for s, (subset_str, subset_set) in enumerate(subsets):
+            for q in range(4):
+                for n in training_testing_atlas_sets[subset_str][q][0]:
+                    atlas_sets_train[n, s, q] = True
+                for n in training_testing_atlas_sets[subset_str][q][1]:
+                    atlas_sets_test[n, s, q] = True
 
-    log.info('Creating new file swire_sets.h5')
-    with h5py.File(os.path.join(WORKING_DIR, 'swire_sets.h5'), 'w') as f_h5:
+    elif field == 'elais':
+        # Don't worry about making different sets for ELAIS, since we will only use it for testing.
+        # We will choose only ATLAS/SWIRE objects within 1' of a positive Middelberg identification
+        # that appears in SWIRE3. This will necessarily exclude some hard sources like IR-faint
+        # objects, but this is by *far* the easiest way to filter the set.
+
+        with astropy.io.fits.open(MIDDELBERG_TABLE4_PATH) as elais_components_fits:
+            elais_components = elais_components_fits[1].data
+            elais_coords = []
+            n_elais = len(elais_components)
+            n_swire = len(swire_coords)
+            for component in elais_components:
+                coord = astropy.coordinates.SkyCoord(
+                    ra='{} {} {}'.format(component['RAh'], component['RAm'], component['RAs']),
+                    dec='-{} {} {}'.format(component['DEd'], component['DEm'], component['DEs']),
+                    unit=('hourangle', 'deg'))
+                coord = (coord.ra.deg, coord.dec.deg)
+                elais_coords.append(coord)
+            elais_coords = numpy.array(elais_coords)
+            positive_swire_coords = swire_coords[swire_labels[:, 0]]
+            elais_tree = KDTree(elais_coords)
+            nearby_elais = sorted(set(numpy.concatenate(elais_tree.query_ball_point(positive_swire_coords, 1 / 60))))
+            atlas_sets_train = numpy.zeros((n_elais, 1, 1), dtype=bool)
+            atlas_sets_test = numpy.zeros((n_elais, 1, 1), dtype=bool)
+            atlas_sets_test[nearby_elais] = True
+            # Convert the ATLAS set into a SWIRE set.
+            swire_tree = KDTree(swire_coords)
+            nearby_swire = sorted(set(numpy.concatenate(swire_tree.query_ball_point(elais_coords[atlas_sets_test[:, 0, 0]], 1 / 60))))
+            swire_sets_train = numpy.zeros((n_swire, 1, 1), dtype=bool)
+            swire_sets_test = numpy.zeros((n_swire, 1, 1), dtype=bool)
+            swire_sets_test[nearby_swire] = True
+
+
+    log.info('Creating new file swire_sets_{}.h5'.format(field))
+    with h5py.File(os.path.join(WORKING_DIR, 'swire_sets_{}.h5'.format(field)), 'w') as f_h5:
         f_h5.create_dataset('train', data=swire_sets_train)
         f_h5.create_dataset('test', data=swire_sets_test)
-    log.info('Creating new file atlas_sets.h5')
-    with h5py.File(os.path.join(WORKING_DIR, 'atlas_sets.h5'), 'w') as f_h5:
+    log.info('Creating new file atlas_sets_{}.h5'.format(field))
+    with h5py.File(os.path.join(WORKING_DIR, 'atlas_sets_{}.h5'.format(field)), 'w') as f_h5:
         f_h5.create_dataset('train', data=atlas_sets_train)
         f_h5.create_dataset('test', data=atlas_sets_test)
 
@@ -1388,26 +1465,29 @@ def main(overwrite_predictions: bool=False,
          overwrite_all: bool=False,
          jobs: int=-1):
     # Generate SWIRE info.
-    swire_names, swire_coords, swire_features = generate_swire_features(overwrite=overwrite_all)
-    swire_labels = generate_swire_labels(swire_names, overwrite=overwrite_all)
-    _, (swire_train_sets, swire_test_sets) = generate_data_sets(swire_coords, overwrite=overwrite_all)
+    swire_names_cdfs, swire_coords_cdfs, swire_features_cdfs = generate_swire_features(overwrite=overwrite_all, field='cdfs')
+    swire_names_elais, swire_coords_elais, swire_features_elais = generate_swire_features(overwrite=overwrite_all, field='elais')
+    swire_labels_cdfs = generate_swire_labels(swire_names_cdfs, swire_coords_cdfs, overwrite=overwrite_all, field='cdfs')
+    swire_labels_elais = generate_swire_labels(swire_names_elais, swire_coords_elais, overwrite=overwrite_all, field='elais')
+    _, (swire_train_sets_cdfs, swire_test_sets_cdfs) = generate_data_sets(swire_coords_cdfs, swire_labels_cdfs, overwrite=overwrite_all, field='cdfs')
+    _, (swire_train_sets_elais, swire_test_sets_elais) = generate_data_sets(swire_coords_elais, swire_labels_elais, overwrite=overwrite_all, field='elais')
     # Predict for LR, RF.
     lr_norris_pred = train_and_predict(
         LogisticRegression,
-        swire_features,
-        swire_labels,
-        swire_train_sets,
-        swire_test_sets,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
         'norris',
         overwrite=overwrite_predictions or overwrite_all,
         n_jobs=jobs,
         C=100000.0)
     rf_norris_pred = train_and_predict(
         RandomForestClassifier,
-        swire_features,
-        swire_labels,
-        swire_train_sets,
-        swire_test_sets,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
         'norris',
         overwrite=overwrite_predictions or overwrite_all,
         n_jobs=jobs,
@@ -1415,28 +1495,28 @@ def main(overwrite_predictions: bool=False,
         criterion='entropy')
     cnn_norris_pred = train_and_predict(
         CNN,
-        swire_features,
-        swire_labels,
-        swire_train_sets,
-        swire_test_sets,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
         'norris',
         overwrite=overwrite_predictions or overwrite_all)
     lr_rgz_pred = train_and_predict(
         LogisticRegression,
-        swire_features,
-        swire_labels,
-        swire_train_sets,
-        swire_test_sets,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
         'rgz',
         overwrite=overwrite_predictions or overwrite_all,
         n_jobs=jobs,
         C=100000.0)
     rf_rgz_pred = train_and_predict(
         RandomForestClassifier,
-        swire_features,
-        swire_labels,
-        swire_train_sets,
-        swire_test_sets,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
         'rgz',
         overwrite=overwrite_predictions or overwrite_all,
         n_jobs=jobs,
@@ -1444,13 +1524,13 @@ def main(overwrite_predictions: bool=False,
         criterion='entropy')
     cnn_rgz_pred = train_and_predict(
         CNN,
-        swire_features,
-        swire_labels,
-        swire_train_sets,
-        swire_test_sets,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
         'rgz',
         overwrite=overwrite_predictions or overwrite_all)
-    cids = list(cross_identify_all(swire_names, swire_coords, swire_test_sets, swire_labels[:, 0]))
+    cids = list(cross_identify_all(swire_names_cdfs, swire_coords_cdfs, swire_test_sets_cdfs, swire_labels_cdfs[:, 0]))
 
 
 if __name__ == '__main__':
