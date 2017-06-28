@@ -364,12 +364,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     \begin{figure}
       \centering
-      \includegraphics[width=0.5\linewidth]{images/ARG0003r2v_radio.png}
+      \includegraphics[width=\linewidth]{images/ARG0003r2v_radio.pdf}
       \caption{$2'$-wide radio image centred on ATLAS3\textunderscore{}J033402.87-282405.8C.
         %(ARG0003r2v)
         This radio source breaks our assumption that there are
         no other sources within $1'$ of the source. Another source is
-        visible to the upper-left. [TODO: Use FITS image, describe the colour scaling, include RA and Dec]}
+        visible to the upper-left.}
       \label{fig:broken-isolation}
     \end{figure}
 
@@ -385,17 +385,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     \begin{figure}
       \centering
-      \includegraphics[width=0.45\linewidth]{images/ARG0000u0h_radio.jpg}
-      \includegraphics[width=0.45\linewidth]{images/ARG0000u0h_first.jpg}
-      \caption{The left image [TODO: a)] is a $3'$-wide radio image from Radio Galaxy
+      \subfloat[]{\includegraphics[width=\linewidth]{images/ARG0000u0h_first_3.pdf}\label{fig:overedge-1}}\\
+      \subfloat[]{\includegraphics[width=\linewidth]{images/ARG0000u0h_first_8.pdf}\label{fig:overedge-2}}
+      \caption{\protect\subref{fig:overedge-1} is a $3'$-wide radio image from Radio Galaxy
         Zoo, centred on FIRSTJ151227.2+454026. This radio source
         % ARG0000u0h
         breaks our assumption that the whole source is visible in the chosen
-        radius. The right image is an $8'$-wide radio image from FIRST centred
+        radius. \protect\subref{fig:overedge-2} is an $8'$-wide radio image from FIRST centred
         on the same location. In this image, it is clear that the source is a
-        radio double. [TODO: Use FITS image (fetch the left image from FIRST
-        cutout server), describe the colour scaling, include RA and Dec, use
-        subfigures] [TODO: Put a box around the left image in the right image]}
+        radio double. The red box indicates the boundaries of \protect\subref{fig:overedge-1}.}
       \label{fig:broken-contains}
     \end{figure}
 
