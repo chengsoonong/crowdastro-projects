@@ -21,20 +21,22 @@
 
 \newcommand{\text}{\mathrm}
 \newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng:~{#1}}]} }
+\newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%% TITLE PAGE %%%%%%%%%%%%%%%%%%%
 
-\title[ML CDFS]{Radio Galaxy Zoo: Machine learning methods for radio host cross-identification}
+\title[ML CDFS]{Radio Galaxy Zoo: Machine learning methods for radio source host galaxy cross-identification}
 
-\author[RGZ ML Team]{M. J. Alger$^{1}$, J. K. Banfield$^{1, 2}$, C. S. Ong$^{3}$, O. I. Wong$^{2, 4}$, others
+\author[RGZ ML Team]{M. J. Alger$^{1}$, J. K. Banfield$^{1, 2, 3}$, C. S. Ong$^{4}$, O. I. Wong$^{2, 5}$, others
 \\
 % List of institutions
-$^{1}$Research School of Astronomy and Astrophysics, The Australian National University, Canberra ACT 2611, Australia\\
+$^{1}$Research School of Astronomy and Astrophysics, The Australian National University, Canberra, ACT 2611, Australia\\
 $^{2}$ARC Centre of Excellence for All-Sky Astrophysics (CAASTRO)\\
-$^{3}$Data61, CSIRO, 7 London Circuit, Canberra ACT 2601, Australia\\
-$^{4}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia
+$^{3}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
+$^{4}$Data61, CSIRO, 7 London Circuit, Canberra ACT 2601, Australia\\
+$^{5}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia
 }
 
 % These dates will be filled out by the publisher
@@ -51,18 +53,16 @@ $^{4}$International Centre for Radio Astronomy Research-M468, The University of 
 
 % Abstract of the paper
 \begin{abstract}
-  We present a machine learning approach for radio host cross-identification,
-  the task of determining the host galaxies of radio emissions detected in
-  wide-area radio surveys. Training a machine learning algorithm requires a
-  large amount of labelled training data, which can be difficult or expensive
-  to acquire. Radio Galaxy Zoo, a citizen science project on the Zooniverse
-  platform, provides a large number of radio host cross-identifications which
-  may be used as labels for training. However, these cross-identifications are
-  assigned by non-experts, and may be incorrect. We find that while machine
-  learning algorithms trained on expert labels outperform those trained on the
-  crowdsourced Radio Galaxy Zoo labels, the accuracies are comparable and the
-  crowdsourced labels are still useful for training. [TODO: add balanced
-  accuracies]
+  We present a machine learning approach for the task of determining the
+  infrared host galaxies of radio emissions detected in wide-area radio surveys.
+  Training a machine learning algorithm requires a large amount of labelled
+  training data, which can be difficult or expensive to acquire. Radio Galaxy
+  Zoo, a citizen science project on the Zooniverse platform, provides a large
+  number of radio host cross-identifications which may be used as labels for
+  training. We find that while machine learning algorithms trained on expert
+  labels outperform those trained on the crowdsourced Radio Galaxy Zoo labels,
+  the accuracies are comparable and the crowdsourced labels are still useful for
+  training. \todo{add balanced accuracies}
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -76,183 +76,117 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
 \section{Introduction}\label{introduction}
 
-  \cheng{Avoid using words like simple, easy, obvious, etc.}
-
   Next generation radio telescopes such as the Australian SKA Pathfinder
-  \citep[ASKAP;][]{johnston07} and Apertif \citep{verheijen08} will
-  conduct increasingly wide, deep, and high-resolution surveys. These
-  surveys will produce very large amounts of data. The Evolutionary Map of
-  the Universe survey \citep[EMU;][]{norris11} using ASKAP and the WODAN
-  survey \citep{rottgering11} using Apertif are expected to detect
-  over 100 million radio sources between them, compared to the 2.5 million
-  radio sources already known \citep{banfield15}.
+  \citep[ASKAP;][]{johnston07} and Apertif \citep{verheijen08} will conduct
+  increasingly wide, deep, and high-resolution radio surveys, producing large
+  amounts of data. The Evolutionary Map of the Universe survey
+  \citep[EMU;][]{norris11} using ASKAP and the WODAN survey \citep{rottgering11}
+  using Apertif are expected to detect over 100 million radio components between
+  them, compared to the 2.5 million radio components already known
+  \citep{banfield15}.
 
-  An important part of processing this data is cross-identifying observed
-  radio emission regions with observations of their host galaxy in surveys at
-  other wavelengths. Radio host cross-identification is a difficult task.
-  While pointlike sources of radio emission are easy to cross-identify as they
-  directly overlap the host galaxy, a large proportion of radio sources are
-  considerably more complex. Radio emissions from radio-loud active galactic
-  nuclei (AGN) may be complicated structures not clearly related to the host
-  galaxy, and are often composed of multiple, separate components. These AGN
-  are expected to dominate approximately 30\% of sources detected by EMU
-  \citep{norris11}. Small surveys of a few thousand sources such as the
-  Australia Telescope Large Area Survey
-  \citep[ATLAS;][]{norris06,middelberg08} can be cross-identified manually,
-  but this is impractical for larger surveys.
+  An important part of processing this data is cross-identifying observed radio
+  emission regions with observations of their host galaxy in surveys at other
+  wavelengths. Radio host cross-identification is a difficult task. While
+  pointlike or compact sources of radio emission usually coincide with the host
+  galaxy, a large proportion of radio sources are considerably more complex.
+  Radio emissions from radio-loud active galactic nuclei (AGN) may be
+  complicated structures not clearly related to the host galaxy, and are often
+  composed of multiple, separate components. These AGN are expected to dominate
+  approximately 30\% of sources detected by EMU \citep{norris11}. Small surveys
+  of a few thousand sources such as the Australia Telescope Large Area Survey
+  \citep[ATLAS;][]{norris06,middelberg08} can be cross-identified manually, but
+  this is impractical for larger surveys.
 
   One approach to cross-identification is crowdsourcing, where members of the
-  public volunteer to cross-identify radio emissions with their host galaxies.
-  This is the premise of Radio Galaxy Zoo \citep[RGZ;][]{banfield15}, a
-  citizen science project hosted on the highly successful Zooniverse platform
-  \citep{lintott08}. Volunteers are shown images of the radio sky, and are
-  asked to identify the morphology of radio sources in each image. They are
-  then asked to cross-identify each radio source with its host galaxy in a
-  corresponding infrared image. Radio Galaxy Zoo provides a large dataset of
-  100~267 radio host cross-identifications and radio source morphologies (Wong
-  et al., 2017). While this is a much larger number of cross-identifications
-  than have been made by experts, it is still far short of the millions of
-  radio sources expected to be detected in upcoming surveys.
+  public volunteer to cross-identify radio emissions (sources) with their host
+  galaxies. This is the premise of Radio Galaxy Zoo \citep[RGZ;][]{banfield15},
+  a citizen science project hosted on the highly successful Zooniverse platform
+  \citep{lintott08}. Volunteers are shown images of the radio sky, and are asked
+  to identify the radio sources in each image \todo{Is this sentence unambiguous
+  enough?}. They are then asked to cross-identify each radio source with its
+  host galaxy in a corresponding infrared image. Radio Galaxy Zoo provides a
+  large dataset of 100~267 radio host cross-identifications and radio source
+  morphologies \citep{wong17}. While this is a much larger number of
+  cross-identifications than have been made by experts, it is still far short of
+  the millions of radio sources expected to be detected in upcoming radio
+  surveys.
 
   Automated algorithms have been developed for this cross-identification
   problem. \citet{fan15} developed a method of cross-identification using
-  Bayesian hypothesis testing, fitting a three-component model to extended
-  radio sources under the assumption that radio sources are composed of a core
-  radio component and two lobe components. The core radio component is
-  coincident with the host galaxy, so cross-identification amounts to finding
-  the galaxy coincident with the core in the most likely model fit. This
-  method is easily extended to use other, more complex models, but it is
-  purely geometric and does not incorporate other information such as the
-  colours of the potential host galaxy. Additionally, there may be new classes
-  of radio source detected in future surveys like EMU which do not fit the
-  model, and it is these radio sources that are of most interest.
-  \citet{weston17} developed a modification of the likelihood ratio method of
+  Bayesian hypothesis testing, fitting a three-component model to extended radio
+  sources under the assumption that radio sources are composed of a core radio
+  component and two lobe components. The core radio component is coincident with
+  the host galaxy, so cross-identification amounts to finding the galaxy
+  coincident with the core in the most likely model fit. This method is easily
+  extended to use other, more complex models, but it is purely geometric and
+  does not incorporate other information such as the properties of the potential
+  host galaxy. Additionally, there may be new classes of radio sources detected
+  in future surveys like EMU which do not fit the model. \citet{weston17}
+  developed a modification of the likelihood ratio method of
   cross-identification \citep{richter75} for application to EMU. However, this
   method is only intended to cross-identify ``simple'' sources consisting of a
-  single, isolated radio component \citep{norris17unexpected}. [TODO(Julie):
-  Can you elaborate on this?]
+  single, isolated radio component \citep{norris17unexpected}. [TODO(Julie): Can
+  you elaborate on this?]
 
-  ASKAP is expected to generate approximately 70 PB yearly
-  \citep{norris17unexpected}. Automated methods will be needed to choose what
-  data to keep and what to discard. While data can be selected for
-  preservation by model-based methods, it is clear that these methods would
-  miss the unexpected objects we expect to find in EMU [TODO: Discuss with
-  Julie inclusion of a WAT example here.]. EMU will therefore need to employ
-  an algorithm for looking for these unexpected objects
-  \citep{norris17unexpected}, which may be of the form of an outlier detector.
-  Outliers can be detected in a variety of ways, including imposing a
-  similarity metric on radio components and looking for objects very distant
-  from other objects \citep{polsterer15pink}, looking for objects that do not
-  reliably fit existing models \citep[potentially an extension of][]{fan15},
-  or generating a model of radio galaxies from existing data and looking for
-  objects that do not fit this model. These methods all require a way of
-  encoding objects, a process called \emph{feature selection}. Given that EMU
-  is expected to find unusual objects, robust feature selection is important.
-  Model-based approaches \citep[e.g.][]{proctor06} will likely fail. [TODO: Discuss with Julie whether we even need this paragraph.]
-
-  {[}TODO: literature review: paper Ivy sent, PINK, WTF, Fan (done),
-  Proctor, Park et al. 2017{]}
-
-  {[}TODO: Note that outlier detection can be done in lots of different
-  ways including with this work and there are benefits in both. Also an
-  example of where model-based approaches fall down. Elaborate on this?{]}
+  Related automated methods are WTF \citep{citeneeded}, for detecting
+  ``unexpected'' radio sources, self-organising maps \citep{polsterer15pink},
+  hand-selected features \citep{proctor06}, and deep convolutional neural
+  networks \citep{aniyan17cnn}. \todo{Write this summary.}
 
   In order to investigate methods for efficiently and effectively classifying
   radio galaxy hosts for upcoming large radio surveys, we have developed a
   machine learning approach for radio host cross-identification using standard
-  machine learning techniques.
+  machine learning techniques. \todo{Outline.}
 
   \begin{figure}
     \includegraphics[width=\linewidth]{images/placeholder.png}
-    \caption{[TODO: Define component, source, primary component, host, in a figure.]}
+    \caption{\todo{Define component, source, primary component, host, in a figure.}}
   \end{figure}
 
 \section{Data}\label{data}
-
-  \subsection{Radio Galaxy Zoo}\label{sec:rgz}
-
-    Radio Galaxy Zoo asks volunteers to cross-identify radio components with
-    their infrared host galaxies. A total of 177~461 radio components are
-    sourced from ATLAS \citep{franzen15} and Faint Images of the Radio
-    Sky at Twenty-Centimeters \citep[FIRST;][]{white97first}. These components
-    are cross-identified to host galaxies detected in the \emph{Spitzer} Wide-
-    Area Infrared Extragalactic survey \citep[SWIRE;][]{lonsdale03swire} and
-    by the \emph{Wide-Field Infrared Survey Explorer}
-    \citep[WISE;][]{wright10wise}, respectively.
-
-    Volunteers are presented with a random radio image centred on a radio
-    component, and a corresponding infrared image centred on the same
-    location. The radio image may contain multiple radio components.
-    Classification of these images is a two-step process. First, volunteers
-    select which radio components are part of the same radio source. Second,
-    volunteers associate each radio source with a host galaxy visible in the
-    infrared image. A more detailed description can be found in
-    \citet{banfield15}.
-
-    To reduce noise, each radio component is shown to multiple volunteers.
-    Compact radio components are shown to 5 volunteers, while extended radio
-    components are shown to 20 volunteers. Once a radio object has been
-    classified by the required number of volunteers, it is considered
-    ``complete''. Complete classifications are combined to produce the final
-    catalogue of Radio Galaxy Zoo morphologies and cross-identifications. The
-    most commonly chosen associations of radio components to radio sources are
-    chosen as the radio morphology classification for the image. The host
-    galaxy locations selected by volunteers who agreed with the most common
-    radio morphology classification are combined by maximising over a kernel
-    density estimate of the locations. These locations are then matched to the
-    nearest SWIRE object within $3"$. A full description of the catalogue
-    generation can be found in \citet{wong17}. As of 30 March 2016, there are
-    97~807 complete classifications of FIRST components, and 2460 complete
-    classifications of ATLAS components (the latter comprising the entire
-    \emph{Chandra} Deep Field - South).
-
-    In this paper we focus on the Radio Galaxy Zoo cross-identifications of
-    the ATLAS and SWIRE surveys. There are two main reasons for this. The
-    first is that ATLAS is the pilot study for EMU where automated methods
-    like ours will be used. The second is that ATLAS is composed of two
-    fields, so we can train methods on one field and test these methods on
-    the other field to ensure that our methods apply in different areas of
-    the sky observed by the same telescope.
-
-    Each primary component found in the ATLAS DR3 component catalogue
-    appears in Radio Galaxy Zoo. Non-primary components may appear within
-    the image of a primary component, but do not have their own entry in
-    Radio Galaxy Zoo. We will henceforth only discuss the primary
-    components. For ATLAS components, the radio and infrared images shown to
-    volunteers are \(2' \times 2'\).
+    
+  We use data from the citizen science project Radio Galaxy Zoo
+  \citep{banfield15}, the Australia Telescope Large Area Survey
+  \citep[ATLAS;][]{franzen15}, and the \emph{Spitzer} Wide-area Infrared
+  Extragalactic survey \citep[SWIRE;][]{lonsdale03swire, surace05swire}.
 
   \subsection{ATLAS}\label{sec:atlas}
 
     ATLAS \citep{franzen15} is a wide-area radio survey of the \emph{Chandra}
     Deep Field - South (CDFS) and the ESO Large Area ISO Survey - South 1
-    (ELAIS-S1) fields at 1.4 GHz. It is a pilot survey for the EMU
-    \citep{norris11} survey that will be conducted with ASKAP. EMU will cover
-    the entire southern sky and is expected to detect approximately 70 million
-    new radio sources. EMU will be conducted at the same depth and resolution
-    as ATLAS, so methods developed for processing ATLAS data are expected to
-    work for EMU. [TODO: How large are CDFS and ELAIS-S1? How many radio
-    objects do they contain?] ATLAS has a sensitivity of 14 $\mu$Jy on CDFS and
-    17 $\mu$Jy on ELAIS-S1. CDFS contains 3034 radio components and ELAIS-S1 contains 2084 radio components above 5$\sigma$ \citep{franzen15}.
+    (ELAIS-S1) fields at 1.4 GHz. ATLAS has a sensitivity of 14~$\mu$Jy on CDFS
+    and 17~$\mu$Jy on ELAIS-S1. CDFS covers 3.6~deg$^2$ and contains 3034 radio
+    components above 5$\sigma$. ELAIS-S1 covers 2.7~deg$^2$ and contains 2084
+    radio components above 5$\sigma$ \citep{franzen15}.
+
+    ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
+    cover the entire southern sky and is expected to detect approximately 70
+    million new radio sources. EMU will be conducted at the same depth and
+    resolution as ATLAS, so methods developed for processing ATLAS data are
+    expected to work for EMU.
 
     \begin{table}
-      \center
-      \begin{tabular}{cc|cc}
-        Catalogue & Method & \#CDFS & \#ELAIS-S1\\\hline
-        \citet{norris06} & Manual & 784 & 0\\
-        \citet{middelberg08} & Manual & 0 & 1366\\
-        \citet{fan15} & Bayesian models & 784 & 0\\
-        \citet{wong17} & Crowdsourcing & 2460 & 1 \\
-        \citet{weston17} & Likelihood ratio & 3078 & 2113
-      \end{tabular}
       \caption{Catalogues of ATLAS/SWIRE cross-identifications for the CDFS
         and ELAIS-S1 fields. The method used to generate each catalogue is
         shown, along with the number of radio components cross-identified in each
         field.}
       \label{tab:atlas-cids}
+      \begin{tabular}{ll|cc}
+        \hline
+        Catalogue & Method & \#CDFS & \#ELAIS-S1\\
+        \hline
+        \citet{norris06} & Manual & 784 & 0\\
+        \citet{middelberg08} & Manual & 0 & 1366\\
+        \citet{fan15} & Bayesian models & 784 & 0\\
+        \citet{wong17} & Crowdsourcing & 2460 & 0 \\
+        \citet{weston17} & Likelihood ratio & 3078 & 2113\\
+        \hline
+      \end{tabular}
     \end{table}
 
     A number of catalogues have been produced cross-identifying radio components
-    in ATLAS and host galaxies in SWIRE. These catalogues are summarised in
+    in ATLAS with host galaxies in SWIRE. These catalogues are summarised in
     Table \ref{tab:atlas-cids}.
 
     % \citet{norris06} produced a catalogue of cross-identifications of 784
@@ -270,35 +204,88 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{SWIRE}\label{sec:swire}
 
-    The Spitzer Wide-area Infrared Extragalactic survey
-    \citep[SWIRE;][]{lonsdale03swire,surace05swire} is a wide-area infrared
-    survey at the four IRAC wavelengths 3.6 $\mu$m, 4.5 $\mu$m, 5.8 $\mu$m,
-    and 8.0 $\mu$m. It covers eight fields, including CDFS and ELAIS-S1 which
-    were also covered by ATLAS. SWIRE is thus the source of infrared
-    observations for cross-identification with ATLAS. [TODO: Sensitivity?
-    Count?]
+    SWIRE \citep{lonsdale03swire, surace05swire} is a wide-area infrared survey
+    at the four IRAC wavelengths 3.6~$\mu$m, 4.5~$\mu$m, 5.8~$\mu$m, and
+    8.0~$\mu$m, with $5\sigma$ noise levels of 7.3~$\mu$Jy, 9.7~$\mu$Jy,
+    27.5~$\mu$Jym, and 32.5~$\mu$Jy respectively \citep{lonsdale03swire}. It
+    covers eight fields, including CDFS and ELAIS-S1 which are also covered by
+    ATLAS. SWIRE is thus the source of infrared observations for
+    cross-identification with ATLAS. SWIRE catalogues 221,535 objects in CDFS
+    and 186,059 objects in ELAIS-S1.
+
+  \subsection{Radio Galaxy Zoo}\label{sec:rgz}
+
+    Radio Galaxy Zoo asks volunteers to cross-identify radio components with
+    their infrared host galaxies. There are a total of 177~461 radio components
+    in Radio Galaxy Zoo, sourced from ATLAS and Faint Images of the Radio Sky at
+    Twenty-Centimeters \citep[FIRST;][]{white97first}. These components are
+    cross-identified to host galaxies detected in SWIRE and by the
+    \emph{Wide-Field Infrared Survey Explorer} \citep[WISE;][]{wright10wise},
+    respectively.
+
+    Volunteers are presented with a random radio image centred on a radio
+    component, and a corresponding infrared image centred on the same
+    location. The radio image may contain multiple radio components.
+    Classification of these images is a two-step process. First, volunteers
+    select which radio components are part of the same radio source. Second,
+    volunteers associate each radio source with a host galaxy visible in the
+    infrared image. A more detailed description can be found in
+    \citet{banfield15}.
+
+    To reduce noise in the classification, each radio component is shown to
+    multiple volunteers. Compact radio components are shown to 5 volunteers,
+    while extended radio components are shown to 20 volunteers. Once a radio
+    object has been classified by the required number of volunteers, it is
+    considered ``complete''. Complete classifications are combined to produce
+    the final catalogue of Radio Galaxy Zoo source component counts and
+    cross-identifications. The most commonly chosen associations of radio
+    components to radio sources are chosen as the radio morphology
+    classification for the image. The host galaxy locations selected by
+    volunteers who agreed with the most common radio morphology classification
+    are combined by maximising over a kernel density estimate of the locations.
+    These locations are then matched to the nearest SWIRE object within $3''$. A
+    full description of the catalogue generation can be found in \citet{wong17}.
+    As of 30 March 2016, there are 97~807 complete classifications of FIRST
+    components, and 2460 complete classifications of ATLAS CDFS components.
+
+    In this paper we focus on the Radio Galaxy Zoo cross-identifications of
+    the ATLAS~CDFS and SWIRE surveys. There are two main reasons for this. The
+    first is that ATLAS is the pilot study for EMU where automated methods
+    like ours will be used. The second is that ATLAS is composed of two
+    fields, so we can train methods on one field and test these methods on
+    the other field to ensure that our methods apply in different areas of
+    the sky observed by the same telescope.
+
+    \todo{Explain what components went into RGZ. (Julie)} Each primary component
+    found in the ATLAS DR3 component catalogue appears in Radio Galaxy Zoo.
+    Non-primary components may appear within the image of a primary component,
+    but do not have their own entry in Radio Galaxy Zoo. We will henceforth only
+    discuss the primary components. For ATLAS components, the radio and infrared
+    images shown to volunteers are \(2' \times 2'\).
 
   \section{Method}\label{method}
 
   \subsection{Cross-identification as binary
   classification}\label{cross-identification-as-binary-classification}
 
-    We focus on the problem of cross-identification without reference to radio
-    morphology. Given a radio component, we want to find its host galaxy as a
-    citizen scientist would using Radio Galaxy Zoo. The input is thus a radio
-    image and an infrared image with a given radius. We choose a radius of
-    $1'$ to match Radio Galaxy Zoo. We make the assumption that each radio
-    image represents a single, complex extended source. This is not the case
-    in general and a radio image may contain many different sources. If we had
-    access to radio morphology information, we could use this to isolate
-    relevant components and hence more accurately cross-identify sources, but
-    this is outside the scope of this paper. We also note that this assumption
-    will bias our results against radio emission that extends beyond the $1'$
-    cutout size. The radio cross-identification task then amounts to locating
-    the host galaxy within the associated radio and infrared images. This is
-    formalised as an object localisation problem: Given a radio image and an
-    infrared image centred on a radio source, locate the host galaxy of the
-    radio source.
+    We focus on the problem of host galaxy cross-identification without
+    reference to radio morphology. Given a radio component, we want to find the
+    corresponding host galaxy as a citizen scientist would using Radio Galaxy
+    Zoo. The input is thus a radio image and an infrared image with a given
+    radius. We choose a radius of $1'$ to match Radio Galaxy Zoo, which uses $2'
+    \times 2'$ cutouts of ATLAS images. We make the assumption that each radio
+    image represents a single, complex extended source. This is not the case in
+    general and a radio image may contain many different radio sources with
+    unique host galaxies. If we had access to radio morphology information, we
+    could use this to isolate relevant components and hence more accurately
+    cross-identify sources, but this is outside the scope of this paper. We also
+    note that this assumption will bias our results against radio emission that
+    extends beyond the $1'$ cutout size \todo{Quantify how often this actually
+    happens for ATLAS (not very often)}. The radio cross-identification task
+    then amounts to locating the host galaxy within the associated radio and
+    infrared images. This is formalised as an object localisation problem: Given
+    a radio image and an infrared image centred on a radio component, locate the
+    host galaxy of the radio component.
 
     \begin{figure}
       \centering
@@ -329,16 +316,17 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     \cheng{Make a list of assumptions, then justify them in paragraphs afterwards.
       I suggest a separate subsection ``Limitations of our approach''}
+    \todo{Combine all problems with the approach into one section.}
 
-    This task can be made greatly more efficient if we have a prior on the
-    location of the object we are localising. For our prior, we assume that
-    the host galaxy is always visible in the infrared and thus we only need
-    consider windows centred on infrared sources. This assumption usually
-    holds, except for a rare class of infrared-faint radio sources. Norris et
-    al. (2006) found 22 such radio sources in their sample of 784 bright ATLAS
-    components in CDFS. This leads us to a binary classification task: Given
-    an infrared source, compute the probability that it is a host galaxy. To
-    find the host galaxy given a radio source, classify each galaxy within
+    This task can be made more efficient if we have a prior on the location of
+    the object we are localising. For our prior, we assume that the host galaxy
+    is always visible in the infrared and thus we only need consider windows
+    centred on infrared sources. This assumption usually holds, except for a
+    rare class of infrared-faint radio sources. Norris et al. (2006) found 22
+    such radio sources in their sample of 784 bright ATLAS components in CDFS.
+    This leads us to a binary classification task: Given an infrared source,
+    compute the probability that it is a host galaxy. To find the host galaxy
+    given a radio source, classify each galaxy within
     \(R\) of the source and select the galaxy with the highest probability of
     being a host galaxy. This is a good formulation as binary classification
     is a very common problem in machine learning and there are many different
@@ -347,29 +335,28 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \cheng{Be careful about the difference between a binary classifier and
       a class probability estimator. $\mathcal{Y}$ can be binary or in the unit interval.}
     Solving the radio cross-identification task amounts to modelling a
-    function \(f\) from infrared sources \(\mathcal{X}\) to binary
-    \(\mathcal{Y} = \{0, 1\}\): \[
+    function $f\) from infrared sources $\mathcal{X}$ to binary
+    $\mathcal{Y} = \{0, 1\}$:
+    \begin{equation}
         f : \mathcal{X} \to \mathcal{Y}
-    \] There are many options for modelling \(f\). In this paper we apply
-    three different models: logistic regression, random forests, and
-    convolutional neural networks.
-    % As a linear method, logistic regression is
-    % the simplest classification approach we can take. Convolutional neural
-    % networks have recently shown strong results on image-based classification
-    % tasks [TODO: citation needed].
-
-    The space of infrared sources \(\mathcal{X}\) needs to be encoded as a
+    \end{equation}
+    The space of infrared sources $\mathcal{X}$ needs to be encoded as a
     vector for the models we will use. We describe this in Section
     \ref{vector-representation-of-infrared-sources}.
+    There are many options for modelling $f$. In this paper we
+    apply three different models: logistic regression, random forests, and
+    convolutional neural networks.
+
 
     \begin{figure}
       \centering
       \includegraphics[width=\linewidth]{images/ARG0003r2v_radio.pdf}
       \caption{$2'$-wide radio image centred on ATLAS3\textunderscore{}J033402.87-282405.8C.
         %(ARG0003r2v)
-        This radio source breaks our assumption that there are
-        no other sources within $1'$ of the source. Another source is
-        visible to the upper-left.}
+        This radio source breaks our assumption that there are no other sources
+        within $1'$ of the source. Another source is visible to the upper-left.
+        \todo{Make these labels a bit smaller --- match the other
+        assumption-breaking figure.}}
       \label{fig:broken-isolation}
     \end{figure}
 
@@ -398,38 +385,37 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{figure}
 
     If the radius does not contain the whole source, then we are missing radio
-    information useful for finding the host galaxy. This is a difficult
-    problem even for non-automated methods as radio sources can be extremely
-    wide --- for example, Radio Galaxy Zoo found a radio giant that spanned
-    over three different images presented to volunteers and the full source
-    was only cross-identified by the efforts of citizen scientists
-    \citep{banfield15}. An example of a radio image where part of the radio
-    source is outside the search radius is shown in Figure
-    \ref{fig:broken-contains}.
-
-    The problems are in opposition to each other: To reduce the number of
-    sources in an input image, we can reduce the image radius, but this
-    increases the chance that we will miss relevant radio source information,
-    and vice versa.
+    information useful for finding the host galaxy. This is a difficult problem
+    even for non-automated methods as radio sources can be extremely wide ---
+    for example, Radio Galaxy Zoo found a radio giant that spanned over three
+    different images presented to volunteers and the full source was only
+    cross-identified by the efforts of citizen scientists \citep{banfield15}. An
+    example of a radio image where part of the radio source is outside the
+    search radius is shown in Figure \ref{fig:broken-contains}. The problems are
+    in opposition to each other: To reduce the number of sources in an input
+    image, we can reduce the image radius, but this increases the chance that we
+    will miss relevant radio source information, and vice versa.
 
     For our experiments, we take $R = 1'$, as in the images presented to Radio
-    Galaxy Zoo volunteers. Our assumptions impose an upper bound on how well
-    we can cross-identify radio sources, which can be estimated by considering
-    how accurately a \emph{perfect} binary classifier cross- identifies radio
-    sources under our method. Using the \citet{norris06} labels (Section
-    \ref{labels}) to classify SWIRE objects to 100\% accuracy on the binary
-    classification task results in a cross-identification accuracy of [TODO:
-    Get an up-to-date number] with our assumptions, which we take as an upper
-    bound on our cross-identification accuracy.
+    Galaxy Zoo volunteers. Our assumptions impose an upper bound on how well we
+    can cross-identify radio sources, which can be estimated by considering how
+    accurately a \emph{perfect} binary classifier cross-identifies radio sources
+    under our method. Using the \citet{norris06} labels (Section \ref{labels})
+    to classify SWIRE objects to 100\% accuracy on the binary classification
+    task results in a cross-identification accuracy of \todo{Get an up-to-date
+    number} with our assumptions, which we take as an upper bound on our
+    cross-identification accuracy. \todo{While getting the up-to-date number,
+    might as well generate a table of accuracies for the appendix. The number
+    can come from that.}
 
     \begin{figure}
       \centering
       \includegraphics[width=0.5\linewidth]{images/ARG0003sky_radio.eps}
-      \caption{A radio image centred on 03~26~39.12~$-$28~07~58.80.
-        %ARG0003sky
+      \caption{A radio image centred on 03$^\text{h}$~26$^\text{m}$~39.12$^\text{s}$~$-$28$^\circ$~07$'$~58.80$''$.        %ARG0003sky
         This is an example of a radio source where the window centred on the
         host galaxy, shown as a rectangle, does not contain enough radio
-        information to correctly identify the galaxy as the host. [TODO: FITS, colour description, RA/Dec]}
+        information to correctly identify the galaxy as the host. \todo{FITS,
+        colour description, RA/Dec, confirm how to represent RA/Dec}}
       \label{fig:broken-window-size}
     \end{figure}
 
@@ -485,29 +471,23 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     of this alongside a binary classifier is shown in Figure
     \ref{fig:flowchart}.
 
-  \subsection{Vector representation of infrared
-  sources}\label{vector-representation-of-infrared-sources}
+  \subsection{Feature vector representation of infrared sources}
+  \label{vector-representation-of-infrared-sources}
 
-  \cheng{I suggest not using the word ``vector''. Either ``feature vector'',
-  or ``an array of real values''. Definitely not ``real valued vector''.}
-    {[}TODO: Discuss comments on ``vector'' with Julie{]}
+    Most binary classification methods require that the inputs to be classified
+    are an array of real values called \emph{feature vectors}. We thus need to
+    choose a feature vector representation of our candidate host galaxies.
 
-    Most binary classification methods require that the inputs to be
-    classified are real-valued vectors. We thus need to choose a vector
-    representation of our candidate host galaxies, also known as the
-    ``features'' of the galaxies.
-
-    {[}TODO: Add a plot of the SWIRE flux distributions along with the
-    wedges{]}
+    \todo{Add a plot of the SWIRE flux distributions along with the wedges.}
 
     Infrared observations of the CDFS field are taken from SWIRE. We use the
     CDFS Fall '05 SWIRE catalogue \citep{surace05swire} to generate candidate
     hosts to classify. Radio observations of the CDFS field are taken from
-    ATLAS. As almost all infrared sources in SWIRE look essentially the same
-    (and differences in structure are likely irrelevant to whether the galaxy
-    is a host galaxy), the candidate host location encodes almost all
-    information we could gain from the infrared image. We therefore only use
-    the radio image for object localisation.
+    ATLAS. As the visual appearance of objects in SWIRE are likely irrelevant to
+    whether the galaxy is a host galaxy, the candidate host location encodes
+    almost all information we could gain from the infrared image. We therefore
+    only use the radio image for object localisation. \todo{Discuss wording with
+    Julie.}
 
     We represent each candidate host as 1034 real-valued features. For a given
     candidate host, these features are:
@@ -531,20 +511,21 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{Logistic regression}\label{logistic-regression}
 
-    Logistic regression is the simplest classification model we can apply.
-    It is linear in the feature space and outputs the probability that the
-    input has a positive label. The model is
+    Logistic regression is a binary classification model. It is linear in the
+    feature space and outputs the probability that the input has a positive
+    label. The model is
 
-    \[
+    \begin{equation}
         f(\vec x) = \sigma(\vec w \cdot \vec x + b)
-    \] where \(\vec w \in \mathbb{R}^D\) is a weights vector,
-    \(b \in \mathbb{R}\) is a bias term, \(\vec x \in \mathbb{R}^D\) is the
-    feature representation of a candidate host, and \(\sigma\) is the
-    logistic sigmoid function \[
+    \end{equation}
+    where $\vec w \in \mathbb{R}^D$ is a weights vector,
+    $b \in \mathbb{R}$ is a bias term, $\vec x \in \mathbb{R}^D$ is the
+    feature representation of a candidate host, and $\sigma$ is the
+    logistic sigmoid function \begin{equation}
         \sigma(a) = (1 + \mathrm{exp}(-a))^{-1}.
-    \]
+    \end{equation}
 
-    The logistic regression model is fully differentiable, and the weight vector $\vec w$ can therefore be learned by gradient methods.
+    The logistic regression model is fully differentiable, and the weights vector $\vec w$ can therefore be learned by gradient methods.
 
   \subsection{Convolutional neural
   networks}\label{convolutional-neural-networks}
