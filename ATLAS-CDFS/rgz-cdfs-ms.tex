@@ -335,7 +335,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \cheng{Be careful about the difference between a binary classifier and
       a class probability estimator. $\mathcal{Y}$ can be binary or in the unit interval.}
     Solving the radio cross-identification task amounts to modelling a
-    function $f\) from infrared sources $\mathcal{X}$ to binary
+    function $f$ from infrared sources $\mathcal{X}$ to binary
     $\mathcal{Y} = \{0, 1\}$:
     \begin{equation}
         f : \mathcal{X} \to \mathcal{Y}
@@ -503,29 +503,40 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         host.
     \end{itemize}
 
-    [TODO: Cite Lacy 2004, 2010 or 2013 white paper, and rewrite this] The
-    flux ratios are indicators of the star formation rate and amount of dust
-    in the galaxy and might thus be predictors of whether the galaxy contains
-    an AGN {[}Julie?{]} \ref{fig:magdiff}. The stellarity index represents how
+    \todo{Cite Lacy 2004, 2010 or 2013 white paper}
+    The infrared fluxes provide insight into the properties of the host galaxy
+    of the radio emission. The 3.6~$\mu$m and 4.5~$\mu$m fluxes trace both
+    galaxies with aint polycyclic aromatic hydrocarbon (PATH) emission and
+    elliptical galaxies dominated by old stellar popluations. The 5.8~$\mu$m
+    flux selects galaxies where the infrared emission is dominated by
+    non-equilibrium emission of dust grains (PAH destruction by the hard UV
+    spectrum of AGN), while the 8.0$\mu$m flux traces strong PAH emission at
+    low redshift \citep{citeneeded}. The stellarity index represents how
     likely the object is to be a star rather than a galaxy.
 
-  \subsection{Logistic regression}\label{logistic-regression}
+  \subsection{Classifiers}\label{sec:classifiers}
 
-    Logistic regression is a binary classification model. It is linear in the
-    feature space and outputs the probability that the input has a positive
-    label. The model is
+    We used three different classifiers as our binary classification model:
+    logistic regression, convolutional neural networks, and random forests.
 
-    \begin{equation}
-        f(\vec x) = \sigma(\vec w \cdot \vec x + b)
-    \end{equation}
-    where $\vec w \in \mathbb{R}^D$ is a weights vector,
-    $b \in \mathbb{R}$ is a bias term, $\vec x \in \mathbb{R}^D$ is the
-    feature representation of a candidate host, and $\sigma$ is the
-    logistic sigmoid function \begin{equation}
-        \sigma(a) = (1 + \mathrm{exp}(-a))^{-1}.
-    \end{equation}
+    \subsubsection{Logistic Regression}
+    \label{sec:logistic-regression}
+      Logistic regression is a binary classification model. It is linear in the
+      feature space and outputs the probability that the input has a positive
+      label. The model is
 
-    The logistic regression model is fully differentiable, and the weights vector $\vec w$ can therefore be learned by gradient methods.
+      \begin{equation}
+          f(\vec x) = \sigma(\vec w \cdot \vec x + b)
+      \end{equation}
+      where $\vec w \in \mathbb{R}^D$ is a weights vector,
+      $b \in \mathbb{R}$ is a bias term, $\vec x \in \mathbb{R}^D$ is the
+      feature representation of a candidate host, and $\sigma$ is the
+      logistic sigmoid function \begin{equation}
+          \sigma(a) = (1 + \mathrm{exp}(-a))^{-1}.
+      \end{equation}
+
+      The logistic regression model is fully differentiable, and the weights
+      vector $\vec w$ can therefore be learned by gradient methods.
 
   \subsection{Convolutional neural
   networks}\label{convolutional-neural-networks}
