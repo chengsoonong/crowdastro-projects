@@ -523,7 +523,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \label{sec:logistic-regression}
       Logistic regression is a binary classification model. It is linear in the
       feature space and outputs the probability that the input has a positive
-      label. The model is
+      label. The model is \citep{bishop06ml}:
 
       \begin{equation}
           f(\vec x) = \sigma(\vec w \cdot \vec x + b)
@@ -533,55 +533,64 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       feature representation of a candidate host, and $\sigma$ is the
       logistic sigmoid function \begin{equation}
           \sigma(a) = (1 + \mathrm{exp}(-a))^{-1}.
-      \end{equation}
-
+      \end{equation}%
       The logistic regression model is fully differentiable, and the weights
-      vector $\vec w$ can therefore be learned by gradient methods.
+      vector $\vec w$ can therefore be learned using gradient methods.
 
-  \subsection{Convolutional neural
-  networks}\label{convolutional-neural-networks}
+    \subsubsection{Convolutional neural networks}
+    \label{sec:convolutional-neural-networks}
 
-    Convolutional neural networks (CNNs) are a biologically-inspired
-    prediction model for prediction with image inputs. A number of filters
-    are convolved with an input image to produce output images called \emph{feature maps}, and these feature maps can then be convolved again with other filters on subsequent layers. This produces a network of convolutions. The whole network is
-    differentiable with respect to the values of the filters, and so the
-    filters can be learned by gradient methods. The final layer of the
-    network is logistic regression, with the convolved outputs as input
-    features. For more detail, see \citet[\S II.A][]{lecun98}.
+      Convolutional neural networks (CNNs) are a biologically-inspired
+      prediction model for prediction with image inputs. A number of filters
+      are convolved with an input image to produce output images called
+      \emph{feature maps}. These feature maps can then be convolved again with
+      other filters on subsequent layers, producing a network of convolutions.
+      The whole network is differentiable with respect to the values of the
+      filters and the filters can be learned using gradient methods. The final
+      layer of the network is logistic regression, with the convolved outputs
+      as input features. For more detail, see \citet[\S II.A][]{lecun98}.
 
-    \begin{figure*}
+      \begin{figure*}
+        \centering
+        \includegraphics[width=\textwidth]{convnet.pdf}
+        \caption{Convolutional neural network model.}
+        \label{fig:cnn}
+      \end{figure*}
+
+      \begin{figure}
       \centering
-      \includegraphics[width=\textwidth]{convnet.pdf}
-      \caption{Convolutional neural network model.}
-      \label{fig:cnn}
-    \end{figure*}
+      \includegraphics[width=0.6\columnwidth]{convolutions_42191.pdf}
+      \caption{Feature maps from convolutional layers of a convolutional neural
+        network trained on quadrants 1 -- 3 of CDFS with labels derived from
+        \citeauthor{norris06} \todo{Explain this diagram, add subfigures, maybe tidy it up a bit}}
+      \label{fig:cnn-outputs}
+      \end{figure}
 
-    \begin{figure}
-    \centering
-    \includegraphics[width=0.6\columnwidth]{convolutions_42191.pdf}
-    \caption{Feature maps from convolutional layers of a convolutional neural
-      network trained on quadrants 1 -- 3 of CDFS with labels derived from
-      \citeauthor{norris06} [TODO: Explain this diagram, add subfigures, maybe tidy it up a bit]}
-    \label{fig:cnn-outputs}
-    \end{figure}
+      CNNs have recently produced good results on large image-based datasets
+      \todo{Cite Gravity Spy or Galaxy Zoo 2}. We employ only a simple CNN
+      model in this paper as a proof of concept that CNNs may be used for
+      prediction on radio images. The model we used is shown in Figure
+      \ref{fig:cnn}. An example of this model reducing a radio image is shown
+      in Figure \ref{fig:cnn-outputs}.
 
-    CNNs have recently produced good results on large image-based datasets [citation needed]. We employ only a simple CNN model in this paper
-    --- CNNs can be arbitrarily complex --- as a proof of concept that CNNs
-    may be used for prediction on radio images. The model we used is shown
-    in Figure \ref{fig:cnn}. An example of this model reducing a radio image is shown in Figure \ref{fig:cnn-outputs}.
+    \subsubsection{Random Forests}
+    \label{sec:random-forests}
 
-  \subsection{Random Forests}\label{random-forests}
-
-    Random forests are an ensemble of decision trees~\citep{breiman01random-forest}.
-    It considers multiple subsamples
-    of the training set, where each bootstrap subsample is sampled with replacement
-    from the training set. For each subsample a decision tree classifier is constructed,
-    which builds an axis parallel split based on individual features in a greedy fashion.
-    In a random forest the split decision is taken based on a random subset of features.
-    For each test point, the random forest takes the weighted average of all the
-    classifications produced by each decision tree.
+      Random forests are an ensemble of decision
+      trees~\citep{breiman01random-forest}. It considers multiple subsamples
+      of the training set, where each bootstrap subsample is sampled with
+      replacement from the training set. For each subsample a decision tree
+      classifier is constructed, which builds an axis parallel split based on
+      individual features in a greedy fashion. In a random forest the split
+      decision is taken based on a random subset of features. For each test
+      point, the random forest takes the weighted average of all the
+      classifications produced by each decision tree.
 
   \subsection{Labels}\label{labels}
+
+    \todo{Define ``expert labels'' once and then use that everywhere instead
+    of mentioning Norris every time. Plots should be fine provided the caption
+    makes it clear what is going on.}
 
     Converting the Radio Galaxy Zoo and \citet{norris06} cross-identification
     catalogues to binary labels for infrared objects is a non-trivial task. A
@@ -598,55 +607,56 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     is assigned a positive label as a host galaxy. In principle we would
     then assign every other galaxy a negative label. This has some problems
     --- an example is that if the cross-identifier did not observe a radio
-    object (e.g.~it was below the signal-to-noise ratio) then the host
-    galaxy of that radio object would receive a negative label. {[}TODO:
-    Count how many times this happens in Norris/RGZ.{]} This occurs with
-    \citet{norris06} cross-identifications, as these are associated with
-    the first data release of ATLAS. The first data release went to a depth
-    of {[}TODO: depth of DR1{]}, compared to the depth of the third data
-    release {[}TODO: depth of DR3{]} (Franzen et al. 2015) used by Radio
-    Galaxy Zoo. Labels from Norris may therefore disagree with labels from
-    Radio Galaxy Zoo even if they are both correct.
+    object (e.g.~it was below the signal-to-noise ratio) then the host galaxy
+    of that radio object would receive a negative label.
+    \todo{Count how many times this happens in Norris/RGZ.} This occurs
+    with \citet{norris06} cross-identifications, as these are associated with
+    the first data release of ATLAS. The first data release went to a
+    5$\sigma$ flux density level of $S_{1.4} \geq 1 \text{ mJy beam}^{-1}$
+    \citep{norris06}, compared to $S_{1.4} \geq 85\ \mu\text{Jy beam}^{-1}$
+    for the third data release used by Radio Galaxy Zoo \citep{franzen15}.
+    Labels from Norris may therefore disagree with labels from Radio Galaxy
+    Zoo even if they are both correct.
 
-    There are many potential host galaxies {[}TODO: how many galaxies in
-    SWIRE?{]}, so instead of using all galaxies in the CDFS field we only
-    train and test our classifiers on infrared objects within a fixed radius
-    of an ATLAS radio object. For this radius we choose \(1'\), the same
-    radius as the images shown to volunteers in Radio Galaxy Zoo. In general
-    this will result in cases where the host galaxy is outside the radius
-    \citep[e.g. the giant radio galaxy shown in][]{banfield15}, but this is
-    unavoidable. We may also choose a radius which is too \emph{large},
-    worsening our assumption that there is only one host galaxy in this
-    radius, but again, this is unavoidable.
+    There are many potential host galaxies, so instead of using all galaxies
+    in the CDFS field we only train and test our classifiers on infrared
+    objects within a fixed radius of an ATLAS radio object. For this radius we
+    choose \(1'\), the same radius as the images shown to volunteers in Radio
+    Galaxy Zoo. In general this will result in cases where the host galaxy is
+    outside the radius \citep[e.g. the giant radio galaxy shown
+    in][]{banfield15}, but this is unavoidable. We may also choose a radius
+    which is too \emph{large}, worsening our assumption that there is only one
+    host galaxy in this radius, but again, this is unavoidable. \todo{Discuss
+    this. Have we already covered this enough in the drawbacks section?}
+    \todo{Consider link-back to drawbacks section.}
 
-    {[}How badly does this assumption hurt us? How does a perfect binary
-    classifier behave under these assumptions?{]}
+    \todo{Describe how we assigned labels given that RGZ only labels the
+    first component.}
 
-    (TODO: Describe how we assigned labels given that RGZ only labels the
-    first component.)
-
-  \subsection{Experimental Setup}\label{experimental-setup}
+  \subsection{Experimental Setup}
+  \label{sec:experimental-setup}
 
     \begin{figure}
       \centering
       \includegraphics[width=\columnwidth]{images/quadrants.pdf}
-      \caption{CDFS field training and testing quadrants. The central dot is
-        located at 52h48m00s -28$^\circ$06m00s. There are similar numbers of
-        radio sources in each quadrant.\label{fig:quadrants}}
+      \caption{CDFS field training and testing quadrants labelled 0 -- 3. The
+        central dot is located at $\alpha = 52^\text{h}48^\text{m}00^\text{s},
+        \delta = -28^\circ{}06'00''$. The quadrants were chosen such that
+        there are similar numbers of radio sources in each
+        quadrant.\label{fig:quadrants}}
     \end{figure}
 
-    We trained cross-identifiers on radio objects from the ATLAS
-    observations of the Chandra Deep Field - South (CDFS) using Radio Galaxy
-    Zoo cross-identifications, and compared the trained cross-identifiers to
-    those trained on a set of expert cross-identifications of the same
-    field. We then applied the cross-identifiers trained on CDFS to the ESO
-    Large Area ISO Survey - South 1 (ELAIS-S1) field {[}TODO{]}.
-
-    We divided the CDFS field into four quadrants for training and testing.
-    The quadrants were centred on 52h48m00s -28$^\circ$06$'$00$''$
-    (Figure \ref{fig:quadrants}). For each trial, one quadrant
-    was used to draw test examples, and the other three quadrants were used
-    for training examples.
+    We trained cross-identifiers on radio objects from the ATLAS observations
+    of the CDFS field using Radio Galaxy Zoo cross-identifications, and
+    compared the trained cross-identifiers to those trained on a set of expert
+    cross-identifications of the same field. We divided the CDFS field into
+    four quadrants for training and testing. The quadrants were centred on
+    $\alpha = 52^\text{h}48^\text{m}00^\text{s}, \delta = -28^\circ{}06'00''$
+    as shown in Figure \ref{fig:quadrants}. For each trial, one quadrant was
+    used to draw test examples and the other three quadrants were used for
+    training examples.
+    \todo{Move this: We then applied the cross-identifiers trained on CDFS to
+    the ELAIS-S1 field}.
 
     We further divided the radio components into compact and resolved. Compact
     components are trivially cross-identified by fitting a 2D Gaussian \citep[as
@@ -654,7 +664,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     cross-identification to attain high accuracy on this set. Whether a
     component was resolved was decided based on its flux; a radio component
     was considered resolved if
-    \[
+    \begin{equation}
         \ln \left(
           \frac{S_{\text{int}}}
                {S_{\text{peak}}}
@@ -665,8 +675,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
           \frac{\sigma_{S_{\text{peak}}}}
                {S_{\text{peak}}}
         \right)^2},
-    \] and compact otherwise, where \(S_{\text{int}}\) is the integrated
-    flux and \(S_{\text{peak}}\) is the peak flux \citep{franzen15}.
+    \end{equation}%
+    and compact otherwise, where \(S_{\text{int}}\) is the integrated flux
+    density and \(S_{\text{peak}}\) is the peak flux density
+    \citep{franzen15}.
 
     We considered only radio objects with a cross-identification in both the
     \citet{norris06} catalogue and the RGZ catalogue. Candidate hosts
@@ -682,11 +694,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     objects within $1'$ of an ATLAS object, only 4\% have positive labels.
     Only examples within $1'$ of ATLAS objects in the first ATLAS data release
     \citep{norris06} were used to compute accuracy, as these were the only
-    ATLAS objects with \citet{norris06} labels. We report the balanced
-    accuracy on the classification task for logistic regression, convolutional
-    neural networks, and random forests. We also report the predictions for
-    each SWIRE object. The reported predictions for a given object are made by
-    classifiers tested on the quadrant containing that object.
+    ATLAS objects with \citet{norris06} labels. \todo{Move what we report to
+    the results section and reference the tables once there.} We report the
+    balanced accuracy on the classification task for logistic regression,
+    convolutional neural networks, and random forests. We also report the
+    predictions for each SWIRE object. The reported predictions for a given
+    object are made by classifiers tested on the quadrant containing that
+    object.
 
     We then used the outputs of our classifiers to predict the host galaxy
     for each radio component cross-identified by both \citet{norris06}
@@ -720,19 +734,25 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \caption{Balanced accuracies for each quadrant in the galaxy
     classification task. The maximum attainable balanced accuracy
     is 100\%, when every galaxy label matches the labels derived
-    from \citet{norris06} cross-identifications.\label{fig:ba}}
+    from \citet{norris06} cross-identifications. \todo{explain colours and
+    mention that colours will be available online.}\label{fig:ba}}
   \end{figure}
 
   \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
   \caption{Accuracies for each quadrant in the cross-identification
-    task. The horizontal line indicates the accuracy of a "perfect" classifier
-    on the cross-identification task, with the dashed lines indicating the
-    standard deviation across CDFS quadrants. A "perfect" classifier simply
-    reads the correct labels, in this case the labels derived from
-    \citet{norris06}. This represents the maximum attainable cross-identification
-    accuracy under our assumptions.
+    task. The green horizontal line indicates the accuracy of a ``perfect''
+    classifier on the cross-identification task, with the dashed lines
+    indicating the standard deviation across CDFS quadrants. A ``perfect''
+    classifier simply reads the correct labels, in this case the labels
+    derived from \citet{norris06}. This represents the maximum attainable
+    cross-identification accuracy under our assumptions. The blue horizontal
+    line indicates the average accuracy of 15 random classifiers, and hence
+    represents the minimum accuracy we would expect to attain. The dashed
+    lines indicate the standard deviation across CDFS quadrants and
+    classifiers. \todo{explain colours and mention that colours will be
+    available online.}
     \label{fig:cross-id-accuracy}}
   \end{figure}
 
@@ -788,16 +808,17 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{tabular}
     \caption{Predicted host galaxy cross-identifications for each object in
       ATLAS-CDFS. Cross-identifications are reported for each predictor, with
-      the predictor listed as in Table \ref{tab:probs}. The cross-identification
-      given by \citet{norris06} is included in the "Norris" column. The
-      cross-identification given by the Radio Galaxy Zoo consensus is included in
-      the "RGZ" column, along with the corresponding consensus levels for the radio
-      morphology and host cross-identification tasks. Low radio consensus
-      indicates that the component has multiple nearby components (and thus is
-      more impacted by our assumption that the source is isolated), and low
-      infrared consensus indicates that the host galaxy is unclear in the SWIRE
-      image (possibly due to multiple nearby candidate host galaxies). Full table
-      electronic. \cheng{What is consensus?}}
+      the predictor listed as in Table \ref{tab:probs}. The
+      cross-identification given by \citet{norris06} is included in the
+      "Norris" column. The cross-identification given by the Radio Galaxy Zoo
+      consensus is included in the "RGZ" column, along with the corresponding
+      consensus levels for the radio morphology and host cross-identification
+      tasks. Low radio consensus indicates that the component has multiple
+      nearby components (and thus is more impacted by our assumption that the
+      source is isolated), and low infrared consensus indicates that the host
+      galaxy is unclear in the SWIRE image (possibly due to multiple nearby
+      candidate host galaxies). Full table electronic. \todo{landscape table?
+      explain dropped columns.} \cheng{What is consensus?}}
     \label{tab:cids}
   \end{table*}
 

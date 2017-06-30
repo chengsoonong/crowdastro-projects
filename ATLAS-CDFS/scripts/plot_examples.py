@@ -6,6 +6,8 @@ The Australian National University
 2017
 """
 
+import logging
+
 import astropy.io.ascii
 import astropy.io.fits
 import astropy.visualization
@@ -16,6 +18,7 @@ import numpy
 import scipy.special
 from scipy.spatial import KDTree
 
+import examples_all
 import examples_incorrect
 import pipeline
 
@@ -55,10 +58,10 @@ def get_predictions(swire_tree, swire_coords, swire_test_sets, atlas_coords, pre
         return list(zip(nearby_coords, nearby_predictions))
 
 
-def main(classifier='CNN', labeller='Norris'):
+def main(examples=None, classifier='CNN', labeller='Norris'):
     # Load SWIRE stuff.
     swire_names, swire_coords, swire_features = pipeline.generate_swire_features(overwrite=False)
-    swire_labels = pipeline.generate_swire_labels(swire_names, overwrite=False)
+    swire_labels = pipeline.generate_swire_labels(swire_names, swire_coords, overwrite=False)
     _, (_, swire_test_sets) = pipeline.generate_data_sets(swire_coords, overwrite=False)
     swire_tree = KDTree(swire_coords)
     swire_name_to_index = {n: i for i, n in enumerate(swire_names)}
@@ -76,13 +79,21 @@ def main(classifier='CNN', labeller='Norris'):
         if index:
             atlas_to_swire_coords[name] = swire_coords[index]
 
-    examples = examples_incorrect.get_examples()
     ir_stretch = astropy.visualization.LogStretch(0.001)
-    for example in examples[labeller, classifier, 'All']:
+    if examples is None:
+        examples = examples_incorrect.get_examples()
+        examples = examples[labeller, classifier, 'All']
+    for example in examples:
+        print('Plotting {}'.format(example))
         predictor_name = '{}_{}'.format(classifier, labeller)
         cid = example[2]
         # Load FITS stuff.
-        radio_fits = astropy.io.fits.open(CDFS_PATH + cid + '_radio.fits')
+        try:
+            radio_fits = astropy.io.fits.open(CDFS_PATH + cid + '_radio.fits')
+        except FileNotFoundError:
+            if example[1]:  # Has Zooniverse ID
+                print('{} not in RGZ'.format(cid))
+            continue
         ir_fits = astropy.io.fits.open(CDFS_PATH + cid + '_ir.fits')
         wcs = astropy.wcs.WCS(radio_fits[0].header)
         # Compute info for contour levels. (also from Enno Middelberg)
@@ -104,13 +115,20 @@ def main(classifier='CNN', labeller='Norris'):
                     linewidths=1, origin='lower', zorder=1)
         # Plot predictions.
         predictions = get_predictions(swire_tree, swire_coords, swire_test_sets, atlas_to_coords[example[0]], predictor_name)
+        if not predictions:
+            print('No predictions for {}'.format(example[0]))
+            continue
         coords = [p[0] for p in predictions]
         probabilities = [p[1] for p in predictions]
         coords = wcs.all_world2pix(coords, 1)
         ax.scatter(coords[:, 0], coords[:, 1], s=numpy.sqrt(numpy.array(probabilities)) * 200, color='white', edgecolor='black', linewidth=1, alpha=0.9, marker='o', zorder=2)
         choice = numpy.argmax(probabilities)
         ax.scatter(coords[choice, 0], coords[choice, 1], s=200 / numpy.sqrt(2), color='blue', marker='x', zorder=2.5)
-        norris_coords, = wcs.all_world2pix([atlas_to_swire_coords[example[0]]], 1)
+        try:
+            norris_coords, = wcs.all_world2pix([atlas_to_swire_coords[example[0]]], 1)
+        except KeyError:
+            print('No Norris cross-identification for {}'.format(example[0]))
+            continue
         ax.scatter(norris_coords[0], norris_coords[1], marker='+', s=200, zorder=3, color='green')
         lon, lat = ax.coords
         lon.set_major_formatter('hh:mm:ss')
@@ -125,6 +143,8 @@ def main(classifier='CNN', labeller='Norris'):
 
 
 if __name__ == '__main__':
-    for classifier in ['CNN', 'LogisticRegression', 'RandomForestClassifier']:
-        for labeller in ['Norris', 'RGZ']:
-            main(classifier, labeller)
+    logging.root.setLevel(logging.DEBUG)
+
+    # for classifier in ['CNN', 'LogisticRegression', 'RandomForestClassifier']:
+    #     for labeller in ['Norris', 'RGZ']:
+    main(examples_all.get_examples(), 'CNN', 'Norris')

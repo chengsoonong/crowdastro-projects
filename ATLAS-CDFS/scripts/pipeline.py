@@ -939,13 +939,14 @@ def predict(
         swire_test_sets: NDArray(N, 6, 4)[bool],
         dataset_name: str,
         quadrant: int,
-        labeller: str) -> Predictions:
+        labeller: str,
+        field: str='cdfs') -> Predictions:
     """Predict labels using a classifier.
 
     Note that predictions will be made for all SWIRE objects in RGZ,
     regardless of training dataset.
 
-    Note that testing will be performed against Norris labels.
+    Note that testing will be performed against Norris or Middelberg labels.
 
     Parameters
     ----------
@@ -968,16 +969,21 @@ def predict(
         int in [0, 4). Quadrant of CDFS to test on.
     labeller
         Labeller that the classifier was trained against. 'norris' or 'rgz'.
+    field
+        'cdfs' or 'elais'.
 
     Returns
     -------
     Predictions
         Predictions of the classifier on the specified data.
     """
-    test = swire_test_sets[:, SET_NAMES['RGZ'], quadrant]
+    if field == 'cdfs':
+        test = swire_test_sets[:, SET_NAMES['RGZ'], quadrant]
+    else:
+        test = swire_test_sets[:, 0, 0]
     features = swire_features[test]
     assert labeller in {'norris', 'rgz'}
-    labels = swire_labels[test, 0]  # Test on Norris.
+    labels = swire_labels[test, 0]  # Test on Norris/Middelberg.
     predicted_labels = classifier.predict(features)
     predicted_probabilities = classifier.predict_proba(features)
     if len(predicted_probabilities.shape) > 1 and \
@@ -1138,11 +1144,16 @@ def predict_all(
         swire_features: NDArray(N, D)[float],
         swire_labels: NDArray(N, 2)[bool],
         swire_test_sets: NDArray(N, 6, 4)[bool],
-        labeller: str) -> List[Predictions]:
+        labeller: str,
+        field: str='cdfs') -> List[Predictions]:
     """Predict labels using classifiers across all quadrants.
 
-    Note that predictions will be made for all SWIRE objects in RGZ,
-    regardless of training dataset.
+    For CDFS:
+        Note that predictions will be made for all SWIRE objects in RGZ,
+        regardless of training dataset.
+    For ELAIS-S1:
+        Predictions will be made for all objects in ELAIS-S1, using all
+        classifiers from CDFS.
 
     Parameters
     ----------
@@ -1156,6 +1167,8 @@ def predict_all(
         Output of generate_data_sets.
     labeller
         Labeller the classifier was trained against. 'norris' or 'rgz'.
+    field
+        'cdfs' or 'elais'.
 
     Returns
     -------
@@ -1170,7 +1183,8 @@ def predict_all(
                 swire_test_sets,
                 dataset_name,
                 q,
-                labeller=labeller) for q, classifier in enumerate(classifiers)]
+                labeller=labeller,
+                field=field) for q, classifier in enumerate(classifiers)]
             for dataset_name, classifiers in classifiers.items()}
 
 
@@ -1248,7 +1262,8 @@ def train_and_predict(
         try:
             return list(
                 unserialise_predictions(WORKING_DIR + Classifier.__name__ +
-                                        '_' + labeller + '_predictions'))
+                                        '_' + labeller + '_' + 'cdfs' +
+                                        '_predictions'))
         except OSError:
             pass
 
@@ -1265,18 +1280,67 @@ def train_and_predict(
         swire_features,
         swire_labels,
         swire_test_sets,
-        labeller)
+        labeller,
+        field='cdfs')
     predictions = [i
                    for quadrant_preds in predictions.values()
                    for i in quadrant_preds]
     serialise_predictions(predictions, WORKING_DIR + Classifier.__name__ +
-                                       '_' + labeller + '_predictions')
+                                       '_' + labeller + '_' + 'cdfs' +
+                                       '_predictions')
+    return predictions
+
+
+def train_and_predict_elais(
+        Classifier: type,
+        swire_features_cdfs: NDArray(N, D)[float],
+        swire_labels_cdfs: NDArray(N, 2)[bool],
+        swire_train_sets_cdfs: NDArray(N, 6, 4)[bool],
+        swire_test_sets_cdfs: NDArray(N, 6, 4)[bool],
+        labeller: str,
+        swire_features_elais: NDArray(N, D)[float],
+        swire_labels_elais: NDArray(N, 2)[bool],
+        swire_sets_elais: NDArray(N, 6, 4)[bool],
+        overwrite: bool=False,
+        **kwargs: Dict[str, Any]) -> List[Predictions]:
+    if not overwrite:
+        try:
+            return list(
+                unserialise_predictions(WORKING_DIR + Classifier.__name__ +
+                                        '_' + labeller + '_' + 'elais' +
+                                        '_predictions'))
+        except OSError:
+            pass
+
+    log.debug('Training all.')
+    classifiers = train_all(
+        Classifier,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        labeller,
+        **kwargs)
+    log.debug('Predicting on ELAIS-S1.')
+    predictions = predict_all(
+        classifiers,
+        swire_features_elais,
+        swire_labels_elais,
+        swire_sets_elais,
+        labeller,
+        field='elais')
+    predictions = [i
+                   for quadrant_preds in predictions.values()
+                   for i in quadrant_preds]
+    serialise_predictions(predictions, WORKING_DIR + Classifier.__name__ +
+                                       '_' + labeller + '_' + 'elais' +
+                                       '_predictions')
     return predictions
 
 
 def cross_identify_all(
         swire_names: List[str],
         swire_coords: NDArray(N, 2)[float],
+        swire_labels: NDArray(N, 2)[bool],
         swire_sets: NDArray(N, 6, 4)[bool],
         norris_labels: NDArray(N)[bool]) -> Iterable[CrossIdentifications]:
     """Cross-identify with all predictors."""
@@ -1301,7 +1365,7 @@ def cross_identify_all(
                 for pred in predictions:
                     log.debug('Cross-identifying quadrant {} with {}'.format(
                         pred.quadrant, pred.dataset_name))
-                    cids = cross_identify(swire_names, swire_coords, pred)
+                    cids = cross_identify(swire_names, swire_coords, swire_labels, pred)
                     cids.classifier = classifier  # scikit-learn __name__ :(
                     assert cids.labeller == labeller
                     all_cids.append(cids)
@@ -1327,7 +1391,7 @@ def cross_identify_all(
                 params={},
                 labeller='norris',
                 classifier='Groundtruth')
-            cids = cross_identify(swire_names, swire_coords, predictions)
+            cids = cross_identify(swire_names, swire_coords, swire_labels, predictions)
             all_cids.append(cids)
         serialise_cross_identifications(all_cids, WORKING_DIR + 'groundtruth_norris_cross_ids')
     yield from all_cids
@@ -1355,7 +1419,7 @@ def cross_identify_all(
                     params={},
                     labeller='norris',
                     classifier='Random')
-                cids = cross_identify(swire_names, swire_coords, predictions)
+                cids = cross_identify(swire_names, swire_coords, swire_labels, predictions)
                 all_cids.append(cids)
             serialise_cross_identifications(all_cids, WORKING_DIR + 'random_{}_norris_cross_ids'.format(trial))
         yield from all_cids
@@ -1364,12 +1428,13 @@ def cross_identify_all(
 def cross_identify(
         swire_names: List[str],
         swire_coords: NDArray(N, 2)[float],
+        swire_labels: NDArray(N, 2)[bool],
         predictions: Predictions,
         radius: float=1 / 60,
         compact_split: bool=True) -> CrossIdentifications:
     """Cross-identify radio objects in a quadrant."""
     (_, atlas_test_sets), (_, swire_test_sets) = generate_data_sets(
-        swire_coords, overwrite=False)
+        swire_coords, swire_labels, overwrite=False)
     atlas_names = []
     table = astropy.io.ascii.read(TABLE_PATH)
     atlas_coords = []
@@ -1472,13 +1537,26 @@ def main(overwrite_predictions: bool=False,
     _, (swire_train_sets_cdfs, swire_test_sets_cdfs) = generate_data_sets(swire_coords_cdfs, swire_labels_cdfs, overwrite=overwrite_all, field='cdfs')
     _, (swire_train_sets_elais, swire_test_sets_elais) = generate_data_sets(swire_coords_elais, swire_labels_elais, overwrite=overwrite_all, field='elais')
     # Predict for LR, RF.
-    lr_norris_pred = train_and_predict(
+    lr_norris_pred_cdfs = train_and_predict(
         LogisticRegression,
         swire_features_cdfs,
         swire_labels_cdfs,
         swire_train_sets_cdfs,
         swire_test_sets_cdfs,
         'norris',
+        overwrite=overwrite_predictions or overwrite_all,
+        n_jobs=jobs,
+        C=100000.0)
+    lr_norris_pred_elais = train_and_predict_elais(
+        LogisticRegression,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
+        'norris',
+        swire_features_elais,
+        swire_labels_elais,
+        swire_test_sets_elais,
         overwrite=overwrite_predictions or overwrite_all,
         n_jobs=jobs,
         C=100000.0)
@@ -1493,6 +1571,20 @@ def main(overwrite_predictions: bool=False,
         n_jobs=jobs,
         min_samples_leaf=45,
         criterion='entropy')
+    rf_norris_pred_elais = train_and_predict_elais(
+        RandomForestClassifier,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
+        'norris',
+        swire_features_elais,
+        swire_labels_elais,
+        swire_test_sets_elais,
+        overwrite=overwrite_predictions or overwrite_all,
+        n_jobs=jobs,
+        min_samples_leaf=45,
+        criterion='entropy')
     cnn_norris_pred = train_and_predict(
         CNN,
         swire_features_cdfs,
@@ -1500,6 +1592,17 @@ def main(overwrite_predictions: bool=False,
         swire_train_sets_cdfs,
         swire_test_sets_cdfs,
         'norris',
+        overwrite=overwrite_predictions or overwrite_all)
+    cnn_norris_pred_elais = train_and_predict_elais(
+        CNN,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
+        'norris',
+        swire_features_elais,
+        swire_labels_elais,
+        swire_test_sets_elais,
         overwrite=overwrite_predictions or overwrite_all)
     lr_rgz_pred = train_and_predict(
         LogisticRegression,
@@ -1530,7 +1633,45 @@ def main(overwrite_predictions: bool=False,
         swire_test_sets_cdfs,
         'rgz',
         overwrite=overwrite_predictions or overwrite_all)
-    cids = list(cross_identify_all(swire_names_cdfs, swire_coords_cdfs, swire_test_sets_cdfs, swire_labels_cdfs[:, 0]))
+    lr_rgz_pred_elais = train_and_predict_elais(
+        LogisticRegression,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
+        'rgz',
+        swire_features_elais,
+        swire_labels_elais,
+        swire_test_sets_elais,
+        overwrite=overwrite_predictions or overwrite_all,
+        n_jobs=jobs,
+        C=100000.0)
+    rf_rgz_pred_elais = train_and_predict_elais(
+        RandomForestClassifier,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
+        'rgz',
+        swire_features_elais,
+        swire_labels_elais,
+        swire_test_sets_elais,
+        overwrite=overwrite_predictions or overwrite_all,
+        n_jobs=jobs,
+        min_samples_leaf=45,
+        criterion='entropy')
+    cnn_rgz_pred_elais = train_and_predict_elais(
+        CNN,
+        swire_features_cdfs,
+        swire_labels_cdfs,
+        swire_train_sets_cdfs,
+        swire_test_sets_cdfs,
+        'rgz',
+        swire_features_elais,
+        swire_labels_elais,
+        swire_test_sets_elais,
+        overwrite=overwrite_predictions or overwrite_all)
+    cids = list(cross_identify_all(swire_names_cdfs, swire_coords_cdfs, swire_labels_cdfs, swire_test_sets_cdfs, swire_labels_cdfs[:, 0]))
 
 
 if __name__ == '__main__':
