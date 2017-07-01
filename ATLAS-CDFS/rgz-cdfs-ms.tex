@@ -353,10 +353,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \includegraphics[width=\linewidth]{images/ARG0003r2v_radio.pdf}
       \caption{$2'$-wide radio image centred on ATLAS3\textunderscore{}J033402.87-282405.8C.
         %(ARG0003r2v)
-        This radio source breaks our assumption that there are no other sources
-        within $1'$ of the source. Another source is visible to the upper-left.
-        \todo{Make these labels a bit smaller --- match the other
-        assumption-breaking figure.}}
+        This radio source breaks our assumption that there are no other radio
+        sources within $1'$ of the source. Another radio source is visible to
+        the upper-left. Host galaxies found by Radio Galaxy Zoo volunteers are
+        shown by a cross.}
       \label{fig:broken-isolation}
     \end{figure}
 
@@ -567,7 +567,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \end{figure}
 
       CNNs have recently produced good results on large image-based datasets
-      \todo{Cite Gravity Spy or Galaxy Zoo 2}. We employ only a simple CNN
+      \citep[e.g.][]{dieleman15cnn}. We employ only a simple CNN
       model in this paper as a proof of concept that CNNs may be used for
       prediction on radio images. The model we used is shown in Figure
       \ref{fig:cnn}. An example of this model reducing a radio image is shown
@@ -587,10 +587,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       classifications produced by each decision tree.
 
   \subsection{Labels}\label{labels}
-
-    \todo{Define ``expert labels'' once and then use that everywhere instead
-    of mentioning Norris every time. Plots should be fine provided the caption
-    makes it clear what is going on.}
 
     Converting the Radio Galaxy Zoo and \citet{norris06} cross-identification
     catalogues to binary labels for infrared objects is a non-trivial task. A
@@ -621,7 +617,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     There are many potential host galaxies, so instead of using all galaxies
     in the CDFS field we only train and test our classifiers on infrared
     objects within a fixed radius of an ATLAS radio object. For this radius we
-    choose \(1'\), the same radius as the images shown to volunteers in Radio
+    choose $1'$, the same radius as the images shown to volunteers in Radio
     Galaxy Zoo. In general this will result in cases where the host galaxy is
     outside the radius \citep[e.g. the giant radio galaxy shown
     in][]{banfield15}, but this is unavoidable. We may also choose a radius
@@ -646,24 +642,23 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         quadrant.\label{fig:quadrants}}
     \end{figure}
 
-    We trained cross-identifiers on radio objects from the ATLAS observations
-    of the CDFS field using Radio Galaxy Zoo cross-identifications, and
-    compared the trained cross-identifiers to those trained on a set of expert
-    cross-identifications of the same field. We divided the CDFS field into
-    four quadrants for training and testing. The quadrants were centred on
-    $\alpha = 52^\text{h}48^\text{m}00^\text{s}, \delta = -28^\circ{}06'00''$
-    as shown in Figure \ref{fig:quadrants}. For each trial, one quadrant was
-    used to draw test examples and the other three quadrants were used for
-    training examples.
-    \todo{Move this: We then applied the cross-identifiers trained on CDFS to
-    the ELAIS-S1 field}.
+    We trained cross-identifiers on radio objects from the ATLAS observations of
+    the CDFS field, using two label sets. One label set was derived from Radio
+    Galaxy Zoo cross-identifications and the other was derived from the
+    \citet{norris06} cross-identification catalogue. We refer to these as the
+    Radio Galaxy Zoo labels and the expert labels respectively. We divided the
+    CDFS field into four quadrants for training and testing. The quadrants were
+    centred on $\alpha = 52^\text{h}48^\text{m}00^\text{s},
+    \delta = -28^\circ{}06'00''$ as shown in Figure \ref{fig:quadrants}. For
+    each trial, one quadrant was used to draw test examples and the other three
+    quadrants were used for training examples.
 
     We further divided the radio components into compact and resolved. Compact
-    components are trivially cross-identified by fitting a 2D Gaussian \citep[as
+    components are cross-identified by fitting a 2D Gaussian \citep[as
     in][]{norris06} and we would expect any machine learning approach for host
     cross-identification to attain high accuracy on this set. Whether a
-    component was resolved was decided based on its flux; a radio component
-    was considered resolved if
+    component was resolved was decided based on its flux; a radio component was
+    considered resolved if
     \begin{equation}
         \ln \left(
           \frac{S_{\text{int}}}
@@ -681,20 +676,19 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \citep{franzen15}.
 
     We considered only radio objects with a cross-identification in both the
-    \citet{norris06} catalogue and the RGZ catalogue. Candidate hosts
-    were then selected from the SWIRE catalogue. For a given subset of radio
-    objects, all SWIRE objects within $1'$ of all radio objects in the
+    \citet{norris06} catalogue and the Radio Galaxy Zoo catalogue. Candidate
+    hosts were then selected from the SWIRE catalogue. For a given subset of
+    radio objects, all SWIRE objects within $1'$ of all radio objects in the
     subset were added to the associated SWIRE subset.
 
     Each classifier was trained on the training examples and used to predict
     labels for the test examples. The predicted labels were compared to the
-    labels derived from the \citet{norris06} cross-identifications and the
-    balanced accuracy was computed. We used balanced accuracy as our accuracy
-    measure due to the highly imbalanced classes --- in our total set of SWIRE
-    objects within $1'$ of an ATLAS object, only 4\% have positive labels.
-    Only examples within $1'$ of ATLAS objects in the first ATLAS data release
-    \citep{norris06} were used to compute accuracy, as these were the only
-    ATLAS objects with \citet{norris06} labels. \todo{Move what we report to
+    expert labels and the balanced accuracy was computed. We used balanced
+    accuracy as our accuracy measure due to the highly imbalanced classes --- in
+    our total set of SWIRE objects within $1'$ of an ATLAS object, only 4\% have
+    positive labels. Only examples within $1'$ of ATLAS objects in the first
+    ATLAS data release \citep{norris06} were used to compute accuracy, as these
+    were the only ATLAS objects with expert labels. \todo{Move what we report to
     the results section and reference the tables once there.} We report the
     balanced accuracy on the classification task for logistic regression,
     convolutional neural networks, and random forests. We also report the
@@ -723,7 +717,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     in Figure \ref{fig:gct-to-xid}. We found a positive correlation.
     Additionally, we compared the balanced accuracy of the classifier to the
     mean distance of the predicted host galaxy from the true host galaxy, also
-    finding a positive correlation. [TODO: Quantify the correlation.]
+    finding a positive correlation. \todo{Quantify the correlation.}
 
 \section{Results}\label{results}
 
@@ -732,9 +726,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \centering
   \includegraphics[width=\columnwidth]{images/cdfs_ba_grid.pdf}
   \caption{Balanced accuracies for each quadrant in the galaxy
-    classification task. The maximum attainable balanced accuracy
-    is 100\%, when every galaxy label matches the labels derived
-    from \citet{norris06} cross-identifications. \todo{explain colours and
+    classification task. The maximum attainable balanced accuracy is 100\%, when
+    every galaxy label matches the expert labels. \todo{explain colours and
     mention that colours will be available online.}\label{fig:ba}}
   \end{figure}
 
@@ -745,14 +738,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     task. The green horizontal line indicates the accuracy of a ``perfect''
     classifier on the cross-identification task, with the dashed lines
     indicating the standard deviation across CDFS quadrants. A ``perfect''
-    classifier simply reads the correct labels, in this case the labels
-    derived from \citet{norris06}. This represents the maximum attainable
-    cross-identification accuracy under our assumptions. The blue horizontal
-    line indicates the average accuracy of 15 random classifiers, and hence
-    represents the minimum accuracy we would expect to attain. The dashed
-    lines indicate the standard deviation across CDFS quadrants and
-    classifiers. \todo{explain colours and mention that colours will be
-    available online.}
+    classifier simply reads the expert labels. This represents the maximum
+    attainable cross-identification accuracy under our assumptions. The blue
+    horizontal line indicates the average accuracy of 15 random classifiers, and
+    hence represents the minimum accuracy we would expect to attain. The dashed
+    lines indicate the standard deviation across CDFS quadrants and classifiers.
+    \todo{explain colours and mention that colours will be available online.}
     \label{fig:cross-id-accuracy}}
   \end{figure}
 
@@ -808,17 +799,17 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{tabular}
     \caption{Predicted host galaxy cross-identifications for each object in
       ATLAS-CDFS. Cross-identifications are reported for each predictor, with
-      the predictor listed as in Table \ref{tab:probs}. The
-      cross-identification given by \citet{norris06} is included in the
-      "Norris" column. The cross-identification given by the Radio Galaxy Zoo
-      consensus is included in the "RGZ" column, along with the corresponding
-      consensus levels for the radio morphology and host cross-identification
-      tasks. Low radio consensus indicates that the component has multiple
-      nearby components (and thus is more impacted by our assumption that the
-      source is isolated), and low infrared consensus indicates that the host
-      galaxy is unclear in the SWIRE image (possibly due to multiple nearby
-      candidate host galaxies). Full table electronic. \todo{landscape table?
-      explain dropped columns.} \cheng{What is consensus?}}
+      the predictor listed as in Table \ref{tab:probs}. The cross-identification
+      given by \citet{norris06} is included in the ``Norris'' column. The
+      cross-identification given by the Radio Galaxy Zoo consensus is included
+      in the "RGZ" column, along with the corresponding consensus levels for the
+      radio morphology and host cross-identification tasks. Low radio consensus
+      indicates that the component has multiple nearby components (and thus is
+      more impacted by our assumption that the source is isolated), and low
+      infrared consensus indicates that the host galaxy is unclear in the SWIRE
+      image (possibly due to multiple nearby candidate host galaxies). Full
+      table electronic. \todo{landscape table? explain dropped columns.}
+      \cheng{What is consensus?}}
     \label{tab:cids}
   \end{table*}
 
@@ -826,12 +817,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \centering
   \includegraphics[width=\columnwidth]{gct-to-xid.pdf}
   \caption{Classification balanced accuracy against accuracy on the
-  cross-identification task. Cross-identification accuracy is computed
-  from a binary comparison between the predicted host and the Norris et
-  al. (2006) cross-identification; neither distance to the true host nor
-  broken assumptions of one host per image are accommodated. {[}TODO:
-  explain this caption better so that it is understandable to non-ML
-  people; regenerate this with the new pipeline{]}\label{fig:gct-to-xid}}
+  cross-identification task. Cross-identification accuracy is computed from a
+  binary comparison between the predicted host and the \citet{norris06}
+  cross-identification; neither distance to the true host nor broken assumptions
+  of one host per image are accommodated. \todo{explain this caption better
+  so that it is understandable to non-ML people; regenerate this with the new
+  pipeline}\label{fig:gct-to-xid}}
   \end{figure}
 
   % \begin{figure}
@@ -847,7 +838,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \includegraphics[width=\columnwidth]{passive.pdf}
   \caption{Passive learning plot for the GCT. Trained and tested on RGZ.
     This is so that we had maximal training data --- RGZ has many more
-    objects than Norris. [TODO: Regenerate with Norris testing data]
+    objects than Norris. \todo{Regenerate with Norris testing data}
     \label{fig:passive}}
   \end{figure}
 
