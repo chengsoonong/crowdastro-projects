@@ -129,12 +129,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   in future surveys like EMU which do not fit the model. \citet{weston17}
   developed a modification of the likelihood ratio method of
   cross-identification \citep{richter75likelihood} for application to EMU.
-  However, this method is only intended to cross-identify ``simple'' sources
+  However, this method is only intended to cross-identify `simple' sources
   consisting of a single, isolated radio component \citep{norris17unexpected}.
   \matthew{Julie}{Can you elaborate on this?}
 
   % Related automated methods are WTF \citep{citeneeded}, for detecting
-  % ``unexpected'' radio sources, self-organising maps \citep{polsterer15pink},
+  % `unexpected' radio sources, self-organising maps \citep{polsterer15pink},
   % hand-selected features \citep{proctor06}, and deep convolutional neural
   % networks \citep{aniyan17cnn}. \todo{Write this summary.}
 
@@ -241,7 +241,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     multiple volunteers. Compact radio components are shown to 5 volunteers,
     while extended radio components are shown to 20 volunteers. Once a radio
     object has been classified by the required number of volunteers, it is
-    considered ``complete''. Complete classifications are combined to produce
+    considered `complete'. Complete classifications are combined to produce
     the final catalogue of Radio Galaxy Zoo source component counts and
     cross-identifications. The most commonly chosen associations of radio
     components to radio sources are chosen as the radio morphology
@@ -572,6 +572,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       filters and the filters can be learned using gradient methods. The final
       layer of the network is logistic regression, with the convolved outputs as
       input features. For more detail, see \citet[subsection II.A][]{lecun98}.
+      We used \textsc{Keras} \citep{chollet15keras} to implement our
+      convolutional neural networks.
 
       % \begin{figure*}
       %   \centering
@@ -737,14 +739,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \caption{Balanced accuracies for each quadrant in the galaxy
     classification task. The accuracies of different classifiers are represented
     by different shapes. The horizontal axis shows which label set was used to
-    train the classifiers: ``Norris'' represents the expert labels, ``RGZ''
-    represents the Radio Galaxy Zoo labels, and ``RGZ N'' represents the Radio
+    train the classifiers: `Norris' represents the expert labels, `RGZ'
+    represents the Radio Galaxy Zoo labels, and `RGZ N' represents the Radio
     Galaxy Zoo labels applied only to the radio components that appeared in the
     expert cross-identification catalogue. The three plots show different sets
-    of training and testing data: the ``compact'' contains only compact radio
-    components, ``resolved'' only contains resolved radio components, and
-    ``all'' contains all radio components. The maximum attainable balanced
-    accuracy is 100\%, when every galaxy label matches the expert labels.
+    of training and testing data: the `compact' contains only compact radio
+    components, `resolved' only contains resolved radio components, and `all'
+    contains all radio components. The maximum attainable balanced accuracy is
+    100~percent, when every galaxy label matches the expert labels.
     \label{fig:ba}}
   \end{figure}
 
@@ -769,15 +771,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
   \caption{Accuracies for each quadrant in the cross-identification
     task. Markers and axes are as in \autoref{fig:ba}. The upper horizontal line
-    indicates the accuracy of a ``perfect'' classifier on the
-    cross-identification task, with the surrounding dashed lines indicating the
-    standard deviation across CDFS quadrants. A ``perfect'' classifier simply
-    reads the expert labels. This represents the maximum attainable
-    cross-identification accuracy under our assumptions. The lower horizontal
-    line indicates the average accuracy of 15 random classifiers, and hence
-    represents the minimum accuracy we would expect to attain. The surrounding
-    dashed lines indicate the standard deviation across CDFS quadrants and
-    classifiers.
+    indicates the accuracy of a `perfect' classifier on the cross-identification
+    task, with the surrounding dashed lines indicating the standard deviation
+    across CDFS quadrants. A `perfect' classifier simply reads the expert
+    labels. This represents the maximum attainable cross-identification accuracy
+    under our assumptions. The lower horizontal line indicates the average
+    accuracy of 15 random classifiers, and hence represents the minimum accuracy
+    we would expect to attain. The surrounding dashed lines indicate the
+    standard deviation across CDFS quadrants and classifiers.
     \label{fig:cross-id-accuracy}}
   \end{figure}
 
@@ -787,7 +788,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   As with SWIRE predictions, reported cross-identifications for a given object
   were generated by classifiers tested on the quadrant containing that object.
 
-  \todo{Include images of ``good'' and ``bad'' X-IDs/GCTs.}
+  \todo{Include images of `good' and `bad' X-IDs/GCTs.}
 
   \begin{table}
     \caption{Average cross-identification accuracies. \todo{Write this caption.}}
@@ -856,9 +857,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \caption{Predicted host galaxy cross-identifications for each object in
       ATLAS-CDFS. Cross-identifications are reported for each predictor, with
       the predictor listed as in \autoref{tab:probs}. The cross-identification
-      given by \citet{norris06} is included in the ``Norris'' column. The
+      given by \citet{norris06} is included in the `Norris' column. The
       cross-identification given by the Radio Galaxy Zoo consensus is included
-      in the ``RGZ'' column, along with the corresponding consensus levels for
+      in the `RGZ' column, along with the corresponding consensus levels for
       the radio morphology and host cross-identification tasks \citep[see][for
       details on how consensus is calculated]{wong17}. Low radio consensus
       indicates that the component has multiple nearby components (and thus is
