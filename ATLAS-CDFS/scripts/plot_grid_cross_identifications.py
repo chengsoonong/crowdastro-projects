@@ -162,9 +162,9 @@ best_stdev = {k[2]: v * 100
 print('Best: {} +- {}'.format(best_acc, best_stdev))
 print('Random: {} +- {}'.format(random_acc, random_stdev))
 
-plt.figure(figsize=(3, 4))
+plt.figure(figsize=(5, 6))
 colours = ['grey', 'magenta', 'blue', 'orange']
-markers = ['o', 's', 'x', '^']
+markers = ['o', '^', 'x', 's']
 handles = {}
 print('Data set & Labeller & Classifier & Mean accuracy (\\%)\\\\')
 for k, set_name in enumerate(norris_labelled_sets[1:]):
@@ -190,7 +190,7 @@ for k, set_name in enumerate(norris_labelled_sets[1:]):
                 ax.set_ylim((70, 100))
             ax.set_xticks([0, 1, 2])
             ax.set_xticklabels(['Norris', 'RGZ N', 'RGZ'])
-            handles[j] = plt.scatter(xs, ys, color=colours[j], marker=markers[j], zorder=2)
+            handles[j] = plt.scatter(xs, ys, color=colours[j], marker=markers[j], zorder=2, edgecolor='k', linewidth=1)
         if k == 2:
             plt.xlabel('Labels')
         plt.ylabel('{}\nAccuracy (%)'.format(titlemap[set_name]))

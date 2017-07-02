@@ -87,9 +87,9 @@ def plot_grid(field='cdfs'):
             cnn_rgz_accuracies[dataset_name][predictions.quadrant] = predictions.balanced_accuracy
 
     colours = ['grey', 'magenta', 'blue', 'orange']
-    markers = ['o', 's', 'x', '^']
+    markers = ['o', '^', 'x', 's']
     handles = {}
-    plt.figure(figsize=(3, 6))
+    plt.figure(figsize=(5, 8))
     for j, (classifier_name, classifier_set) in enumerate([
             ('LR', [lr_norris_accuracies, lr_rgz_accuracies]),
             ('CNN', [cnn_norris_accuracies, cnn_rgz_accuracies]),
@@ -99,11 +99,11 @@ def plot_grid(field='cdfs'):
             ax = plt.subplot(3, 1, 1 + i)
             for k in range(4):
                 handles[j] = ax.scatter([0 + (j - 1) / 5], classifier_set[0][set_name][k] * 100,
-                                        color=colours[j], marker=markers[j])
+                                        color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
                 ax.scatter([1 + (j - 1) / 5], classifier_set[1][set_name][k] * 100,
-                           color=colours[j], marker=markers[j])
+                           color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
                 ax.scatter([2 + (j - 1) / 5], classifier_set[1][fullmap[set_name]][k] * 100,
-                           color=colours[j], marker=markers[j])
+                           color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
 
             ax.set_ylim((80, 100))
             ax.set_xlim((-0.5, 2.5))
