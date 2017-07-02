@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot grid of cross-identification accuracies.
+"""Plot grid of cross-identification accuracies and an associated table.
 
 Input files:
 - ???
@@ -57,9 +57,9 @@ norris_labelled_sets = [
 ]
 
 swire_names, swire_coords, _ = pipeline.generate_swire_features(overwrite=False)
-swire_labels = pipeline.generate_swire_labels(swire_names, overwrite=False)
-(_, atlas_test_sets), (_, swire_test_sets) = pipeline.generate_data_sets(swire_coords, overwrite=False)
-cids = list(pipeline.cross_identify_all(swire_names, swire_coords, swire_test_sets, swire_labels[:, 0]))
+swire_labels = pipeline.generate_swire_labels(swire_names, swire_coords, overwrite=False)
+(_, atlas_test_sets), (_, swire_test_sets) = pipeline.generate_data_sets(swire_coords, swire_labels, overwrite=False)
+cids = list(pipeline.cross_identify_all(swire_names, swire_coords, swire_labels, swire_test_sets, swire_labels[:, 0]))
 table = astropy.io.ascii.read(pipeline.TABLE_PATH)
 
 atlas_to_swire_norris = {}
@@ -166,8 +166,12 @@ plt.figure(figsize=(3, 4))
 colours = ['grey', 'magenta', 'blue', 'orange']
 markers = ['o', 's', 'x', '^']
 handles = {}
+print('Data set & Labeller & Classifier & Mean accuracy (\\%)\\\\')
 for k, set_name in enumerate(norris_labelled_sets[1:]):
+    print_set_name = titlemap[set_name]
     ax = plt.subplot(2, 1, 1 + k)
+    print('{} & Norris & Perfect & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, best_acc[titlemap[set_name]], best_stdev[titlemap[set_name]]))
+    print('{} & Norris & Random & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, random_acc[titlemap[set_name]], random_stdev[titlemap[set_name]]))
     plt.hlines(best_acc[titlemap[set_name]], -0.5, 2.5, linestyles='solid', colors='green', linewidth=1, zorder=1, alpha=0.7)
     plt.hlines(best_acc[titlemap[set_name]] + best_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='green', linewidth=1, zorder=1, alpha=0.7)
     plt.hlines(best_acc[titlemap[set_name]] - best_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='green', linewidth=1, zorder=1, alpha=0.7)
@@ -178,6 +182,7 @@ for k, set_name in enumerate(norris_labelled_sets[1:]):
         for j, classifier in enumerate(['LogisticRegression', 'CNN', 'RandomForestClassifier']):
             ys = numpy.array(labeller_classifier_to_accuracies[labeller, classifier, titlemap[set_name]]) * 100
             xs = [i + (j - 1) / 5] * len(ys)
+            print('{} & {} & {} & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, labeller, classifier, numpy.mean(ys), numpy.std(ys)))
             ax.set_xlim((-0.5, 2.5))
             if k == 0:
                 ax.set_ylim((0, 100))
