@@ -11,7 +11,10 @@ import astropy.io.fits
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-radio_path = '/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/EI0093C1_radio.fits'
+import configure_plotting
+configure_plotting.configure()
+
+radio_path = 'J:/repos/crowdastro-projects/ATLAS-CDFS/EI0093C1_radio.fits'
 fig = aplpy.FITSFigure(radio_path)
 fig.show_grayscale(stretch='arcsinh')
 # fig = plt.figure(figsize=(10, 10), dpi=50)

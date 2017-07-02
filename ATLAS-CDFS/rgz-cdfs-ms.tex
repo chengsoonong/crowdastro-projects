@@ -280,25 +280,30 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     could use this to isolate relevant components and hence more accurately
     cross-identify sources, but this is outside the scope of this paper. We also
     note that this assumption will bias our results against radio emission that
-    extends beyond the $1'$ cutout size \todo{Quantify how often this actually
-    happens for ATLAS (not very often)}. The radio cross-identification task
-    then amounts to locating the host galaxy within the associated radio and
-    infrared images. This is formalised as an object localisation problem: Given
-    a radio image and an infrared image centred on a radio component, locate the
-    host galaxy of the radio component.
+    extends beyond the $1'$ cutout size, however, these are uncommon in ATLAS
+    with 9 radio sources identified by \citet{norris06} as having components
+    further than $1'$ apart (and of these, 5 are in Radio Galaxy Zoo). The radio
+    cross-identification task then amounts to locating the host galaxy within
+    the associated radio and infrared images. This is formalised as an object
+    localisation problem: Given a radio image and an infrared image centred on a
+    radio component, locate the host galaxy of the radio component.
+    % S031, S336, S081, S576, S136, S719, S618, S707, S287
+    % ARG0003r2r, -, -, ARG0003r5h, ARG0003r2d, -, ARG0003r1s, -, ARG0003r8q
 
     \begin{figure}
       \centering
-      \includegraphics[width=0.8\columnwidth]{images/windows.eps}
-      \caption{Localising the host galaxy in a radio image. Red boxes
-        represent windows centred on various locations in the image. The image
-        patches from each window are shown beneath. The image patch of each
-        window represents the location the window is centred on. The
-        probabilities of each patch coinciding with the host galaxy would then
-        be estimated. The probabilities shown are for illustration only. In
-        this example, the centre window of the image would be chosen as the
-        location of the host galaxy, as the window centred on it has the
-        highest probability. [TODO: Use FITS images]}
+      \includegraphics[width=0.8\columnwidth]{images/elais_0093C1_with_boxes}
+      \caption{An example of localising the host galaxy of a radio source using
+        our method. This image is from ATLAS and is centred on $\alpha =
+        00^\text{h}33^\text{m}06.36^\text{s}, \delta = -43^\circ{}10'30.1''$. Boxes
+        represent $32 \times 32$ pixel windows centred on various locations in
+        the image. The corresponding image patches from each window are shown
+        beneath. The image patch of each window represents the location the
+        window is centred on. The probabilities of each patch coinciding with
+        the host galaxy would then be estimated by a classification model. The
+        probabilities shown are for illustration only. In this example, the
+        centre window of the image would be chosen as the location of the host
+        galaxy, as the window centred on it has the highest probability.}
       \label{fig:windows}
     \end{figure}
 
@@ -372,15 +377,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     \begin{figure}
       \centering
-      \subfloat[]{\includegraphics[width=\linewidth]{images/ARG0000u0h_first_3.pdf}\label{fig:overedge-1}}\\
-      \subfloat[]{\includegraphics[width=\linewidth]{images/ARG0000u0h_first_8.pdf}\label{fig:overedge-2}}
-      \caption{\protect\subref{fig:overedge-1} is a $3'$-wide radio image from Radio Galaxy
-        Zoo, centred on FIRSTJ151227.2+454026. This radio source
-        % ARG0000u0h
-        breaks our assumption that the whole source is visible in the chosen
-        radius. \protect\subref{fig:overedge-2} is an $8'$-wide radio image from FIRST centred
-        on the same location. In this image, it is clear that the source is a
-        radio double. The red box indicates the boundaries of \protect\subref{fig:overedge-1}.}
+      \includegraphics[width=\linewidth]{images/ARG0000u0h_first_8.pdf}
+      \caption{A $8'$-wide radio image from FIRST, centred on
+        FIRSTJ151227.2+454026. The $3'$-wide red box indicates the boundaries of
+        the image of this radio component shown to volunteers in Radio Galaxy
+        Zoo. This radio source breaks out assumption that the whole radio source
+        is visible in the chosen radius. As one of the lobes of the radio source
+        is outside of the image, a volunteer (or automated algorithm) looking at
+        the $3'$-wide image may be unable to determine that this is a radio
+        double or locate the host galaxy.}
       \label{fig:broken-contains}
     \end{figure}
 
@@ -410,12 +415,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     \begin{figure}
       \centering
-      \includegraphics[width=0.5\linewidth]{images/ARG0003sky_radio.eps}
-      \caption{A radio image centred on 03$^\text{h}$~26$^\text{m}$~39.12$^\text{s}$~$-$28$^\circ$~07$'$~58.80$''$.        %ARG0003sky
+      \includegraphics[width=\linewidth]{images/ARG0003sky_radio}
+      \caption{A radio image centred on $\alpha =
+        03^\text{h}26^\text{m}39.12^\text{s}, \delta = -28^\circ{}07'58.80''$.        %ARG0003sky
         This is an example of a radio source where the window centred on the
         host galaxy, shown as a rectangle, does not contain enough radio
-        information to correctly identify the galaxy as the host. \todo{FITS,
-        colour description, RA/Dec, confirm how to represent RA/Dec}}
+        information to correctly identify the galaxy as the host.}
       \label{fig:broken-window-size}
     \end{figure}
 
@@ -550,12 +555,36 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       layer of the network is logistic regression, with the convolved outputs
       as input features. For more detail, see \citet[\S II.A][]{lecun98}.
 
-      \begin{figure*}
-        \centering
-        \includegraphics[width=\textwidth]{convnet.pdf}
-        \caption{Convolutional neural network model.}
+      % \begin{figure*}
+      %   \centering
+      %   \includegraphics[width=\textwidth]{convnet.pdf}
+      %   \caption{Convolutional neural network model.}
+      %   \label{fig:cnn}
+      % \end{figure*}
+
+      \begin{figure}
+        % \begin{tabular}{l|c}
+        %   \hline
+        %   Layer type & Output size\\
+        %   \hline
+        %   Image Input & $1 \times 32 \times 32$\\
+        %   Convolution & $32 \times 28 \times 28$\\
+        %   Max pooling & $32 \times 14 \times 14$\\
+        %   Convolution & $32 \times 10 \times 10$\\
+        %   Max pooling & $32 \times 5 \times 5$\\
+        %   Dropout & $32 \times 5 \times 5$\\
+        %   Merge & $810$\\
+        %   Logistic regression & $1$\\
+        %   \hline
+        % \end{tabular}
+        \includegraphics[width=\linewidth]{images/cnn_model_graph}
+        \caption{Architecture of our convolutional neural network. The merge
+          layer flattens the output of the previous layer and adds the 10
+          features derived from the candidate host in SWIRE, i.e. the flux
+          ratios, stellarity indices, and distance. The dropout layer drops
+          $25\%$ of its inputs.}
         \label{fig:cnn}
-      \end{figure*}
+      \end{figure}
 
       \begin{figure}
       \centering
@@ -567,11 +596,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \end{figure}
 
       CNNs have recently produced good results on large image-based datasets
-      \citep[e.g.][]{dieleman15cnn}. We employ only a simple CNN
-      model in this paper as a proof of concept that CNNs may be used for
-      prediction on radio images. The model we used is shown in Figure
-      \ref{fig:cnn}. An example of this model reducing a radio image is shown
-      in Figure \ref{fig:cnn-outputs}.
+      \citep[e.g.][]{dieleman15cnn}. We employ only a simple CNN model in this
+      paper as a proof of concept that CNNs may be used for prediction on radio
+      images. The model architecture we used is shown in Figure \ref{fig:cnn}. An
+      example of this model reducing a radio image is shown in Figure
+      \ref{fig:cnn-outputs}.
 
     \subsubsection{Random Forests}
     \label{sec:random-forests}

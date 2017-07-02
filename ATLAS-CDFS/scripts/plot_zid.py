@@ -30,13 +30,18 @@ def plot(path, plot_atlas_hosts=False, v=None):
         decs = table['SWIRE.dec']
         fig.show_markers(ras, decs, marker='x', s=200, c='red')
 
-def plot_box():
+def plot_box_FIRST():
     rect = matplotlib.patches.Rectangle((267 / 2 - 267 / 8 * 3 / 2, 267 / 2 - 267 / 8 * 3 / 2), 267 / 8 * 3, 267 / 8 * 3, facecolor='None', edgecolor='red', linewidth=2)
+    plt.gca().add_patch(rect)
+
+def plot_box_ATLAS():
+    rect = matplotlib.patches.Rectangle((100 - 35, 100 - 35), 70, 70, facecolor='None', edgecolor='red', linewidth=2)
     plt.gca().add_patch(rect)
 
 if __name__ == '__main__':
     # plot('J:\\repos\\crowdastro\\data/cdfs/2x2/CI0077C1_radio.fits', plot_atlas_hosts=True)
-    plot("J:\\repos\\crowdastro-projects\\ATLAS-CDFS\\images\\FIRSTJ151227.2+454026_3.fits")
-    plot("J:\\repos\\crowdastro-projects\\ATLAS-CDFS\\images\\FIRSTJ151227.2+454026_8.fits", v=(-5.472e-04, 3.887e-02))
-    plot_box()
+    # plot("J:\\repos\\crowdastro-projects\\ATLAS-CDFS\\images\\FIRSTJ151227.2+454026_3.fits")
+    # plot("J:\\repos\\crowdastro-projects\\ATLAS-CDFS\\images\\FIRSTJ151227.2+454026_8.fits", v=(-5.472e-04, 3.887e-02))
+    plot("J:\\repos\\crowdastro\\data\\cdfs\\2x2\\CI2363_radio.fits")
+    plot_box_ATLAS()
     plt.show()
