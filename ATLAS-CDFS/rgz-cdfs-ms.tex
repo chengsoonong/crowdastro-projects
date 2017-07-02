@@ -14,12 +14,15 @@
 \usepackage{aastexmacros}
 \usepackage{tikz}
 \usepackage[caption=false]{subfig}
+\usepackage[mediumspace,mediumqspace,Grey,squaren]{SIunits}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%% AUTHORS - PLACE YOUR OWN COMMANDS HERE %%%%%
 \usetikzlibrary{shapes,arrows,calc,positioning}
 
-\newcommand{\text}{\mathrm}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+% \newcommand{\text}{\mathrm}
+\newcommand{\jansky}{\text{Jy}}
 \newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng:~{#1}}]} }
 \newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
@@ -156,10 +159,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     ATLAS \citep{franzen15} is a wide-area radio survey of the \emph{Chandra}
     Deep Field - South (CDFS) and the ESO Large Area ISO Survey - South 1
-    (ELAIS-S1) fields at 1.4 GHz. ATLAS has a sensitivity of 14~$\mu$Jy on CDFS
-    and 17~$\mu$Jy on ELAIS-S1. CDFS covers 3.6~deg$^2$ and contains 3034 radio
-    components above 5$\sigma$. ELAIS-S1 covers 2.7~deg$^2$ and contains 2084
-    radio components above 5$\sigma$ \citep{franzen15}.
+    (ELAIS-S1) fields at 1.4 GHz. ATLAS has a sensitivity of
+    \unit{14}{\micro\jansky} on CDFS and \unit{17}{\micro\jansky} on ELAIS-S1.
+    CDFS covers 3.6~deg$^2$ and contains 3034 radio components above 5$\sigma$.
+    ELAIS-S1 covers 2.7~deg$^2$ and contains 2084 radio components above
+    5$\sigma$ \citep{franzen15}.
 
     ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
     cover the entire southern sky and is expected to detect approximately 70
@@ -206,13 +210,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \subsection{SWIRE}\label{sec:swire}
 
     SWIRE \citep{lonsdale03swire, surace05swire} is a wide-area infrared survey
-    at the four IRAC wavelengths 3.6~$\mu$m, 4.5~$\mu$m, 5.8~$\mu$m, and
-    8.0~$\mu$m, with $5\sigma$ noise levels of 7.3~$\mu$Jy, 9.7~$\mu$Jy,
-    27.5~$\mu$Jym, and 32.5~$\mu$Jy respectively \citep{lonsdale03swire}. It
-    covers eight fields, including CDFS and ELAIS-S1 which are also covered by
-    ATLAS. SWIRE is thus the source of infrared observations for
-    cross-identification with ATLAS. SWIRE catalogues 221,535 objects in CDFS
-    and 186,059 objects in ELAIS-S1.
+    at the four IRAC wavelengths 3.6, 4.5, 5.8, and
+    \unit{8.0}{\micro\meter}, with $5\sigma$ noise levels of 7.3,
+    9.7, 27.5, and \unit{32.5}{\micro\jansky} respectively
+    \citep{lonsdale03swire}. It covers eight fields, including CDFS and ELAIS-S1
+    which are also covered by ATLAS. SWIRE is thus the source of infrared
+    observations for cross-identification with ATLAS. SWIRE catalogues 221,535
+    objects in CDFS and 186,059 objects in ELAIS-S1.
 
   \subsection{Radio Galaxy Zoo}\label{sec:rgz}
 
@@ -244,10 +248,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     classification for the image. The host galaxy locations selected by
     volunteers who agreed with the most common radio morphology classification
     are combined by maximising over a kernel density estimate of the locations.
-    These locations are then matched to the nearest SWIRE object within $3''$. A
-    full description of the catalogue generation can be found in \citet{wong17}.
-    As of 30 March 2016, there are 97~807 complete classifications of FIRST
-    components, and 2460 complete classifications of ATLAS CDFS components.
+    These locations are then matched to the nearest SWIRE object within
+    3~arcsec. A full description of the catalogue generation can be found in
+    \citet{wong17}. As of 30 March 2016, there are 97~807 complete
+    classifications of FIRST components, and 2460 complete classifications of
+    ATLAS CDFS components.
 
     In this paper we focus on the Radio Galaxy Zoo cross-identifications of
     the ATLAS~CDFS and SWIRE surveys. There are two main reasons for this. The
@@ -262,7 +267,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     Non-primary components may appear within the image of a primary component,
     but do not have their own entry in Radio Galaxy Zoo. We will henceforth only
     discuss the primary components. For ATLAS components, the radio and infrared
-    images shown to volunteers are \(2' \times 2'\).
+    images shown to volunteers are $2 \times 2$~arcmin.
 
   \section{Method}\label{method}
 
@@ -273,22 +278,22 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     reference to radio morphology. Given a radio component, we want to find the
     corresponding host galaxy as a citizen scientist would using Radio Galaxy
     Zoo. The input is thus a radio image and an infrared image with a given
-    radius. We choose a radius of $1'$ to match Radio Galaxy Zoo, which uses $2'
-    \times 2'$ cutouts of ATLAS images. We make the assumption that each radio
-    image represents a single, complex extended source. This is not the case in
-    general and a radio image may contain many different radio sources with
-    unique host galaxies. If we had access to radio morphology information, we
-    could use this to isolate relevant components and hence more accurately
-    cross-identify sources, but this is outside the scope of this paper. We also
-    note that this assumption will bias our results against radio emission that
-    extends beyond the $1'$ cutout size, however, these are uncommon in ATLAS
-    with 9 radio sources identified by \citet{norris06} as having components
-    further than $1'$ apart (and of these, 5 are in Radio Galaxy Zoo). The radio
-    cross-identification task then amounts to locating the host galaxy within
-    the associated radio and infrared images. This is formalised as an object
-    localisation problem: Given a radio image and an infrared image centred on a
-    radio component, locate the host galaxy of the radio component.
-    % S031, S336, S081, S576, S136, S719, S618, S707, S287
+    radius. We choose a radius of 1~arcmin to match Radio Galaxy Zoo, which uses
+    $2 \times 2$~arcmin cutouts of ATLAS images. We make the assumption that
+    each radio image represents a single, complex extended source. This is not
+    the case in general and a radio image may contain many different radio
+    sources with unique host galaxies. If we had access to radio morphology
+    information, we could use this to isolate relevant components and hence more
+    accurately cross-identify sources, but this is outside the scope of this
+    paper. We also note that this assumption will bias our results against radio
+    emission that extends beyond the 1~arcmin cutout size, however, these are
+    uncommon in ATLAS with 9 radio sources identified by \citet{norris06} as
+    having components further than 1~arcmin apart (and of these, 5 are in Radio
+    Galaxy Zoo). The radio cross-identification task then amounts to locating
+    the host galaxy within the associated radio and infrared images. This is
+    formalised as an object localisation problem: Given a radio image and an
+    infrared image centred on a radio component, locate the host galaxy of the
+    radio component.    % S031, S336, S081, S576, S136, S719, S618, S707, S287
     % ARG0003r2r, -, -, ARG0003r5h, ARG0003r2d, -, ARG0003r1s, -, ARG0003r8q
 
     \begin{figure}
@@ -328,10 +333,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     radio sources in their sample of 784 bright ATLAS components in CDFS. This
     leads us to a binary classification task: Given an infrared source, compute
     the probability that it is a host galaxy. To find the host galaxy given a
-    radio source, classify each galaxy within $1'$ of the source and select the
-    galaxy with the highest probability of being a host galaxy. This is a good
-    formulation as binary classification is a very common problem in machine
-    learning and there are many different methods readily available to solve it.
+    radio source, classify each galaxy within 1~arcmin of the source and select
+    the galaxy with the highest probability of being a host galaxy. This is a
+    good formulation as binary classification is a very common problem in
+    machine learning and there are many different methods readily available to
+    solve it.
 
     % \cheng{Be careful about the difference between a binary classifier and
     % a class probability estimator. $\mathcal{Y}$ can be binary or in the unit
@@ -397,7 +403,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \begin{itemize}
       \item A radio image represents a single radio source and contains exactly
         one host galaxy.
-      \item The host galaxy of a radio component is within $1'$ of the component.
+      \item The host galaxy of a radio component is within 1~arcmin of the
+        component.
       \item The host galaxy appears in the SWIRE catalogue.
     \end{itemize}
 
@@ -407,9 +414,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \caption{$2'$-wide radio image centred on ATLAS3\textunderscore{}J033402.87-282405.8C.
         %(ARG0003r2v)
         This radio source breaks our assumption that there are no other radio
-        sources within $1'$ of the source. Another radio source is visible to
-        the upper-left. Host galaxies found by Radio Galaxy Zoo volunteers are
-        shown by a cross.}
+        sources within 1~arcmin of the source. Another radio source is visible
+        to the upper-left. Host galaxies found by Radio Galaxy Zoo volunteers
+        are shown by a cross.}
       \label{fig:broken-isolation}
     \end{figure}
 
@@ -428,8 +435,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{figure}
 
     The key problem with this approach is our assumption that the radio sky
-    within $1'$ radius contains only one, complete radio source. The problem is
-    two-fold: This radius may contain multiple sources, or it may not contain
+    within 1~arcmin radius contains only one, complete radio source. The problem
+    is two-fold: This radius may contain multiple sources, or it may not contain
     the entirety of the source. If the radius contains multiple sources then
     there will also be multiple hosts in our input images (which breaks our
     assumption that there is only one); even a perfect classifier can only
@@ -452,10 +459,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     radio sources, which can be estimated by considering how accurately a
     \emph{perfect} binary classifier cross-identifies radio sources under our
     method. Using the \citet{norris06} labels (\autoref{labels}) to classify
-    SWIRE objects to 100\% accuracy on the binary classification task results in
-    a cross-identification accuracy of $(96.74 \pm 1.76)\%$ across the four CDFS
-    quadrants under our assumptions, which we take as an upper bound on our
-    cross-identification accuracy.
+    SWIRE objects to 100~percent accuracy on the binary classification task
+    results in a cross-identification accuracy of $(96.74 \pm 1.76)$~percent
+    across the four CDFS quadrants under our assumptions, which we take as an
+    upper bound on our cross-identification accuracy.
 
     \begin{figure}
       \centering
@@ -644,7 +651,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     $S_{1.4} \geq 85\ \mu\text{Jy beam}^{-1}$ for the third data release used by
     Radio Galaxy Zoo \citep{franzen15}. The expert labels may therefore disagree
     with labels from Radio Galaxy Zoo even if they are both correct. We train
-    and test our classifiers on infrared objects within a $1'$ radius of an
+    and test our classifiers on infrared objects within a 1~arcmin radius of an
     ATLAS radio object.
 
   \subsection{Experimental Setup}
@@ -694,33 +701,33 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \citep{franzen15}.
 
     Candidate hosts were selected from the SWIRE catalogue. For a given subset
-    of radio objects, all SWIRE objects within $1'$ of all radio objects in the
-    subset were added to the associated SWIRE subset.
+    of radio objects, all SWIRE objects within 1~arcmin of all radio objects in
+    the subset were added to the associated SWIRE subset.
 
     Classifiers were trained on all available training data in the training
     quadrants. Test examples were drawn from the remaining quadrant. To reduce
     bias in the testing data due to the expert labels being generated from a
     shallower data release of ATLAS, a SWIRE object was only added to the test
-    set if it was within $1'$ of a radio object with a cross-identification in
-    both the \citet{norris06} catalogue and the Radio Galaxy Zoo catalogue.
+    set if it was within 1~arcmin of a radio object with a cross-identification
+    in both the \citet{norris06} catalogue and the Radio Galaxy Zoo catalogue.
 
     Each classifier was trained on the training examples and used to predict
-    labels for the test examples. The predicted labels were compared to the expert
-    labels and the balanced accuracy was computed. We used balanced accuracy as
-    our accuracy measure due to the highly imbalanced classes --- in our total
-    set of SWIRE objects within $1'$ of an ATLAS object, only 4\% have positive
-    labels. Only examples within $1'$ of ATLAS objects in the first ATLAS data
-    release \citep{norris06} were used to compute accuracy, as these were the
-    only ATLAS objects with expert labels.
+    labels for the test examples. The predicted labels were compared to the
+    expert labels and the balanced accuracy was computed. We used balanced
+    accuracy as our accuracy measure due to the highly imbalanced classes --- in
+    our total set of SWIRE objects within 1~arcmin of an ATLAS object, only
+    4~percent have positive labels. Only examples within 1~arcmin of ATLAS
+    objects in the first ATLAS data release \citep{norris06} were used to
+    compute accuracy, as these were the only ATLAS objects with expert labels.
 
-    We then used the outputs of our classifiers to predict the host galaxy
-    for each radio component cross-identified by both \citet{norris06}
-    and Radio Galaxy Zoo. For each SWIRE object within $1'$ of the radio
-    component, the probability of the object having a positive label was
-    estimated using the trained binary classifiers. The SWIRE object with
-    the highest probability was chosen as the host galaxy. The accuracy was
-    then estimated by counting how many predicted host galaxies matched the
-    \citet{norris06} cross-identifications.
+    We then used the outputs of our classifiers to predict the host galaxy for
+    each radio component cross-identified by both \citet{norris06} and Radio
+    Galaxy Zoo. For each SWIRE object within 1~arcmin of the radio component,
+    the probability of the object having a positive label was estimated using
+    the trained binary classifiers. The SWIRE object with the highest
+    probability was chosen as the host galaxy. The accuracy was then estimated
+    by counting how many predicted host galaxies matched the \citet{norris06}
+    cross-identifications.
 
 \section{Results}\label{results}
 
@@ -741,10 +748,38 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \label{fig:ba}}
   \end{figure}
 
-  The balanced accuracy of each classifier is shown in \autoref{fig:ba}.
-  \todo{Describe.} The predicted probabilities for each SWIRE object are
+  The balanced accuracy of each classifier is shown in \autoref{fig:ba}. The
+  best overall performance is attained by random forests trained on expert
+  labels. With the exception of random forests trained only on resolved
+  components, classifiers trained on expert labels on average perform better
+  than those trained on Radio Galaxy Zoo labels. Nevertheless, classifiers
+  trained on Radio Galaxy Zoo labels still attain reasonably good accuracies on
+  all tasks. Averaging over quadrants, random forests outperform all other
+  classifiers overall. When trained on resolved components and expert labels,
+  the accuracy of random forests on the classification task has a very high
+  spread over the CDFS quadrants. This may be due to the limited number of
+  resolved components in the expert-labelled data set.
+
+  The predicted probabilities for each SWIRE object are
   reported in \autoref{tab:probs}. Probabilities reported for a given object
   were predicted by classifiers tested on the quadrant containing that object.
+
+  \begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
+  \caption{Accuracies for each quadrant in the cross-identification
+    task. Markers and axes are as in \autoref{fig:ba}. The upper horizontal line
+    indicates the accuracy of a ``perfect'' classifier on the
+    cross-identification task, with the surrounding dashed lines indicating the
+    standard deviation across CDFS quadrants. A ``perfect'' classifier simply
+    reads the expert labels. This represents the maximum attainable
+    cross-identification accuracy under our assumptions. The lower horizontal
+    line indicates the average accuracy of 15 random classifiers, and hence
+    represents the minimum accuracy we would expect to attain. The surrounding
+    dashed lines indicate the standard deviation across CDFS quadrants and
+    classifiers.
+    \label{fig:cross-id-accuracy}}
+  \end{figure}
 
   The cross-identification accuracy for each classifier is shown in
   \autoref{fig:cross-id-accuracy}. \todo{Describe.} The predicted
@@ -753,22 +788,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   were generated by classifiers tested on the quadrant containing that object.
 
   \todo{Include images of ``good'' and ``bad'' X-IDs/GCTs.}
-
-  \begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
-  \caption{Accuracies for each quadrant in the cross-identification
-    task. The green horizontal line indicates the accuracy of a ``perfect''
-    classifier on the cross-identification task, with the dashed lines
-    indicating the standard deviation across CDFS quadrants. A ``perfect''
-    classifier simply reads the expert labels. This represents the maximum
-    attainable cross-identification accuracy under our assumptions. The blue
-    horizontal line indicates the average accuracy of 15 random classifiers, and
-    hence represents the minimum accuracy we would expect to attain. The dashed
-    lines indicate the standard deviation across CDFS quadrants and classifiers.
-    \todo{explain colours and mention that colours will be available online.}
-    \label{fig:cross-id-accuracy}}
-  \end{figure}
 
   \begin{table}
     \caption{Average cross-identification accuracies. \todo{Write this caption.}}
@@ -811,8 +830,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       the predictor using classifier model C, trained on label set A on data set
       B. Ellipsis indicates columns that have been omitted. The omitted columns
       are all other combinations of classifier, label set, and data set. If a
-      SWIRE object does not appear in the table, then it was further than
-      $1'$ from an ATLAS object and hence has a predicted probability of zero
+      SWIRE object does not appear in the table, then it was further than 1
+      arcmin from an ATLAS object and hence has a predicted probability of zero
       by our assumptions. Full table electronic.}
     \label{tab:probs}
     \begin{tabular}{c|ccccccccccccccccccccccccccccc}
