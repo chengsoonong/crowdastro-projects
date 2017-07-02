@@ -187,7 +187,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     A number of catalogues have been produced cross-identifying radio components
     in ATLAS with host galaxies in SWIRE. These catalogues are summarised in
-    Table \ref{tab:atlas-cids}.
+    \autoref{tab:atlas-cids}.
 
     % \citet{norris06} produced a catalogue of cross-identifications of 784
     % radio sources with their infrared counterparts in SWIRE.
@@ -195,7 +195,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     % {[}NNNN{]} radio sources with their infrared counterparts in SWIRE.
     % {[}TODO: Make this less clunky and talk about Fan et al.{]}
 
-    % Radio Galaxy Zoo (Section \ref{sec:rgz}) produced a catalogue of
+    % Radio Galaxy Zoo (\autoref{sec:rgz}) produced a catalogue of
     % crowdsourced cross-identifications of 2460 ATLAS radio objects in CDFS
     % \citep{wong17}.
     % % As these cross-identifications have been based on
@@ -315,19 +315,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     then assumed to be the location of the object. Applying this to radio host
     cross-identification, we consider windows of a radio/infrared image and
     estimate the probability that each window is centred on the host galaxy.
-    This approach is illustrated in Figure \ref{fig:windows}.
+    This approach is illustrated in \autoref{fig:windows}.
     In computer vision a sliding window is commonly used: every possible patch
     in the image is considered.
-
-    \cheng{Make a list of assumptions, then justify them in paragraphs afterwards.
-      I suggest a separate subsection ``Limitations of our approach''}
-    \todo{Combine all problems with the approach into one section.}
 
     This task can be made more efficient if we have a prior on the location of
     the object we are localising. For our prior, we assume that the host galaxy
     is always visible in the infrared and thus we only need consider windows
     centred on infrared sources. This assumption usually holds, except for a
-    rare class of infrared-faint radio sources. Norris et al. (2006) found 22
+    rare class of infrared-faint radio sources. \citet{norris06} found 22
     such radio sources in their sample of 784 bright ATLAS components in CDFS.
     This leads us to a binary classification task: Given an infrared source,
     compute the probability that it is a host galaxy. To find the host galaxy
@@ -337,101 +333,20 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     is a very common problem in machine learning and there are many different
     methods readily available to solve it.
 
-    \cheng{Be careful about the difference between a binary classifier and
-      a class probability estimator. $\mathcal{Y}$ can be binary or in the unit interval.}
+    % \cheng{Be careful about the difference between a binary classifier and
+    % a class probability estimator. $\mathcal{Y}$ can be binary or in the unit
+    % interval.}
     Solving the radio cross-identification task amounts to modelling a
     function $f$ from infrared sources $\mathcal{X}$ to binary
     $\mathcal{Y} = \{0, 1\}$:
     \begin{equation}
         f : \mathcal{X} \to \mathcal{Y}
     \end{equation}
-    The space of infrared sources $\mathcal{X}$ needs to be encoded as a
-    vector for the models we will use. We describe this in Section
-    \ref{vector-representation-of-infrared-sources}.
-    There are many options for modelling $f$. In this paper we
-    apply three different models: logistic regression, random forests, and
-    convolutional neural networks.
-
-
-    \begin{figure}
-      \centering
-      \includegraphics[width=\linewidth]{images/ARG0003r2v_radio.pdf}
-      \caption{$2'$-wide radio image centred on ATLAS3\textunderscore{}J033402.87-282405.8C.
-        %(ARG0003r2v)
-        This radio source breaks our assumption that there are no other radio
-        sources within $1'$ of the source. Another radio source is visible to
-        the upper-left. Host galaxies found by Radio Galaxy Zoo volunteers are
-        shown by a cross.}
-      \label{fig:broken-isolation}
-    \end{figure}
-
-    The key problem with this approach is our assumption that the radio sky
-    within radius $R$ contains only one, complete radio source. The problem is
-    two-fold: This radius may contain multiple sources, or it may not contain
-    the entirety of the source. If the radius contains multiple sources then
-    there will also be multiple hosts in our input images (which breaks our
-    assumption that there is only one); even a perfect classifier can only
-    accurately cross-identify \emph{one} host in an image with multiple. An
-    example of a radio source that breaks the assumption in this way is shown
-    in Figure \ref{fig:broken-isolation}.
-
-    \begin{figure}
-      \centering
-      \includegraphics[width=\linewidth]{images/ARG0000u0h_first_8.pdf}
-      \caption{A $8'$-wide radio image from FIRST, centred on
-        FIRSTJ151227.2+454026. The $3'$-wide red box indicates the boundaries of
-        the image of this radio component shown to volunteers in Radio Galaxy
-        Zoo. This radio source breaks out assumption that the whole radio source
-        is visible in the chosen radius. As one of the lobes of the radio source
-        is outside of the image, a volunteer (or automated algorithm) looking at
-        the $3'$-wide image may be unable to determine that this is a radio
-        double or locate the host galaxy.}
-      \label{fig:broken-contains}
-    \end{figure}
-
-    If the radius does not contain the whole source, then we are missing radio
-    information useful for finding the host galaxy. This is a difficult problem
-    even for non-automated methods as radio sources can be extremely wide ---
-    for example, Radio Galaxy Zoo found a radio giant that spanned over three
-    different images presented to volunteers and the full source was only
-    cross-identified by the efforts of citizen scientists \citep{banfield15}. An
-    example of a radio image where part of the radio source is outside the
-    search radius is shown in Figure \ref{fig:broken-contains}. The problems are
-    in opposition to each other: To reduce the number of sources in an input
-    image, we can reduce the image radius, but this increases the chance that we
-    will miss relevant radio source information, and vice versa.
-
-    For our experiments, we take $R = 1'$, as in the images presented to Radio
-    Galaxy Zoo volunteers. Our assumptions impose an upper bound on how well we
-    can cross-identify radio sources, which can be estimated by considering how
-    accurately a \emph{perfect} binary classifier cross-identifies radio sources
-    under our method. Using the \citet{norris06} labels (Section \ref{labels})
-    to classify SWIRE objects to 100\% accuracy on the binary classification
-    task results in a cross-identification accuracy of \todo{Get an up-to-date
-    number} with our assumptions, which we take as an upper bound on our
-    cross-identification accuracy. \todo{While getting the up-to-date number,
-    might as well generate a table of accuracies for the appendix. The number
-    can come from that.}
-
-    \begin{figure}
-      \centering
-      \includegraphics[width=\linewidth]{images/ARG0003sky_radio}
-      \caption{A radio image centred on $\alpha =
-        03^\text{h}26^\text{m}39.12^\text{s}, \delta = -28^\circ{}07'58.80''$.        %ARG0003sky
-        This is an example of a radio source where the window centred on the
-        host galaxy, shown as a rectangle, does not contain enough radio
-        information to correctly identify the galaxy as the host.}
-      \label{fig:broken-window-size}
-    \end{figure}
-
-    A related issue is that we need to choose a window size for the image
-    representations of each SWIRE object. If this image is too small, radio
-    emission may extend past the edges of the window, and it may be impossible
-    to identify the galaxy as a host galaxy. If the image is too large, then
-    too much information will be included and it will be difficult or
-    computationally expensive to classify. We chose a window size of $32
-    \times 32$ pixels, shown as a red rectangle in Figures
-    \ref{fig:windows} and \ref{fig:broken-window-size}.
+    The space of infrared sources $\mathcal{X}$ needs to be encoded as a vector
+    for the models we will use. We describe this in
+    \autoref{vector-representation-of-infrared-sources}. There are many options
+    for modelling $f$. In this paper we apply three different models: logistic
+    regression, random forests, and convolutional neural networks.
 
     \begin{figure}
       \centering
@@ -473,8 +388,95 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     nearest SWIRE object may be identified as the host galaxy, or a more
     complex method such as likelihood ratios may be applied
     \citep[see][]{weston17}. A full cross-identification pipeline making use
-    of this alongside a binary classifier is shown in Figure
-    \ref{fig:flowchart}.
+    of this alongside a binary classifier is shown in \autoref{fig:flowchart}.
+
+  \subsection{Limitations of our approach}
+  \label{sec:limitations}
+
+    Our assumptions are:
+    \begin{itemize}
+      \item A radio image represents a single radio source and contains exactly
+        one host galaxy.
+      \item The host galaxy of a radio component is within $1'$ of the component.
+      \item The host galaxy appears in the SWIRE catalogue.
+    \end{itemize}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\linewidth]{images/ARG0003r2v_radio.pdf}
+      \caption{$2'$-wide radio image centred on ATLAS3\textunderscore{}J033402.87-282405.8C.
+        %(ARG0003r2v)
+        This radio source breaks our assumption that there are no other radio
+        sources within $1'$ of the source. Another radio source is visible to
+        the upper-left. Host galaxies found by Radio Galaxy Zoo volunteers are
+        shown by a cross.}
+      \label{fig:broken-isolation}
+    \end{figure}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\linewidth]{images/ARG0000u0h_first_8.pdf}
+      \caption{A $8'$-wide radio image from FIRST, centred on
+        FIRSTJ151227.2+454026. The $3'$-wide red box indicates the boundaries of
+        the image of this radio component shown to volunteers in Radio Galaxy
+        Zoo. This radio source breaks our assumption that the whole radio source
+        is visible in the chosen radius. As one of the lobes of the radio source
+        is outside of the image, a volunteer (or automated algorithm) looking at
+        the $3'$-wide image may be unable to determine that this is a radio
+        double or locate the host galaxy.}
+      \label{fig:broken-contains}
+    \end{figure}
+
+    The key problem with this approach is our assumption that the radio sky
+    within $1'$ radius contains only one, complete radio source. The problem is
+    two-fold: This radius may contain multiple sources, or it may not contain
+    the entirety of the source. If the radius contains multiple sources then
+    there will also be multiple hosts in our input images (which breaks our
+    assumption that there is only one); even a perfect classifier can only
+    accurately cross-identify \emph{one} host in an image with multiple. An
+    example of a radio source that breaks the assumption in this way is shown in
+    \autoref{fig:broken-isolation}. If the radius does not contain the whole
+    source, then we are missing radio information useful for finding the host
+    galaxy. This is a difficult problem even for non-automated methods as radio
+    sources can be extremely wide --- for example, Radio Galaxy Zoo found a
+    radio giant that spanned over three different images presented to volunteers
+    and the full source was only cross-identified by the efforts of citizen
+    scientists \citep{banfield15}. An example of a radio image where part of the
+    radio source is outside the search radius is shown in
+    \autoref{fig:broken-contains}. The problems are in opposition to each other:
+    To reduce the number of sources in an input image, we can reduce the image
+    radius, but this increases the chance that we will miss relevant radio
+    source information, and vice versa.
+
+    Our assumptions impose an upper bound on how well we can cross-identify
+    radio sources, which can be estimated by considering how accurately a
+    \emph{perfect} binary classifier cross-identifies radio sources under our
+    method. Using the \citet{norris06} labels (\autoref{labels}) to classify
+    SWIRE objects to 100\% accuracy on the binary classification task results in
+    a cross-identification accuracy of \todo{Get an up-to-date number} with our
+    assumptions, which we take as an upper bound on our cross-identification
+    accuracy. \todo{While getting the up-to-date number, might as well generate
+    a table of accuracies for the appendix. The number can come from that.}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\linewidth]{images/ARG0003sky_radio}
+      \caption{A radio image centred on $\alpha =
+        03^\text{h}26^\text{m}39.12^\text{s}, \delta = -28^\circ{}07'58.80''$.        %ARG0003sky
+        This is an example of a radio source where the window centred on the
+        host galaxy, shown as a rectangle, does not contain enough radio
+        information to correctly identify the galaxy as the host.}
+      \label{fig:broken-window-size}
+    \end{figure}
+
+    A related issue is that we need to choose a window size for the image
+    representations of each SWIRE object. If this image is too small, radio
+    emission may extend past the edges of the window, and it may be impossible
+    to identify the galaxy as a host galaxy. If the image is too large, then
+    too much information will be included and it will be difficult or
+    computationally expensive to classify. We chose a window size of $32
+    \times 32$ pixels, shown as a red rectangle in
+    \autoref{fig:windows} and \autoref{fig:broken-window-size}.
 
   \subsection{Feature vector representation of infrared sources}
   \label{vector-representation-of-infrared-sources}
@@ -546,14 +548,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \label{sec:convolutional-neural-networks}
 
       Convolutional neural networks (CNNs) are a biologically-inspired
-      prediction model for prediction with image inputs. A number of filters
-      are convolved with an input image to produce output images called
+      prediction model for prediction with image inputs. A number of filters are
+      convolved with an input image to produce output images called
       \emph{feature maps}. These feature maps can then be convolved again with
       other filters on subsequent layers, producing a network of convolutions.
       The whole network is differentiable with respect to the values of the
       filters and the filters can be learned using gradient methods. The final
-      layer of the network is logistic regression, with the convolved outputs
-      as input features. For more detail, see \citet[\S II.A][]{lecun98}.
+      layer of the network is logistic regression, with the convolved outputs as
+      input features. For more detail, see \citet[subsection II.A][]{lecun98}.
 
       % \begin{figure*}
       %   \centering
@@ -598,9 +600,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       CNNs have recently produced good results on large image-based datasets
       \citep[e.g.][]{dieleman15cnn}. We employ only a simple CNN model in this
       paper as a proof of concept that CNNs may be used for prediction on radio
-      images. The model architecture we used is shown in Figure \ref{fig:cnn}. An
-      example of this model reducing a radio image is shown in Figure
-      \ref{fig:cnn-outputs}.
+      images. The model architecture we used is shown in \autoref{fig:cnn}. An
+      example of this model reducing a radio image is shown in
+      \autoref{fig:cnn-outputs}.
 
     \subsubsection{Random Forests}
     \label{sec:random-forests}
@@ -678,7 +680,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     Radio Galaxy Zoo labels and the expert labels respectively. We divided the
     CDFS field into four quadrants for training and testing. The quadrants were
     centred on $\alpha = 52^\text{h}48^\text{m}00^\text{s},
-    \delta = -28^\circ{}06'00''$ as shown in Figure \ref{fig:quadrants}. For
+    \delta = -28^\circ{}06'00''$ as shown in \autoref{fig:quadrants}. For
     each trial, one quadrant was used to draw test examples and the other three
     quadrants were used for training examples.
 
@@ -743,7 +745,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     a logistic regression classifier. The balanced accuracy of this classifier
     was computed and compared with the accuracy of this classifier on the host
     cross-identification task. These accuracies are plotted against each other
-    in Figure \ref{fig:gct-to-xid}. We found a positive correlation.
+    in \autoref{fig:gct-to-xid}. We found a positive correlation.
     Additionally, we compared the balanced accuracy of the classifier to the
     mean distance of the predicted host galaxy from the true host galaxy, also
     finding a positive correlation. \todo{Quantify the correlation.}
@@ -828,7 +830,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{tabular}
     \caption{Predicted host galaxy cross-identifications for each object in
       ATLAS-CDFS. Cross-identifications are reported for each predictor, with
-      the predictor listed as in Table \ref{tab:probs}. The cross-identification
+      the predictor listed as in \autoref{tab:probs}. The cross-identification
       given by \citet{norris06} is included in the ``Norris'' column. The
       cross-identification given by the Radio Galaxy Zoo consensus is included
       in the "RGZ" column, along with the corresponding consensus levels for the
