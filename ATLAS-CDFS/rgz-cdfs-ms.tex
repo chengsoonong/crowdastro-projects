@@ -21,6 +21,7 @@
 
 \newcommand{\text}{\mathrm}
 \newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng:~{#1}}]} }
+\newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,7 +63,7 @@ $^{5}$International Centre for Radio Astronomy Research-M468, The University of 
   training. We find that while machine learning algorithms trained on expert
   labels outperform those trained on the crowdsourced Radio Galaxy Zoo labels,
   the accuracies are comparable and the crowdsourced labels are still useful for
-  training. \todo{add balanced accuracies}
+  training. \matthew{Julie}{Rewrite.}
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -103,11 +104,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   galaxies. This is the premise of Radio Galaxy Zoo \citep[RGZ;][]{banfield15},
   a citizen science project hosted on the highly successful Zooniverse platform
   \citep{lintott08}. Volunteers are shown images of the radio sky, and are asked
-  to identify the radio sources in each image \todo{Is this sentence unambiguous
-  enough?}. They are then asked to cross-identify each radio source with its
-  host galaxy in a corresponding infrared image. Radio Galaxy Zoo provides a
-  large dataset of 100~267 radio host cross-identifications and radio source
-  morphologies \citep{wong17}. While this is a much larger number of
+  to identify the radio sources in each image \matthew{Julie}{Is this sentence
+  unambiguous enough?}. They are then asked to cross-identify each radio source
+  with its host galaxy in a corresponding infrared image. Radio Galaxy Zoo
+  provides a large dataset of 100~267 radio host cross-identifications and radio
+  source morphologies \citep{wong17}. While this is a much larger number of
   cross-identifications than have been made by experts, it is still far short of
   the millions of radio sources expected to be detected in upcoming radio
   surveys.
@@ -124,15 +125,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   host galaxy. Additionally, there may be new classes of radio sources detected
   in future surveys like EMU which do not fit the model. \citet{weston17}
   developed a modification of the likelihood ratio method of
-  cross-identification \citep{richter75} for application to EMU. However, this
-  method is only intended to cross-identify ``simple'' sources consisting of a
-  single, isolated radio component \citep{norris17unexpected}. [TODO(Julie): Can
-  you elaborate on this?]
+  cross-identification \citep{richter75likelihood} for application to EMU.
+  However, this method is only intended to cross-identify ``simple'' sources
+  consisting of a single, isolated radio component \citep{norris17unexpected}.
+  \matthew{Julie}{Can you elaborate on this?}
 
-  Related automated methods are WTF \citep{citeneeded}, for detecting
-  ``unexpected'' radio sources, self-organising maps \citep{polsterer15pink},
-  hand-selected features \citep{proctor06}, and deep convolutional neural
-  networks \citep{aniyan17cnn}. \todo{Write this summary.}
+  % Related automated methods are WTF \citep{citeneeded}, for detecting
+  % ``unexpected'' radio sources, self-organising maps \citep{polsterer15pink},
+  % hand-selected features \citep{proctor06}, and deep convolutional neural
+  % networks \citep{aniyan17cnn}. \todo{Write this summary.}
 
   In order to investigate methods for efficiently and effectively classifying
   radio galaxy hosts for upcoming large radio surveys, we have developed a
@@ -141,7 +142,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \begin{figure}
     \includegraphics[width=\linewidth]{images/placeholder.png}
-    \caption{\todo{Define component, source, primary component, host, in a figure.}}
+    \caption{\matthew{Julie}{Define component, source, primary component, host, in a figure.}}
   \end{figure}
 
 \section{Data}\label{data}
@@ -461,7 +462,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \centering
       \includegraphics[width=\linewidth]{images/ARG0003sky_radio}
       \caption{A radio image centred on $\alpha =
-        03^\text{h}26^\text{m}39.12^\text{s}, \delta = -28^\circ{}07'58.80''$.        %ARG0003sky
+        03^\text{h}26^\text{m}39.12^\text{s}$, $\delta = -28^\circ{}07'58.80''$.        %ARG0003sky
         This is an example of a radio source where the window centred on the
         host galaxy, shown as a rectangle, does not contain enough radio
         information to correctly identify the galaxy as the host.}
@@ -512,13 +513,23 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \todo{Cite Lacy 2004, 2010 or 2013 white paper}
     The infrared fluxes provide insight into the properties of the host galaxy
     of the radio emission. The 3.6~$\mu$m and 4.5~$\mu$m fluxes trace both
-    galaxies with aint polycyclic aromatic hydrocarbon (PATH) emission and
+    galaxies with faint polycyclic aromatic hydrocarbon (PATH) emission and
     elliptical galaxies dominated by old stellar popluations. The 5.8~$\mu$m
     flux selects galaxies where the infrared emission is dominated by
     non-equilibrium emission of dust grains (PAH destruction by the hard UV
     spectrum of AGN), while the 8.0$\mu$m flux traces strong PAH emission at
     low redshift \citep{citeneeded}. The stellarity index represents how
     likely the object is to be a star rather than a galaxy.
+
+    There has been limited research on extracting features from radio images.
+    \citet{proctor06} describe hand-selected features for radio doubles in
+    FIRST, and \citet{aniyan17cnn} and \citet{lukic17compact} make use of deep
+    convolutional neural networks which automatically extract features as part
+    of classification. We use the pixels of each $32 \times 32$ radio image as
+    independent features for all classifiers, with the convolutional neural
+    network (\autoref{sec:convolutional-neural-networks}) automatically
+    extracting features, and note that better feature selection may improve our
+    performance. \matthew{Cheng}{This is pretty clunky; can it be improved?}
 
   \subsection{Classifiers}\label{sec:classifiers}
 
@@ -596,12 +607,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \label{fig:cnn-outputs}
       \end{figure}
 
-      CNNs have recently produced good results on large image-based datasets
-      \citep[e.g.][]{dieleman15cnn}. We employ only a simple CNN model in this
-      paper as a proof of concept that CNNs may be used for prediction on radio
-      images. The model architecture we used is shown in \autoref{fig:cnn}. An
-      example of this model reducing a radio image is shown in
-      \autoref{fig:cnn-outputs}.
+      CNNs have recently produced good results on large image-based datasets in
+      astronomy \citep[e.g.][]{dieleman15cnn, lukic17compact}. We employ only a
+      simple CNN model in this paper as a proof of concept that CNNs may be used
+      for class probability prediction on radio images. The model architecture
+      we used is shown in \autoref{fig:cnn}. An example of this model reducing a
+      radio image is shown in \autoref{fig:cnn-outputs}.
 
     \subsubsection{Random Forests}
     \label{sec:random-forests}
