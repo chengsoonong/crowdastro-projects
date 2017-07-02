@@ -563,17 +563,16 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \subsubsection{Convolutional neural networks}
     \label{sec:convolutional-neural-networks}
 
-      Convolutional neural networks (CNNs) are a biologically-inspired
-      prediction model for prediction with image inputs. A number of filters are
-      convolved with an input image to produce output images called
-      \emph{feature maps}. These feature maps can then be convolved again with
-      other filters on subsequent layers, producing a network of convolutions.
-      The whole network is differentiable with respect to the values of the
-      filters and the filters can be learned using gradient methods. The final
-      layer of the network is logistic regression, with the convolved outputs as
-      input features. For more detail, see \citet[subsection II.A][]{lecun98}.
-      We used \textsc{Keras} \citep{chollet15keras} to implement our
-      convolutional neural networks.
+      Convolutional neural networks (CNN) are a biologically-inspired prediction
+      model for prediction with image inputs. A number of filters are convolved
+      with an input image to produce output images called \emph{feature maps}.
+      These feature maps can then be convolved again with other filters on
+      subsequent layers, producing a network of convolutions. The whole network
+      is differentiable with respect to the values of the filters and the
+      filters can be learned using gradient methods. The final layer of the
+      network is logistic regression, with the convolved outputs as input
+      features. For more detail, see \citet[subsection II.A][]{lecun98}. We used
+      \textsc{Keras} \citep{chollet15keras} to implement our CNN.
 
       % \begin{figure*}
       %   \centering
@@ -598,11 +597,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         %   \hline
         % \end{tabular}
         \includegraphics[width=\linewidth]{images/cnn_model_graph}
-        \caption{Architecture of our convolutional neural network. The merge
-          layer flattens the output of the previous layer and adds the 10
-          features derived from the candidate host in SWIRE, i.e. the flux
-          ratios, stellarity indices, and distance. The dropout layer drops
-          $25\%$ of its inputs.}
+        \caption{Architecture of our CNN. The merge layer flattens the output of
+          the previous layer and adds the 10 features derived from the candidate
+          host in SWIRE, i.e. the flux ratios, stellarity indices, and distance.
+          The dropout layer drops $25\%$ of its inputs.}
         \label{fig:cnn}
       \end{figure}
 
