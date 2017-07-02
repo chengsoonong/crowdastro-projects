@@ -324,24 +324,23 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     the object we are localising. For our prior, we assume that the host galaxy
     is always visible in the infrared and thus we only need consider windows
     centred on infrared sources. This assumption usually holds, except for a
-    rare class of infrared-faint radio sources. \citet{norris06} found 22
-    such radio sources in their sample of 784 bright ATLAS components in CDFS.
-    This leads us to a binary classification task: Given an infrared source,
-    compute the probability that it is a host galaxy. To find the host galaxy
-    given a radio source, classify each galaxy within
-    \(R\) of the source and select the galaxy with the highest probability of
-    being a host galaxy. This is a good formulation as binary classification
-    is a very common problem in machine learning and there are many different
-    methods readily available to solve it.
+    rare class of infrared-faint radio sources. \citet{norris06} found 22 such
+    radio sources in their sample of 784 bright ATLAS components in CDFS. This
+    leads us to a binary classification task: Given an infrared source, compute
+    the probability that it is a host galaxy. To find the host galaxy given a
+    radio source, classify each galaxy within $1'$ of the source and select the
+    galaxy with the highest probability of being a host galaxy. This is a good
+    formulation as binary classification is a very common problem in machine
+    learning and there are many different methods readily available to solve it.
 
     % \cheng{Be careful about the difference between a binary classifier and
     % a class probability estimator. $\mathcal{Y}$ can be binary or in the unit
     % interval.}
-    Solving the radio cross-identification task amounts to modelling a
-    function $f$ from infrared sources $\mathcal{X}$ to binary
-    $\mathcal{Y} = \{0, 1\}$:
+    Solving the radio cross-identification task amounts to modelling a function
+    $f$ from infrared sources $\mathcal{X}$ to the probability that an infrared
+    source belongs to a binary class in $\mathcal{Y} = \{0, 1\}$:
     \begin{equation}
-        f : \mathcal{X} \to \mathcal{Y}
+        f(x) \coloneqq \text{Pr}\left(\mathcal{Y} = 1 \mid \mathcal X = x\right).
     \end{equation}
     The space of infrared sources $\mathcal{X}$ needs to be encoded as a vector
     for the models we will use. We describe this in
@@ -604,8 +603,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       astronomy \citep[e.g.][]{dieleman15cnn, lukic17compact}. We employ only a
       simple CNN model in this paper as a proof of concept that CNNs may be used
       for class probability prediction on radio images. The model architecture
-      we used is shown in \autoref{fig:cnn}. An example of this model reducing a
-      radio image is shown in \autoref{fig:cnn-outputs}.
+      we used is shown in \autoref{fig:cnn}.
 
     \subsubsection{Random Forests}
     \label{sec:random-forests}
@@ -695,26 +693,25 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     density and \(S_{\text{peak}}\) is the peak flux density
     \citep{franzen15}.
 
-    We considered only radio objects with a cross-identification in both the
-    \citet{norris06} catalogue and the Radio Galaxy Zoo catalogue. Candidate
-    hosts were then selected from the SWIRE catalogue. For a given subset of
-    radio objects, all SWIRE objects within $1'$ of all radio objects in the
+    Candidate hosts were selected from the SWIRE catalogue. For a given subset
+    of radio objects, all SWIRE objects within $1'$ of all radio objects in the
     subset were added to the associated SWIRE subset.
 
+    Classifiers were trained on all available training data in the training
+    quadrants. Test examples were drawn from the remaining quadrant. To reduce
+    bias in the testing data due to the expert labels being generated from a
+    shallower data release of ATLAS, a SWIRE object was only added to the test
+    set if it was within $1'$ of a radio object with a cross-identification in
+    both the \citet{norris06} catalogue and the Radio Galaxy Zoo catalogue.
+
     Each classifier was trained on the training examples and used to predict
-    labels for the test examples. The predicted labels were compared to the
-    expert labels and the balanced accuracy was computed. We used balanced
-    accuracy as our accuracy measure due to the highly imbalanced classes --- in
-    our total set of SWIRE objects within $1'$ of an ATLAS object, only 4\% have
-    positive labels. Only examples within $1'$ of ATLAS objects in the first
-    ATLAS data release \citep{norris06} were used to compute accuracy, as these
-    were the only ATLAS objects with expert labels. \todo{Move what we report to
-    the results section and reference the tables once there.} We report the
-    balanced accuracy on the classification task for logistic regression,
-    convolutional neural networks, and random forests. We also report the
-    predictions for each SWIRE object. The reported predictions for a given
-    object are made by classifiers tested on the quadrant containing that
-    object.
+    labels for the test examples. The predicted labels were compared to the expert
+    labels and the balanced accuracy was computed. We used balanced accuracy as
+    our accuracy measure due to the highly imbalanced classes --- in our total
+    set of SWIRE objects within $1'$ of an ATLAS object, only 4\% have positive
+    labels. Only examples within $1'$ of ATLAS objects in the first ATLAS data
+    release \citep{norris06} were used to compute accuracy, as these were the
+    only ATLAS objects with expert labels.
 
     We then used the outputs of our classifiers to predict the host galaxy
     for each radio component cross-identified by both \citet{norris06}
@@ -723,33 +720,39 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     estimated using the trained binary classifiers. The SWIRE object with
     the highest probability was chosen as the host galaxy. The accuracy was
     then estimated by counting how many predicted host galaxies matched the
-    \citet{norris06} cross-identifications. We report the accuracies and the
-    cross-identifications. As with SWIRE predictions, reported
-    cross-identifications for a given object are made by classifiers tested
-    on the quadrant containing that object.
-
-    The balanced accuracy provides a good proxy to the accuracy of the host
-    cross-identification task. To check this, we selected random, small
-    subsets of the SWIRE training objects, and for each random subset trained
-    a logistic regression classifier. The balanced accuracy of this classifier
-    was computed and compared with the accuracy of this classifier on the host
-    cross-identification task. These accuracies are plotted against each other
-    in \autoref{fig:gct-to-xid}. We found a positive correlation.
-    Additionally, we compared the balanced accuracy of the classifier to the
-    mean distance of the predicted host galaxy from the true host galaxy, also
-    finding a positive correlation. \todo{Quantify the correlation.}
+    \citet{norris06} cross-identifications.
 
 \section{Results}\label{results}
 
-  {[}TODO: Include images of ``good'' and ``bad'' X-IDs/GCTs.{]}
   \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{images/cdfs_ba_grid.pdf}
   \caption{Balanced accuracies for each quadrant in the galaxy
-    classification task. The maximum attainable balanced accuracy is 100\%, when
-    every galaxy label matches the expert labels. \todo{explain colours and
-    mention that colours will be available online.}\label{fig:ba}}
+    classification task. The accuracies of different classifiers are represented
+    by different shapes. The horizontal axis shows which label set was used to
+    train the classifiers: ``Norris'' represents the expert labels, ``RGZ''
+    represents the Radio Galaxy Zoo labels, and ``RGZ N'' represents the Radio
+    Galaxy Zoo labels applied only to the radio components that appeared in the
+    expert cross-identification catalogue. The three plots show different sets
+    of training and testing data: the ``compact'' contains only compact radio
+    components, ``resolved'' only contains resolved radio components, and
+    ``all'' contains all radio components. The maximum attainable balanced
+    accuracy is 100\%, when every galaxy label matches the expert labels.
+    \label{fig:ba}}
   \end{figure}
+
+  The balanced accuracy of each classifier is shown in \autoref{fig:ba}.
+  \todo{Describe.} The predicted probabilities for each SWIRE object are
+  reported in \autoref{tab:probs}. Probabilities reported for a given object
+  were predicted by classifiers tested on the quadrant containing that object.
+
+  The cross-identification accuracy for each classifier is shown in
+  \autoref{fig:cross-id-accuracy}. \todo{Describe.} The predicted
+  cross-identification for each ATLAS object is reported in \autoref{tab:cids}.
+  As with SWIRE predictions, reported cross-identifications for a given object
+  were generated by classifiers tested on the quadrant containing that object.
+
+  \todo{Include images of ``good'' and ``bad'' X-IDs/GCTs.}
 
   \begin{figure}
   \centering
@@ -939,8 +942,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   classifier.\label{fig:colour-colour}}
   \end{figure}
 
-  {[}TODO: Axis labels should say e.g. \(\log_{10}(S_{5.8}/S_{3.6})\);
-  include the SWIRE wedges from Lacy et al. 2004.{]}
+  \todo{Axis labels should say e.g. \(\log_{10}(S_{5.8}/S_{3.6})\);
+  include the SWIRE wedges from Lacy et al. 2004.}
 
 \section{Application to ATLAS-ELAIS}
 
