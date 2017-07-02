@@ -231,7 +231,7 @@ archivePrefix = "arXiv",
   abstract ={Cross-matching catalogues at different wavelengths is a difficult problem in astronomy, especially when the objects are not point-like. At radio wavelengths, an object can have several components corresponding, for example, to a core and lobes. Considering not all radio detections correspond to visible or infrared sources, matching these catalogues can be challenging. Traditionally, this is done by eye for better quality, which does not scale to the large data volumes expected from the next-generation of radio telescopes. We present a novel automated procedure, using Bayesian hypothesis testing, to achieve reliable associations by explicit modelling of a particular class of radio-source morphology. The new algorithm not only assesses the likelihood of an association between data at two different wavelengths, but also tries to assess whether different radio sources are physically associated, are double-lobed radio galaxies, or just distinct nearby objects. Application to the Spitzer Wide-Area Infrared Extragalactic and Australia Telescope Large Area Survey CDF-S catalogues shows that this method performs well without human intervention.},
   URL = {http://mnras.oxfordjournals.org/content/451/2/1299.abstract},
   eprint = {http://mnras.oxfordjournals.org/content/451/2/1299.full.pdf+html},
-  journal = {Monthly Notices of the Royal Astronomical Society}
+  journal = {\mnras}
 }
 
 @ARTICLE{norris17unexpected,
@@ -266,42 +266,59 @@ booktitle = {Astronomical Data Analysis Software an Systems XXIV (ADASS XXIV)},
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 
-@article{proctor06,
-  title={Comparing Pattern Recognition Feature Sets for Sorting Triples in the {FIRST} Database},
-  author={Proctor, D.D.},
-  journal={The Astrophysical Journal Supplement Series},
-  volume={165},
-  number={1},
-  pages={95},
-  year={2006},
-  publisher={IOP Publishing}
+@ARTICLE{proctor06,
+   author = {{Proctor}, D.~D.},
+    title = "{Comparing Pattern Recognition Feature Sets for Sorting Triples in the FIRST Database}",
+  journal = {\apjs},
+   eprint = {astro-ph/0605104},
+ keywords = {Astronomical Data Bases: Miscellaneous, Galaxies: General, Methods: Data Analysis, Methods: Statistical, Surveys, Techniques: Image Processing},
+     year = 2006,
+    month = jul,
+   volume = 165,
+    pages = {95-107},
+      doi = {10.1086/504801},
+   adsurl = {http://adsabs.harvard.edu/abs/2006ApJS..165...95P},
+  adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 
-@article{lonsdale03swire,
-  title={{SWIRE}: The {SIRTF} wide-area infrared extragalactic survey},
-  author={Lonsdale, Carol J and Smith, Harding E and Rowan-Robinson, Michael and Surace, Jason and Shupe, David and Xu, Cong and Oliver, Sebastian and Padgett, Deborah and Fang, Fan and Conrow, Tim and others},
-  journal={Publications of the Astronomical Society of the Pacific},
-  volume={115},
-  number={810},
-  pages={897},
-  year={2003},
-  publisher={IOP Publishing}
+@ARTICLE{lonsdale03swire,
+   author = {{Lonsdale}, C.~J. and {Smith}, H.~E. and {Rowan-Robinson}, M. and 
+  {Surace}, J. and {Shupe}, D. and {Xu}, C. and {Oliver}, S. and 
+  {Padgett}, D. and {Fang}, F. and {Conrow}, T. and {Franceschini}, A. and 
+  {Gautier}, N. and {Griffin}, M. and {Hacking}, P. and {Masci}, F. and 
+  {Morrison}, G. and {O'Linger}, J. and {Owen}, F. and {P{\'e}rez-Fournon}, I. and 
+  {Pierre}, M. and {Puetter}, R. and {Stacey}, G. and {Castro}, S. and 
+  {Polletta}, M.~d.~C. and {Farrah}, D. and {Jarrett}, T. and 
+  {Frayer}, D. and {Siana}, B. and {Babbedge}, T. and {Dye}, S. and 
+  {Fox}, M. and {Gonzalez-Solares}, E. and {Salaman}, M. and {Berta}, S. and 
+  {Condon}, J.~J. and {Dole}, H. and {Serjeant}, S.},
+    title = "{SWIRE: The SIRTF Wide-Area Infrared Extragalactic Survey}",
+  journal = {\pasp},
+   eprint = {astro-ph/0305375},
+ keywords = {Surveys, Galaxies: Evolution, Galaxies: Active, Cosmology: Large-Scale Structure of Universe, infrared: galaxies},
+     year = 2003,
+    month = aug,
+   volume = 115,
+    pages = {897-927},
+      doi = {10.1086/376850},
+   adsurl = {http://adsabs.harvard.edu/abs/2003PASP..115..897L},
+  adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 
 @ARTICLE{wright10wise,
-   author = {{Wright}, E.~L. and {Eisenhardt}, P.~R.~M. and {Mainzer}, A.~K. and
-  {Ressler}, M.~E. and {Cutri}, R.~M. and {Jarrett}, T. and {Kirkpatrick}, J.~D. and
-  {Padgett}, D. and {McMillan}, R.~S. and {Skrutskie}, M. and
-  {Stanford}, S.~A. and {Cohen}, M. and {Walker}, R.~G. and {Mather}, J.~C. and
-  {Leisawitz}, D. and {Gautier}, III, T.~N. and {McLean}, I. and
-  {Benford}, D. and {Lonsdale}, C.~J. and {Blain}, A. and {Mendez}, B. and
-  {Irace}, W.~R. and {Duval}, V. and {Liu}, F. and {Royer}, D. and
-  {Heinrichsen}, I. and {Howard}, J. and {Shannon}, M. and {Kendall}, M. and
-  {Walsh}, A.~L. and {Larsen}, M. and {Cardon}, J.~G. and {Schick}, S. and
-  {Schwalm}, M. and {Abid}, M. and {Fabinsky}, B. and {Naes}, L. and
+   author = {{Wright}, E.~L. and {Eisenhardt}, P.~R.~M. and {Mainzer}, A.~K. and 
+  {Ressler}, M.~E. and {Cutri}, R.~M. and {Jarrett}, T. and {Kirkpatrick}, J.~D. and 
+  {Padgett}, D. and {McMillan}, R.~S. and {Skrutskie}, M. and 
+  {Stanford}, S.~A. and {Cohen}, M. and {Walker}, R.~G. and {Mather}, J.~C. and 
+  {Leisawitz}, D. and {Gautier}, III, T.~N. and {McLean}, I. and 
+  {Benford}, D. and {Lonsdale}, C.~J. and {Blain}, A. and {Mendez}, B. and 
+  {Irace}, W.~R. and {Duval}, V. and {Liu}, F. and {Royer}, D. and 
+  {Heinrichsen}, I. and {Howard}, J. and {Shannon}, M. and {Kendall}, M. and 
+  {Walsh}, A.~L. and {Larsen}, M. and {Cardon}, J.~G. and {Schick}, S. and 
+  {Schwalm}, M. and {Abid}, M. and {Fabinsky}, B. and {Naes}, L. and 
   {Tsai}, C.-W.},
     title = "{The Wide-field Infrared Survey Explorer (WISE): Mission Description and Initial On-orbit Performance}",
-  journal = {The Astronomical Journal},
+  journal = {\aj},
 archivePrefix = "arXiv",
    eprint = {1008.0031},
  primaryClass = "astro-ph.IM",
@@ -316,16 +333,22 @@ archivePrefix = "arXiv",
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 
-@article{white97first,
-  title={A catalog of 1.4 {GHz} radio sources from the {FIRST} survey},
-  author={White, Richard L and Becker, Robert H and Helfand, David J and Gregg, Michael D},
-  journal={The Astrophysical Journal},
-  volume={475},
-  number={2},
-  pages={479},
-  year={1997},
-  publisher={IOP Publishing}
+
+@ARTICLE{white97first,
+   author = {{White}, R.~L. and {Becker}, R.~H. and {Helfand}, D.~J. and 
+  {Gregg}, M.~D.},
+    title = "{A Catalog of 1.4 GHz Radio Sources from the FIRST Survey}",
+  journal = {\apj},
+ keywords = {Astrometry, Catalogs, Galaxies: Statistics, Galaxies: Quasars: General, Radio Continuum: Galaxies, Surveys},
+     year = 1997,
+    month = feb,
+   volume = 475,
+    pages = {479-493},
+      doi = {10.1086/303564},
+   adsurl = {http://adsabs.harvard.edu/abs/1997ApJ...475..479W},
+  adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
+
 
 @article{surace05swire,
   title={The {SWIRE} Data Release 2: Image Atlases and Source Catalogs for {ELAIS-N1}, {ELAIS-N2}, {XMM-LSS}, and the {Lockman} Hole},
@@ -366,7 +389,7 @@ archivePrefix = "arXiv",
   title={Pattern recognition and machine learning},
   author={Bishop, C. M.},
   year={2006},
-  publisher={springer}
+  publisher={Springer}
 }
 @ARTICLE{dieleman15cnn,
    author = {{Dieleman}, S. and {Willett}, K.~W. and {Dambre}, J.},
@@ -383,4 +406,23 @@ archivePrefix = "arXiv",
       doi = {10.1093/mnras/stv632},
    adsurl = {http://adsabs.harvard.edu/abs/2015MNRAS.450.1441D},
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+
+@ARTICLE{richter75likelihood,
+   author = {{Richter}, G.~A.},
+    title = "{Search for optical identifications in the 5C3-radio survey. II - Statistical treatment and results}",
+  journal = {Astronomische Nachrichten},
+ keywords = {Photographic Plates, Quasars, Radio Sources (Astronomy), Schmidt Telescopes, Statistical Analysis, Andromeda Galaxy, Cosmology, H Ii Regions, Red Shift, Tables (Data)},
+     year = 1975,
+   volume = 296,
+    pages = {65-81},
+      doi = {10.1002/asna.19752960203},
+   adsurl = {http://adsabs.harvard.edu/abs/1975AN....296...65R},
+  adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+
+@unpublished{lukic17compact,
+  author={Lukic, V. and Banfield, J. K. and Wong, O. I. and Br\"uggen, M.},
+  title={{Radio Galaxy Zoo}: Compact and extended radio source classification with deep learning},
+  year={in prep. }
 }

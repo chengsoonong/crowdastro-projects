@@ -21,6 +21,7 @@
 
 \newcommand{\text}{\mathrm}
 \newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng:~{#1}}]} }
+\newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,7 +63,7 @@ $^{5}$International Centre for Radio Astronomy Research-M468, The University of 
   training. We find that while machine learning algorithms trained on expert
   labels outperform those trained on the crowdsourced Radio Galaxy Zoo labels,
   the accuracies are comparable and the crowdsourced labels are still useful for
-  training. \todo{add balanced accuracies}
+  training. \matthew{Julie}{Rewrite.}
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -103,11 +104,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   galaxies. This is the premise of Radio Galaxy Zoo \citep[RGZ;][]{banfield15},
   a citizen science project hosted on the highly successful Zooniverse platform
   \citep{lintott08}. Volunteers are shown images of the radio sky, and are asked
-  to identify the radio sources in each image \todo{Is this sentence unambiguous
-  enough?}. They are then asked to cross-identify each radio source with its
-  host galaxy in a corresponding infrared image. Radio Galaxy Zoo provides a
-  large dataset of 100~267 radio host cross-identifications and radio source
-  morphologies \citep{wong17}. While this is a much larger number of
+  to identify the radio sources in each image \matthew{Julie}{Is this sentence
+  unambiguous enough?}. They are then asked to cross-identify each radio source
+  with its host galaxy in a corresponding infrared image. Radio Galaxy Zoo
+  provides a large dataset of 100~267 radio host cross-identifications and radio
+  source morphologies \citep{wong17}. While this is a much larger number of
   cross-identifications than have been made by experts, it is still far short of
   the millions of radio sources expected to be detected in upcoming radio
   surveys.
@@ -124,15 +125,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   host galaxy. Additionally, there may be new classes of radio sources detected
   in future surveys like EMU which do not fit the model. \citet{weston17}
   developed a modification of the likelihood ratio method of
-  cross-identification \citep{richter75} for application to EMU. However, this
-  method is only intended to cross-identify ``simple'' sources consisting of a
-  single, isolated radio component \citep{norris17unexpected}. [TODO(Julie): Can
-  you elaborate on this?]
+  cross-identification \citep{richter75likelihood} for application to EMU.
+  However, this method is only intended to cross-identify ``simple'' sources
+  consisting of a single, isolated radio component \citep{norris17unexpected}.
+  \matthew{Julie}{Can you elaborate on this?}
 
-  Related automated methods are WTF \citep{citeneeded}, for detecting
-  ``unexpected'' radio sources, self-organising maps \citep{polsterer15pink},
-  hand-selected features \citep{proctor06}, and deep convolutional neural
-  networks \citep{aniyan17cnn}. \todo{Write this summary.}
+  % Related automated methods are WTF \citep{citeneeded}, for detecting
+  % ``unexpected'' radio sources, self-organising maps \citep{polsterer15pink},
+  % hand-selected features \citep{proctor06}, and deep convolutional neural
+  % networks \citep{aniyan17cnn}. \todo{Write this summary.}
 
   In order to investigate methods for efficiently and effectively classifying
   radio galaxy hosts for upcoming large radio surveys, we have developed a
@@ -141,7 +142,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \begin{figure}
     \includegraphics[width=\linewidth]{images/placeholder.png}
-    \caption{\todo{Define component, source, primary component, host, in a figure.}}
+    \caption{\matthew{Julie}{Define component, source, primary component, host, in a figure.}}
   \end{figure}
 
 \section{Data}\label{data}
@@ -453,16 +454,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \emph{perfect} binary classifier cross-identifies radio sources under our
     method. Using the \citet{norris06} labels (\autoref{labels}) to classify
     SWIRE objects to 100\% accuracy on the binary classification task results in
-    a cross-identification accuracy of \todo{Get an up-to-date number} with our
-    assumptions, which we take as an upper bound on our cross-identification
-    accuracy. \todo{While getting the up-to-date number, might as well generate
-    a table of accuracies for the appendix. The number can come from that.}
+    a cross-identification accuracy of $(96.74 \pm 1.76)\%$ across the four CDFS
+    quadrants under our assumptions, which we take as an upper bound on our
+    cross-identification accuracy.
 
     \begin{figure}
       \centering
       \includegraphics[width=\linewidth]{images/ARG0003sky_radio}
       \caption{A radio image centred on $\alpha =
-        03^\text{h}26^\text{m}39.12^\text{s}, \delta = -28^\circ{}07'58.80''$.        %ARG0003sky
+        03^\text{h}26^\text{m}39.12^\text{s}$, $\delta = -28^\circ{}07'58.80''$.        %ARG0003sky
         This is an example of a radio source where the window centred on the
         host galaxy, shown as a rectangle, does not contain enough radio
         information to correctly identify the galaxy as the host.}
@@ -513,13 +513,23 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \todo{Cite Lacy 2004, 2010 or 2013 white paper}
     The infrared fluxes provide insight into the properties of the host galaxy
     of the radio emission. The 3.6~$\mu$m and 4.5~$\mu$m fluxes trace both
-    galaxies with aint polycyclic aromatic hydrocarbon (PATH) emission and
+    galaxies with faint polycyclic aromatic hydrocarbon (PATH) emission and
     elliptical galaxies dominated by old stellar popluations. The 5.8~$\mu$m
     flux selects galaxies where the infrared emission is dominated by
     non-equilibrium emission of dust grains (PAH destruction by the hard UV
     spectrum of AGN), while the 8.0$\mu$m flux traces strong PAH emission at
     low redshift \citep{citeneeded}. The stellarity index represents how
     likely the object is to be a star rather than a galaxy.
+
+    There has been limited research on extracting features from radio images.
+    \citet{proctor06} describe hand-selected features for radio doubles in
+    FIRST, and \citet{aniyan17cnn} and \citet{lukic17compact} make use of deep
+    convolutional neural networks which automatically extract features as part
+    of classification. We use the pixels of each $32 \times 32$ radio image as
+    independent features for all classifiers, with the convolutional neural
+    network (\autoref{sec:convolutional-neural-networks}) automatically
+    extracting features, and note that better feature selection may improve our
+    performance. \matthew{Cheng}{This is pretty clunky; can it be improved?}
 
   \subsection{Classifiers}\label{sec:classifiers}
 
@@ -588,21 +598,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \label{fig:cnn}
       \end{figure}
 
-      \begin{figure}
-      \centering
-      \includegraphics[width=0.6\columnwidth]{convolutions_42191.pdf}
-      \caption{Feature maps from convolutional layers of a convolutional neural
-        network trained on quadrants 1 -- 3 of CDFS with labels derived from
-        \citeauthor{norris06} \todo{Explain this diagram, add subfigures, maybe tidy it up a bit}}
-      \label{fig:cnn-outputs}
-      \end{figure}
+      \todo{Add a diagram of convolutional filters?}
 
-      CNNs have recently produced good results on large image-based datasets
-      \citep[e.g.][]{dieleman15cnn}. We employ only a simple CNN model in this
-      paper as a proof of concept that CNNs may be used for prediction on radio
-      images. The model architecture we used is shown in \autoref{fig:cnn}. An
-      example of this model reducing a radio image is shown in
-      \autoref{fig:cnn-outputs}.
+      CNNs have recently produced good results on large image-based datasets in
+      astronomy \citep[e.g.][]{dieleman15cnn, lukic17compact}. We employ only a
+      simple CNN model in this paper as a proof of concept that CNNs may be used
+      for class probability prediction on radio images. The model architecture
+      we used is shown in \autoref{fig:cnn}. An example of this model reducing a
+      radio image is shown in \autoref{fig:cnn-outputs}.
 
     \subsubsection{Random Forests}
     \label{sec:random-forests}
@@ -634,31 +637,17 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     is assigned a positive label as a host galaxy. In principle we would
     then assign every other galaxy a negative label. This has some problems
     --- an example is that if the cross-identifier did not observe a radio
-    object (e.g.~it was below the signal-to-noise ratio) then the host galaxy
-    of that radio object would receive a negative label.
-    \todo{Count how many times this happens in Norris/RGZ.} This occurs
-    with \citet{norris06} cross-identifications, as these are associated with
-    the first data release of ATLAS. The first data release went to a
-    5$\sigma$ flux density level of $S_{1.4} \geq 1 \text{ mJy beam}^{-1}$
-    \citep{norris06}, compared to $S_{1.4} \geq 85\ \mu\text{Jy beam}^{-1}$
-    for the third data release used by Radio Galaxy Zoo \citep{franzen15}.
-    Labels from Norris may therefore disagree with labels from Radio Galaxy
-    Zoo even if they are both correct.
-
-    There are many potential host galaxies, so instead of using all galaxies
-    in the CDFS field we only train and test our classifiers on infrared
-    objects within a fixed radius of an ATLAS radio object. For this radius we
-    choose $1'$, the same radius as the images shown to volunteers in Radio
-    Galaxy Zoo. In general this will result in cases where the host galaxy is
-    outside the radius \citep[e.g. the giant radio galaxy shown
-    in][]{banfield15}, but this is unavoidable. We may also choose a radius
-    which is too \emph{large}, worsening our assumption that there is only one
-    host galaxy in this radius, but again, this is unavoidable. \todo{Discuss
-    this. Have we already covered this enough in the drawbacks section?}
-    \todo{Consider link-back to drawbacks section.}
-
-    \todo{Describe how we assigned labels given that RGZ only labels the
-    first component.}
+    object (e.g.~it was below the signal-to-noise ratio) then the host galaxy of
+    that radio object would receive a negative label. \todo{Count how many times
+    this happens in Norris/RGZ.} This occurs with \citet{norris06}
+    cross-identifications, as these are associated with the first data release
+    of ATLAS. The first data release went to a 5$\sigma$ flux density level of
+    $S_{1.4} \geq 1 \text{ mJy beam}^{-1}$ \citep{norris06}, compared to
+    $S_{1.4} \geq 85\ \mu\text{Jy beam}^{-1}$ for the third data release used by
+    Radio Galaxy Zoo \citep{franzen15}. The expert labels may therefore disagree
+    with labels from Radio Galaxy Zoo even if they are both correct. We train
+    and test our classifiers on infrared objects within a $1'$ radius of an
+    ATLAS radio object.
 
   \subsection{Experimental Setup}
   \label{sec:experimental-setup}
@@ -814,8 +803,19 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \cheng{Generate results and plots for accuracy, for the supplement}
 
   \begin{table*}
-    \begin{tabular}{cccccccccccccccccccccccccccccc}
-      SWIRE & RA & Dec & CNN(Norris / All) & CNN(Norris / Compact) & \dots & RF(RGZ N / Resolved) \\\hline
+    \caption{Predicted probabilities that each object in SWIRE is a host
+      galaxy. Probabilities are reported for each predictor. C(A / B) indicates
+      the predictor using classifier model C, trained on label set A on data set
+      B. Ellipsis indicates columns that have been omitted. The omitted columns
+      are all other combinations of classifier, label set, and data set. If a
+      SWIRE object does not appear in the table, then it was further than
+      $1'$ from an ATLAS object and hence has a predicted probability of zero
+      by our assumptions. Full table electronic.}
+    \label{tab:probs}
+    \begin{tabular}{c|ccccccccccccccccccccccccccccc}
+      \hline
+      SWIRE & RA & Dec & CNN(Norris / All) & CNN(Norris / Compact) & \dots & RF(RGZ N / Resolved) \\
+      \hline
       SWIRE3\textunderscore J032559.15-284724.2 & 51.4965 & -28.7901 & 0.0001 & 0.3585 & \dots & 0.2815 \\
       SWIRE3\textunderscore J032559.91-284728.9 & 51.4996 & -28.7914 & 0.0004 & 0.3909 & \dots & 0.0000 \\
       SWIRE3\textunderscore J032600.02-284736.9 & 51.5001 & -28.7936 & 0.0002 & 0.3395 & \dots & 0.0000 \\
@@ -825,20 +825,29 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       SWIRE3\textunderscore J032601.03-284711.6 & 51.5043 & -28.7866 & 0.0699 & 0.3752 & \dots & 0.0000 \\
       SWIRE3\textunderscore J032601.56-284131.0 & 51.5065 & -28.692 & 0.0001 & 0.3917 & \dots & 0.0819 \\
       SWIRE3\textunderscore J032601.60-284207.5 & 51.5067 & -28.7021 & 0.0000 & 0.3182 & \dots & 0.0000 \\
+      \hline
     \end{tabular}
-    \caption{Predicted probabilities that each object in SWIRE is a host
-      galaxy. Probabilities are reported for each predictor. C(A / B) indicates
-      the predictor using classifier model C, trained on label set A on data set
-      B. If a SWIRE object does not appear in the table, then it was further
-      than $1'$ from an ATLAS object and hence has a predicted probability of
-      zero by our assumptions. Full table electronic.}
-    \label{tab:probs}
   \end{table*}
 
   \begin{table*}
     \small
-    \begin{tabular}{ccccccccccc}
-      SWIRE & RA & Dec & Norris & RGZ & RGZ radio consensus \\\hline
+    \caption{Predicted host galaxy cross-identifications for each object in
+      ATLAS-CDFS. Cross-identifications are reported for each predictor, with
+      the predictor listed as in \autoref{tab:probs}. The cross-identification
+      given by \citet{norris06} is included in the ``Norris'' column. The
+      cross-identification given by the Radio Galaxy Zoo consensus is included
+      in the ``RGZ'' column, along with the corresponding consensus levels for
+      the radio morphology and host cross-identification tasks \citep[see][for
+      details on how consensus is calculated]{wong17}. Low radio consensus
+      indicates that the component has multiple nearby components (and thus is
+      more impacted by our assumption that the source is isolated), and low
+      infrared consensus indicates that the host galaxy is unclear in the SWIRE
+      image (possibly due to multiple nearby candidate host galaxies). Full
+      table electronic.}
+    \begin{tabular}{c|cccccccccc}
+      \hline
+      SWIRE & RA & Dec & Norris & RGZ & RGZ radio consensus \\
+      \hline
       ATLAS3\textunderscore{}J032602.82-284708.1C & 51.511734 & -28.785575 & SWIRE3\textunderscore{}J032603.15-284708.5 & & 0.4516\\
       ATLAS3\textunderscore{}J032615.49-284629.4C & 51.564555 & -28.774847 & SWIRE3\textunderscore{}J032615.41-284630.7 & SWIRE3\textunderscore{}J032615.41-284630.7 & 0.2941\\
       ATLAS3\textunderscore{}J032615.55-280559.8C & 51.564799 & -28.099955 & SWIRE3\textunderscore{}J032615.52-280559.8 & SWIRE3\textunderscore{}J032615.52-280559.8 & 0.5625\\
@@ -847,10 +856,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       ATLAS3\textunderscore{}J032629.10-280650.1C & 51.621251 & -28.113924 & SWIRE3\textunderscore{}J032629.13-280650.7 & SWIRE3\textunderscore{}J032626.74-280636.7 & 0.3333\\
       ATLAS3\textunderscore{}J032629.61-284052.7C & 51.623385 & -28.681315 & SWIRE3\textunderscore{}J032629.54-284055.8 & SWIRE3\textunderscore{}J032629.54-284055.8 & 0.2676\\
       ATLAS3\textunderscore{}J032629.92-284753.5C & 51.624653 & -28.798195 & SWIRE3\textunderscore{}J032629.81-284754.4 & SWIRE3\textunderscore{}J032629.81-284754.4 & 1.0000\\
-      ATLAS3\textunderscore{}J032630.66-283657.3C & 51.62777 & -28.615917 & SWIRE3\textunderscore{}J032630.64-283658.0 & SWIRE3\textunderscore{}J032628.56-283744.8 & 0.3611
+      ATLAS3\textunderscore{}J032630.66-283657.3C & 51.62777 & -28.615917 & SWIRE3\textunderscore{}J032630.64-283658.0 & SWIRE3\textunderscore{}J032628.56-283744.8 & 0.3611\\
+      \hline
     \end{tabular}
     \begin{tabular}{ccccc}
-      RGZ IR consensus & CNN(Norris / All) & CNN(Norris / Compact) & \dots & RF(RGZ N / Resolved) \\\hline
+      \hline
+      RGZ IR consensus & CNN(Norris / All) & CNN(Norris / Compact) & \dots & RF(RGZ N / Resolved) \\
+      \hline
       0.3214 & SWIRE3\textunderscore{}J032602.36-284711.5 & SWIRE3\textunderscore{}J032602.36-284711.5 & \dots & SWIRE3\textunderscore{}J032603.60-284627.4 \\
       0.8000 & SWIRE3\textunderscore{}J032615.41-284630.7 & SWIRE3\textunderscore{}J032615.41-284630.7 & \dots & SWIRE3\textunderscore{}J032615.41-284630.7 \\
       0.8333 & SWIRE3\textunderscore{}J032615.52-280559.8 & SWIRE3\textunderscore{}J032615.52-280559.8 & \dots & SWIRE3\textunderscore{}J032615.52-280559.8 \\
@@ -859,35 +871,23 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       1.0000 & SWIRE3\textunderscore{}J032629.13-280650.7 & SWIRE3\textunderscore{}J032629.13-280650.7 & \dots & SWIRE3\textunderscore{}J032629.13-280650.7 \\
       1.0000 & SWIRE3\textunderscore{}J032629.13-280650.7 & SWIRE3\textunderscore{}J032629.13-280650.7 & \dots & SWIRE3\textunderscore{}J032629.13-280650.7 \\
       0.8571 & SWIRE3\textunderscore{}J032629.81-284754.4 & SWIRE3\textunderscore{}J032629.81-284754.4 & \dots & SWIRE3\textunderscore{}J032629.81-284754.4 \\
-      0.7308 & SWIRE3\textunderscore{}J032630.64-283658.0 & SWIRE3\textunderscore{}J032628.56-283744.8 & \dots & SWIRE3\textunderscore{}J032628.56-283744.8
+      0.7308 & SWIRE3\textunderscore{}J032630.64-283658.0 & SWIRE3\textunderscore{}J032628.56-283744.8 & \dots & SWIRE3\textunderscore{}J032628.56-283744.8 \\
+      \hline
     \end{tabular}
-    \caption{Predicted host galaxy cross-identifications for each object in
-      ATLAS-CDFS. Cross-identifications are reported for each predictor, with
-      the predictor listed as in \autoref{tab:probs}. The cross-identification
-      given by \citet{norris06} is included in the ``Norris'' column. The
-      cross-identification given by the Radio Galaxy Zoo consensus is included
-      in the "RGZ" column, along with the corresponding consensus levels for the
-      radio morphology and host cross-identification tasks. Low radio consensus
-      indicates that the component has multiple nearby components (and thus is
-      more impacted by our assumption that the source is isolated), and low
-      infrared consensus indicates that the host galaxy is unclear in the SWIRE
-      image (possibly due to multiple nearby candidate host galaxies). Full
-      table electronic. \todo{landscape table? explain dropped columns.}
-      \cheng{What is consensus?}}
     \label{tab:cids}
   \end{table*}
 
-  \begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{gct-to-xid.pdf}
-  \caption{Classification balanced accuracy against accuracy on the
-  cross-identification task. Cross-identification accuracy is computed from a
-  binary comparison between the predicted host and the \citet{norris06}
-  cross-identification; neither distance to the true host nor broken assumptions
-  of one host per image are accommodated. \todo{explain this caption better
-  so that it is understandable to non-ML people; regenerate this with the new
-  pipeline}\label{fig:gct-to-xid}}
-  \end{figure}
+  % \begin{figure}
+  % \centering
+  % \includegraphics[width=\columnwidth]{gct-to-xid.pdf}
+  % \caption{Classification balanced accuracy against accuracy on the
+  % cross-identification task. Cross-identification accuracy is computed from a
+  % binary comparison between the predicted host and the \citet{norris06}
+  % cross-identification; neither distance to the true host nor broken assumptions
+  % of one host per image are accommodated. \todo{explain this caption better
+  % so that it is understandable to non-ML people; regenerate this with the new
+  % pipeline}\label{fig:gct-to-xid}}
+  % \end{figure}
 
   % \begin{figure}
   % \centering
@@ -897,20 +897,20 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   % host on the cross-identification task.\label{fig:gct-to-arcsec-error}}
   % \end{figure}
 
-  \begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{passive.pdf}
-  \caption{Passive learning plot for the GCT. Trained and tested on RGZ.
-    This is so that we had maximal training data --- RGZ has many more
-    objects than Norris. \todo{Regenerate with Norris testing data}
-    \label{fig:passive}}
-  \end{figure}
+  % \begin{figure}
+  % \centering
+  % \includegraphics[width=\columnwidth]{passive.pdf}
+  % \caption{Passive learning plot for the GCT. Trained and tested on RGZ.
+  %   This is so that we had maximal training data --- RGZ has many more
+  %   objects than Norris. \todo{Regenerate with Norris testing data}
+  %   \label{fig:passive}}
+  % \end{figure}
 
-  \begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{distributions.pdf}
-  \caption{Distribution of non-image features.\label{fig:distributions}}
-  \end{figure}
+  % \begin{figure}
+  % \centering
+  % \includegraphics[width=\columnwidth]{distributions.pdf}
+  % \caption{Distribution of non-image features.\label{fig:distributions}}
+  % \end{figure}
 
   \begin{figure*}
     \subfloat{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J032629.61-284052.7C}.pdf}}\hspace{1cm}
