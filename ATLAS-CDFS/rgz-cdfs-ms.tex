@@ -133,22 +133,23 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   consisting of a single, isolated radio component \citep{norris17unexpected}.
   \matthew{Julie}{Can you elaborate on this?}
 
-  % Related automated methods are WTF \citep{citeneeded}, for detecting
-  % `unexpected' radio sources, self-organising maps \citep{polsterer15pink},
-  % hand-selected features \citep{proctor06}, and deep convolutional neural
-  % networks \citep{aniyan17cnn}. \todo{Write this summary.}
-
   In order to investigate methods for efficiently and effectively classifying
   radio galaxy hosts for upcoming large radio surveys, we have developed a
   machine learning approach for radio host cross-identification using standard
-  machine learning techniques. \todo{Outline.}
+  machine learning techniques. In \autoref{sec:data} we describe the data we
+  used to train our methods. In \autoref{sec:method} we describe how we cast the
+  radio host galaxy cross-identification problem as a standard machine learning
+  problem. In \autoref{sec:results} we present results of applying our method to
+  the \emph{Chandra} Deep Field - South (CDFS) and in \autoref{sec:elais} we
+  apply the cross-identifiers trained on CDFS to the ESO Large Area ISO Survey -
+  South 1 (ELAIS-S1) field.
 
   \begin{figure}
     \includegraphics[width=\linewidth]{images/placeholder.png}
     \caption{\matthew{Julie}{Define component, source, primary component, host, in a figure.}}
   \end{figure}
 
-\section{Data}\label{data}
+\section{Data}\label{sec:data}
     
   We use data from the citizen science project Radio Galaxy Zoo
   \citep{banfield15}, the Australia Telescope Large Area Survey
@@ -157,9 +158,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{ATLAS}\label{sec:atlas}
 
-    ATLAS \citep{franzen15} is a wide-area radio survey of the \emph{Chandra}
-    Deep Field - South (CDFS) and the ESO Large Area ISO Survey - South 1
-    (ELAIS-S1) fields at 1.4 GHz. ATLAS has a sensitivity of
+    ATLAS \citep{franzen15} is a wide-area radio survey of the CDFS and ELAIS-S1
+    fields at 1.4 GHz. ATLAS has a sensitivity of
     \unit{14}{\micro\jansky} on CDFS and \unit{17}{\micro\jansky} on ELAIS-S1.
     CDFS covers 3.6~deg$^2$ and contains 3034 radio components above 5$\sigma$.
     ELAIS-S1 covers 2.7~deg$^2$ and contains 2084 radio components above
@@ -262,14 +262,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     the other field to ensure that our methods apply in different areas of
     the sky observed by the same telescope.
 
-    \todo{Explain what components went into RGZ. (Julie)} Each primary component
-    found in the ATLAS DR3 component catalogue appears in Radio Galaxy Zoo.
-    Non-primary components may appear within the image of a primary component,
-    but do not have their own entry in Radio Galaxy Zoo. We will henceforth only
-    discuss the primary components. For ATLAS components, the radio and infrared
-    images shown to volunteers are $2 \times 2$~arcmin.
+    \matthew{Julie}{Explain what components went into RGZ.} Each primary
+    component found in the ATLAS DR3 component catalogue appears in Radio Galaxy
+    Zoo. Non-primary components may appear within the image of a primary
+    component, but do not have their own entry in Radio Galaxy Zoo. We will
+    henceforth only discuss the primary components. For ATLAS components, the
+    radio and infrared images shown to volunteers are $2 \times 2$~arcmin.
 
-  \section{Method}\label{method}
+  \section{Method}\label{sec:method}
 
   \subsection{Cross-identification as binary
   classification}\label{cross-identification-as-binary-classification}
@@ -458,11 +458,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     Our assumptions impose an upper bound on how well we can cross-identify
     radio sources, which can be estimated by considering how accurately a
     \emph{perfect} binary classifier cross-identifies radio sources under our
-    method. Using the \citet{norris06} labels (\autoref{labels}) to classify
-    SWIRE objects to 100~percent accuracy on the binary classification task
-    results in a cross-identification accuracy of $(96.74 \pm 1.76)$~percent
-    across the four CDFS quadrants under our assumptions, which we take as an
-    upper bound on our cross-identification accuracy.
+    method. Using the expert labels (\autoref{labels}) to classify SWIRE objects
+    to 100~percent accuracy on the binary classification task results in a
+    cross-identification accuracy of $(96.74 \pm 1.76)$~percent across the four
+    CDFS quadrants under our assumptions, which we take as an upper bound on our
+    cross-identification accuracy.
 
     \begin{figure}
       \centering
@@ -491,41 +491,38 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     are an array of real values called \emph{feature vectors}. We thus need to
     choose a feature vector representation of our candidate host galaxies.
 
-    \todo{Add a plot of the SWIRE flux distributions along with the wedges.}
-
     Infrared observations of the CDFS field are taken from SWIRE. We use the
     CDFS Fall '05 SWIRE catalogue \citep{surace05swire} to generate candidate
     hosts to classify. Radio observations of the CDFS field are taken from
     ATLAS. As the visual appearance of objects in SWIRE are likely irrelevant to
     whether the galaxy is a host galaxy, the candidate host location encodes
     almost all information we could gain from the infrared image. We therefore
-    only use the radio image for object localisation. \todo{Discuss wording with
-    Julie.}
+    only use the radio image for object localisation. \matthew{Julie}{How is the
+    wording?}
 
     We represent each candidate host as 1034 real-valued features. For a given
     candidate host, these features are:
     \begin{itemize}
       \item the logarithm of the ratio of fluxes of the candidate host in the
         four IRAC wavelengths;
-      \item the stellarity index of the host in both 3.6 $\mu$m and 4.5
-        $\mu$m;
-      \item the flux of the host in 3.6 $\mu$m;
+      \item the stellarity index of the host in both 3.6 and
+        \unit{4.5}{\micro\meter};
+      \item the flux of the host in \unit{3.6}{\micro\meter};
       \item the radial distance between the candidate host and the nearest
         radio component in the ATLAS catalogue; and
       \item a 32 $\times$ 32 pixel image from ATLAS, centred on the candidate
         host.
     \end{itemize}
 
-    \todo{Cite Lacy 2004, 2010 or 2013 white paper}
     The infrared fluxes provide insight into the properties of the host galaxy
-    of the radio emission. The 3.6~$\mu$m and 4.5~$\mu$m fluxes trace both
-    galaxies with faint polycyclic aromatic hydrocarbon (PATH) emission and
-    elliptical galaxies dominated by old stellar popluations. The 5.8~$\mu$m
-    flux selects galaxies where the infrared emission is dominated by
-    non-equilibrium emission of dust grains (PAH destruction by the hard UV
-    spectrum of AGN), while the 8.0$\mu$m flux traces strong PAH emission at
-    low redshift \citep{citeneeded}. The stellarity index represents how
-    likely the object is to be a star rather than a galaxy.
+    of the radio emission. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace
+    both galaxies with faint polycyclic aromatic hydrocarbon (PATH) emission and
+    elliptical galaxies dominated by old stellar popluations. The
+    \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission
+    is dominated by non-equilibrium emission of dust grains (PAH destruction by
+    the hard UV spectrum of AGN), while the \unit{8.0}{\micro\meter} flux traces
+    strong PAH emission at low redshift \citep{citeneeded}. The stellarity index
+    represents how likely the object is to be a star rather than a galaxy.
 
     There has been limited research on extracting features from radio images.
     \citet{proctor06} describe hand-selected features for radio doubles in
@@ -604,7 +601,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \label{fig:cnn}
       \end{figure}
 
-      \todo{Add a diagram of convolutional filters?}
+      % \todo{Add a diagram of convolutional filters?}
 
       CNNs have recently produced good results on large image-based datasets in
       astronomy \citep[e.g.][]{dieleman15cnn, lukic17compact}. We employ only a
@@ -643,16 +640,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     then assign every other galaxy a negative label. This has some problems
     --- an example is that if the cross-identifier did not observe a radio
     object (e.g.~it was below the signal-to-noise ratio) then the host galaxy of
-    that radio object would receive a negative label. \todo{Count how many times
-    this happens in Norris/RGZ.} This occurs with \citet{norris06}
-    cross-identifications, as these are associated with the first data release
-    of ATLAS. The first data release went to a 5$\sigma$ flux density level of
-    $S_{1.4} \geq 1 \text{ mJy beam}^{-1}$ \citep{norris06}, compared to
-    $S_{1.4} \geq 85\ \mu\text{Jy beam}^{-1}$ for the third data release used by
-    Radio Galaxy Zoo \citep{franzen15}. The expert labels may therefore disagree
-    with labels from Radio Galaxy Zoo even if they are both correct. We train
-    and test our classifiers on infrared objects within a 1~arcmin radius of an
-    ATLAS radio object.
+    that radio object would receive a negative label. This occurs with
+    \citet{norris06} cross-identifications, as these are associated with the
+    first data release of ATLAS. The first data release went to a 5$\sigma$ flux
+    density level of $S_{1.4} \geq 1 \text{ mJy beam}^{-1}$ \citep{norris06},
+    compared to $S_{1.4} \geq \unit{85}{\micro\jansky}\text{ beam}^{-1}$ for the
+    third data release used by Radio Galaxy Zoo \citep{franzen15}. The expert
+    labels may therefore disagree with labels from Radio Galaxy Zoo even if they
+    are both correct. We train and test our classifiers on infrared objects
+    within a 1~arcmin radius of an ATLAS radio object.
 
   \subsection{Experimental Setup}
   \label{sec:experimental-setup}
@@ -729,7 +725,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     by counting how many predicted host galaxies matched the \citet{norris06}
     cross-identifications.
 
-\section{Results}\label{results}
+\section{Results}\label{sec:results}
 
   \begin{figure}
   \centering
@@ -748,6 +744,22 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \label{fig:ba}}
   \end{figure}
 
+  \begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
+    \caption{Accuracies for each quadrant in the cross-identification
+      task. Markers and axes are as in \autoref{fig:ba}. The upper horizontal line
+      indicates the accuracy of a `perfect' classifier on the cross-identification
+      task, with the surrounding dashed lines indicating the standard deviation
+      across CDFS quadrants. A `perfect' classifier simply reads the expert
+      labels. This represents the maximum attainable cross-identification accuracy
+      under our assumptions. The lower horizontal line indicates the average
+      accuracy of 15 random classifiers, and hence represents the minimum accuracy
+      we would expect to attain. The surrounding dashed lines indicate the
+      standard deviation across CDFS quadrants and classifiers.
+      \label{fig:cross-id-accuracy}}
+  \end{figure}
+
   The balanced accuracy of each classifier is shown in \autoref{fig:ba}. The
   best overall performance is attained by random forests trained on expert
   labels. With the exception of random forests trained only on resolved
@@ -764,29 +776,52 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   reported in \autoref{tab:probs}. Probabilities reported for a given object
   were predicted by classifiers tested on the quadrant containing that object.
 
-  \begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
-  \caption{Accuracies for each quadrant in the cross-identification
-    task. Markers and axes are as in \autoref{fig:ba}. The upper horizontal line
-    indicates the accuracy of a `perfect' classifier on the cross-identification
-    task, with the surrounding dashed lines indicating the standard deviation
-    across CDFS quadrants. A `perfect' classifier simply reads the expert
-    labels. This represents the maximum attainable cross-identification accuracy
-    under our assumptions. The lower horizontal line indicates the average
-    accuracy of 15 random classifiers, and hence represents the minimum accuracy
-    we would expect to attain. The surrounding dashed lines indicate the
-    standard deviation across CDFS quadrants and classifiers.
-    \label{fig:cross-id-accuracy}}
-  \end{figure}
-
   The cross-identification accuracy for each classifier is shown in
-  \autoref{fig:cross-id-accuracy}. \todo{Describe.} The predicted
-  cross-identification for each ATLAS object is reported in \autoref{tab:cids}.
-  As with SWIRE predictions, reported cross-identifications for a given object
-  were generated by classifiers tested on the quadrant containing that object.
+  \autoref{fig:cross-id-accuracy}. Despite relatively poor performance on the
+  classification task, CNN produce good results on the cross-identification task
+  when trained on the expert labels. Logistic regression gives consistent, good
+  results on both expert and Radio Galaxy Zoo labels. Random forests perform
+  much more poorly on the cross-identification task than on the classification
+  task, possibly as they produce discrete predicted probabilities.
 
-  \todo{Include images of `good' and `bad' X-IDs/GCTs.}
+  The predicted cross-identification for each ATLAS object is reported in
+  \autoref{tab:cids}. As with SWIRE predictions, reported cross-identifications
+  for a given object were generated by classifiers tested on the quadrant
+  containing that object.
+
+  \begin{figure*}
+    \subfloat[\label{fig:fail-a}]{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J032629.61-284052.7C}.pdf}}\hspace{1cm}
+    \subfloat[\label{fig:fail-b}]{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J032824.66-274149.7C}.pdf}}\\
+    \subfloat[\label{fig:fail-c}]{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J032908.32-284827.0C}.pdf}}\hspace{1cm}
+    \subfloat[\label{fig:fail-d}]{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J032916.31-272341.2C}.pdf}}\\
+    \caption{Radio sources in CDFS incorrectly cross-identified by a
+      convolutional neural network trained on expert labels.
+      \protect\subref{fig:fail-a}, \protect\subref{fig:fail-e}, and
+      \protect\subref{fig:fail-f} have multiple SWIRE host galaxies very close
+      together and the predicted host galaxy is close to the true host galaxy.
+      \protect\subref{fig:fail-b} contains multiple radio sources, and the
+      identified host likely \emph{is} a host galaxy, but not one labelled in
+      the initial ATLAS data release, as it is a low flux source. In
+      \protect\subref{fig:fail-c}, the classifier seems to be distracted by the
+      right lobe of the radio source. This may be due to the large number of
+      compact objects in the training set.
+      \protect\subref{fig:fail-d} and \protect\subref{fig:fail-h} show the
+      classifier failing to correct cross-identify a radio double. This may be
+      due to the window size (both lobes would not be visible in the radio image
+      shown to the classifier) or due to the limited number of radio doubles in
+      the training set. Finally,
+      \protect\subref{fig:fail-g} shows the classifier failing to classify a radio
+      triple. This triple extends outside the 1~arcmin radius used to select
+      candidate hosts.}
+  \end{figure*}
+  \begin{figure*}
+    \setcounter{subfigure}{4}
+    \subfloat[\label{fig:fail-e}]{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J033022.32-272121.1C}.pdf}}\hspace{1cm}
+    \subfloat[\label{fig:fail-f}]{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J033242.02-273818.8C}.pdf}}\\
+    \subfloat[\label{fig:fail-g}]{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J033433.94-271812.9C}.pdf}}\hspace{1cm}
+    \subfloat[\label{fig:fail-h}]{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J033436.18-272632.0C}.pdf}}\\
+    \contcaption{}
+  \end{figure*}
 
   \begin{table}
     \caption{Average cross-identification accuracies. \todo{Write this caption.}}
@@ -933,19 +968,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   % \caption{Distribution of non-image features.\label{fig:distributions}}
   % \end{figure}
 
-  \begin{figure*}
-    \subfloat{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J032629.61-284052.7C}.pdf}}\hspace{1cm}
-    \subfloat{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J032824.66-274149.7C}.pdf}}\\
-    \subfloat{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J032908.32-284827.0C}.pdf}}\hspace{1cm}
-    \subfloat{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J032916.31-272341.2C}.pdf}}\\
-  \end{figure*}
-  \begin{figure*}
-    \subfloat{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J033022.32-272121.1C}.pdf}}\hspace{1cm}
-    \subfloat{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J033242.02-273818.8C}.pdf}}\\
-    \subfloat{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J033433.94-271812.9C}.pdf}}\hspace{1cm}
-    \subfloat{\includegraphics[width=0.45\linewidth]{images/examples/\detokenize{CNN_Norris_ATLAS3_J033436.18-272632.0C}.pdf}}\\
-  \end{figure*}
-
   \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{colour-colour-all.pdf}
@@ -964,6 +986,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   include the SWIRE wedges from Lacy et al. 2004.}
 
 \section{Application to ATLAS-ELAIS}
+\label{sec:elais}
 
 \section{Summary}
 %
