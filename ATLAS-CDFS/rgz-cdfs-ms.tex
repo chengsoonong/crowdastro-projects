@@ -824,7 +824,19 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \end{figure*}
 
   \begin{table}
-    \caption{Average cross-identification accuracies. \todo{Write this caption.}}
+    \caption{Average cross-identification accuracies across quadrants.
+      Uncertainties represent standard deviations. `Data set' indicates whether
+      the classifiers were trained and tested on resolved sources or all
+      sources. `Labeller' indicates what label set the classifiers were trained
+      on; `Norris' is the expert label set, `RGZ' is the Radio Galaxy Zoo label
+      set, and `RGZ N' is the Radio Galaxy Zoo label set with only radio sources
+      that were also labelled by experts. A `perfect' classifier reads the
+      expert labels directly and hence represents the maximum attainable
+      accuracy under our assumptions. A `random' classifier generates uniform
+      random class probabilities and hence represents the expected minimum
+      attainable accuracy with our cross-identification method. `LR' refers to
+      logistic regression, `CNN' refers to our convolutional neural network, and
+      `RF' refers to random forests.}
     \label{tab:cross-id-accuracies}
     \begin{tabular}{lll|l}
       \hline
@@ -981,9 +993,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \caption{Colour-colour diagrams for each
   classifier.\label{fig:colour-colour}}
   \end{figure}
-
-  \todo{Axis labels should say e.g. \(\log_{10}(S_{5.8}/S_{3.6})\);
-  include the SWIRE wedges from Lacy et al. 2004.}
 
 \section{Application to ATLAS-ELAIS}
 \label{sec:elais}
