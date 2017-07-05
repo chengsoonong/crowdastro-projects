@@ -1342,15 +1342,19 @@ def cross_identify_all(
         swire_coords: NDArray(N, 2)[float],
         swire_labels: NDArray(N, 2)[bool],
         swire_sets: NDArray(N, 6, 4)[bool],
-        norris_labels: NDArray(N)[bool]) -> Iterable[CrossIdentifications]:
-    """Cross-identify with all predictors."""
+        norris_labels: NDArray(N)[bool],
+        field: str='cdfs') -> Iterable[CrossIdentifications]:
+    """Cross-identify with all predictors.
+
+    ELAIS is cross-identified using CDFS predictors.
+    """
     for classifier in ['RandomForestClassifier', 'LogisticRegression', 'CNN']:
         for labeller in ['norris', 'rgz']:
             # Cross-identification of all ATLAS sources begins here. We
             # ideally get non-overlapping quadrants, so each
             # classifier+labeller pair is fully described by four predictors,
             # one per quadrant.
-            path = WORKING_DIR + classifier + '_' + labeller
+            path = WORKING_DIR + classifier + '_' + labeller + '_' + field
             try:
                 all_cids = list(unserialise_cross_identifications(
                     path + '_cross_ids'))
@@ -1365,7 +1369,7 @@ def cross_identify_all(
                 for pred in predictions:
                     log.debug('Cross-identifying quadrant {} with {}'.format(
                         pred.quadrant, pred.dataset_name))
-                    cids = cross_identify(swire_names, swire_coords, swire_labels, pred)
+                    cids = cross_identify(swire_names, swire_coords, swire_labels, pred, field=field)
                     cids.classifier = classifier  # scikit-learn __name__ :(
                     assert cids.labeller == labeller
                     all_cids.append(cids)
@@ -1374,26 +1378,41 @@ def cross_identify_all(
 
     # "Perfect" classifier (reads groundtruth).
     try:
-        all_cids = list(unserialise_cross_identifications(
-            WORKING_DIR + 'groundtruth_norris_cross_ids',
-            dataset_names=['RGZ & Norris']))
+        if field == 'cdfs':
+            all_cids = list(unserialise_cross_identifications(
+                WORKING_DIR + 'groundtruth_norris_cross_ids',
+                dataset_names=['RGZ & Norris']))
+        else:
+            all_cids = list(unserialise_cross_identifications(
+                WORKING_DIR + 'groundtruth_middelberg_cross_ids',
+                dataset_names=['RGZ & Norris']))
         log.debug('Loaded groundtruth cross-identifications')
     except OSError:
         log.debug('Generating groundtruth cross-identifications')
         all_cids = []
         for q in range(4):
+            if field == 'cdfs':
+                probabilities = norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]]
+                labeller = 'norris'
+            else:
+                probabilities = swire_labels[swire_sets[:, 0, 0], 0]
+                labeller = 'middelberg'
+            labels = probabilities
             predictions = Predictions(
-                probabilities=norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]],
-                labels=norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]],
+                probabilities=probabilities,
+                labels=labels,
                 balanced_accuracy=1.0,
                 dataset_name='RGZ & Norris',
                 quadrant=q,
                 params={},
-                labeller='norris',
+                labeller=labeller,
                 classifier='Groundtruth')
-            cids = cross_identify(swire_names, swire_coords, swire_labels, predictions)
+            cids = cross_identify(swire_names, swire_coords, swire_labels, predictions, field=field)
             all_cids.append(cids)
-        serialise_cross_identifications(all_cids, WORKING_DIR + 'groundtruth_norris_cross_ids')
+        if field == 'cdfs':
+            serialise_cross_identifications(all_cids, WORKING_DIR + 'groundtruth_norris_cross_ids')
+        else:
+            serialise_cross_identifications(all_cids, WORKING_DIR + 'groundtruth_middelberg_cross_ids')
     yield from all_cids
 
     # Random classifier.
@@ -1401,27 +1420,30 @@ def cross_identify_all(
     for trial in range(25):
         try:
             all_cids = list(unserialise_cross_identifications(
-                WORKING_DIR + 'random_{}_norris_cross_ids'.format(trial),
+                WORKING_DIR + 'random_{}_{}_cross_ids'.format(trial, field),
                 dataset_names=['RGZ & Norris']))
             log.debug('Loaded random cross-identifications {}'.format(trial))
         except OSError:
             log.debug('Generating random cross-identifications {}'.format(trial))
             all_cids = []
             for q in range(4):
-                pshape = norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]].shape
+                if field == 'cdfs':
+                    pshape = norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]].shape
+                else:
+                    pshape = swire_labels[swire_sets[:, 0, 0], 0].shape
                 random_probabilities = numpy.random.uniform(size=pshape)
                 predictions = Predictions(
                     probabilities=random_probabilities,
-                    labels=norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]],
+                    labels=numpy.zeros(pshape, dtype=bool),
                     balanced_accuracy=1.0,
                     dataset_name='RGZ & Norris',
                     quadrant=q,
                     params={},
-                    labeller='norris',
+                    labeller='norris',  # Just for consistency.
                     classifier='Random')
-                cids = cross_identify(swire_names, swire_coords, swire_labels, predictions)
+                cids = cross_identify(swire_names, swire_coords, swire_labels, predictions, field=field)
                 all_cids.append(cids)
-            serialise_cross_identifications(all_cids, WORKING_DIR + 'random_{}_norris_cross_ids'.format(trial))
+            serialise_cross_identifications(all_cids, WORKING_DIR + 'random_{}_{}_cross_ids'.format(trial, field))
         yield from all_cids
 
 
@@ -1431,31 +1453,66 @@ def cross_identify(
         swire_labels: NDArray(N, 2)[bool],
         predictions: Predictions,
         radius: float=1 / 60,
-        compact_split: bool=True) -> CrossIdentifications:
+        compact_split: bool=True,
+        field: str='cdfs') -> CrossIdentifications:
     """Cross-identify radio objects in a quadrant."""
     (_, atlas_test_sets), (_, swire_test_sets) = generate_data_sets(
-        swire_coords, swire_labels, overwrite=False)
-    atlas_names = []
-    table = astropy.io.ascii.read(TABLE_PATH)
-    atlas_coords = []
-    norris_truth = []
-    atlas_name_to_compact = {}
-    for i, row in enumerate(table):
-        assert i == row['Key']
-        name = row['Component Name (Franzen)']
-        atlas_names.append(name)
-        atlas_coords.append((row['Component RA (Franzen)'], row['Component DEC (Franzen)']))
-        norris_truth.append((row['Source SWIRE (Norris)']))
-        if name:
-            atlas_name_to_compact[name] = compact_test(row)
-    atlas_coords = numpy.array(atlas_coords)
+        swire_coords, swire_labels, overwrite=False, field=field)
+    if field == 'cdfs':
+        # Read ATLAS info from the big table.
+        # Outputs: atlas_names, atlas_coords, atlas_name_to_compact
+        atlas_names = []
+        table = astropy.io.ascii.read(TABLE_PATH)
+        atlas_coords = []
+        norris_truth = []
+        atlas_name_to_compact = {}
+        for i, row in enumerate(table):
+            assert i == row['Key']
+            name = row['Component Name (Franzen)']
+            atlas_names.append(name)
+            atlas_coords.append((row['Component RA (Franzen)'], row['Component DEC (Franzen)']))
+            norris_truth.append((row['Source SWIRE (Norris)']))
+            if name:
+                atlas_name_to_compact[name] = compact_test(row)
+        atlas_coords = numpy.array(atlas_coords)
+    else:
+        # Read ATLAS component info from Middelberg table.
+        with astropy.io.fits.open(MIDDELBERG_TABLE4_PATH) as elais_components_fits:
+            elais_components = elais_components_fits[1].data
+            atlas_coords = []
+            atlas_names = []
+            atlas_name_to_compact = {}
+            atlas_cid_to_name = {}
+            for component in elais_components:
+                coord = astropy.coordinates.SkyCoord(
+                    ra='{} {} {}'.format(component['RAh'], component['RAm'], component['RAs']),
+                    dec='-{} {} {}'.format(component['DEd'], component['DEm'], component['DEs']),
+                    unit=('hourangle', 'deg'))
+                coord = (coord.ra.deg, coord.dec.deg)
+                cid = component['CID']
+                name = component['ATELAIS']
+                atlas_coords.append(coord)
+                atlas_names.append(name)
+                atlas_cid_to_name[cid] = name
+                row = {'Component S (Franzen)': component['Sint'],  # Fitting in with the CDFS API...
+                       'Component S_ERR (Franzen)': component['e_Sint'],
+                       'Component Sp (Franzen)': component['Sp'],
+                       'Component Sp_ERR (Franzen)': component['e_Sp']}
+                atlas_name_to_compact[name] = compact_test(row)
+            atlas_coords = numpy.array(atlas_coords)
+
     quadrant = predictions.quadrant
     dataset_name = predictions.dataset_name
     labeller = predictions.labeller
     classifier = predictions.classifier
     params = predictions.params
-    atlas_set = atlas_test_sets[:, SET_NAMES['RGZ'], quadrant].nonzero()[0]  # Cross-identify against *everything*.
-    swire_set = swire_test_sets[:, SET_NAMES['RGZ'], quadrant].nonzero()[0]  # Note that this is independent from dataset_name.
+    if field == 'cdfs':
+        atlas_set = atlas_test_sets[:, SET_NAMES['RGZ'], quadrant].nonzero()[0]  # Cross-identify against *everything*.
+        swire_set = swire_test_sets[:, SET_NAMES['RGZ'], quadrant].nonzero()[0]  # Note that this is independent from dataset_name.
+    else:
+        atlas_set = atlas_test_sets[:, 0, 0].nonzero()[0]
+        swire_set = swire_test_sets[:, 0, 0].nonzero()[0]
+
     swire_tree = KDTree(swire_coords[swire_set])
 
     radio_names_ = []
@@ -1494,20 +1551,61 @@ def cross_identify(
     # Compute accuracy.
     n_correct = 0
     n_total = 0
-    for row in table:
-        if not (row['Key'] in atlas_set and
-                row['Source SWIRE (Norris)'] and
-                row['Source SWIRE (Norris)'].startswith('SWIRE')):
-            continue
+    if field == 'cdfs':
+        for row in table:
+            if not (row['Key'] in atlas_set and
+                    row['Source SWIRE (Norris)'] and
+                    row['Source SWIRE (Norris)'].startswith('SWIRE')):
+                continue
 
-        assert row['Component Name (Franzen)'].startswith('ATLAS')
-        if row['Component Name (Franzen)'] in no_matches:
-            continue
+            assert row['Component Name (Franzen)'].startswith('ATLAS')
+            if row['Component Name (Franzen)'] in no_matches:
+                continue
 
-        n_correct += row['Source SWIRE (Norris)'] == radio_to_ir[row['Component Name (Franzen)']]
-        n_total += 1
+            n_correct += row['Source SWIRE (Norris)'] == radio_to_ir[row['Component Name (Franzen)']]
+            n_total += 1
+    else:
+        # Read correct cross-identifications from Middelberg table.
+        middelberg_cross_ids = {}
+        swire_names = numpy.array(swire_names)
+        with open(MIDDELBERG_TABLE5_PATH) as elais_file:
+            # The FITS version of this table is corrupt, so we need to parse this ourselves.
+            # We'll opt for the easy approach and use regex.
+            # Here's a sample line:
+            # S336   ATELAISJ003836.72-440617.8|C0336, C0336.1, C0336.2                         |00 38 36.727 -44 06 17.82SWIRE4J003836.72-440617.8|
+            # We can ignore the source ID and name, but we will have to pull out the CID list and the SWIRE name.
+            lines = [line.split('|') for line in elais_file]
+            for line in lines:
+                if 'ATELAISJ' not in line[0]:
+                    continue
+
+                line_cids = line[1]
+                if 'C0' not in line_cids and 'C1' not in line_cids:
+                    continue
+
+                line_cids = [cid.strip() for cid in line_cids.split(',')]
+                swire_coord_re = re.search(r'SWIRE4J(\d\d)(\d\d)(\d\d\.\d\d)(-\d\d)(\d\d)(\d\d\.\d)', line[2])
+                if not swire_coord_re:
+                    continue
+                swire_coord_list = swire_coord_re.groups()
+                coord = astropy.coordinates.SkyCoord(
+                    ra='{} {} {}'.format(*swire_coord_list[:3]),
+                    dec='{} {} {}'.format(*swire_coord_list[3:]),
+                    unit=('hourangle', 'deg'))
+                coord = (coord.ra.deg, coord.dec.deg)
+                # Nearest SWIRE...
+                dist, nearest = swire_tree.query(coord)
+                if dist > 5 / 60 / 60:
+                    log.warning('No SWIRE match found for Middelberg cross-identification {}'.format(line[0]))
+                    continue
+                name = swire_names[swire_set][nearest]
+                for cid in line_cids:
+                    if atlas_cid_to_name[cid] in radio_to_ir:
+                        n_correct += radio_to_ir[atlas_cid_to_name[cid]] == name
+                        n_total += 1
 
     accuracy = n_correct / n_total
+    log.debug('Accuracy: {:.02%}'.format(accuracy))
 
     return CrossIdentifications(
         radio_names=radio_names_,
@@ -1671,7 +1769,8 @@ def main(overwrite_predictions: bool=False,
         swire_labels_elais,
         swire_test_sets_elais,
         overwrite=overwrite_predictions or overwrite_all)
-    cids = list(cross_identify_all(swire_names_cdfs, swire_coords_cdfs, swire_labels_cdfs, swire_test_sets_cdfs, swire_labels_cdfs[:, 0]))
+    cids = list(cross_identify_all(swire_names_cdfs, swire_coords_cdfs, swire_labels_cdfs, swire_test_sets_cdfs, swire_labels_cdfs[:, 0], field='cdfs'))
+    cids = list(cross_identify_all(swire_names_elais, swire_coords_elais, swire_labels_elais, swire_test_sets_elais, swire_labels_elais[:, 0], field='elais'))
 
 
 if __name__ == '__main__':
