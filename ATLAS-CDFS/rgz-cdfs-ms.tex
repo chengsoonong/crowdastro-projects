@@ -33,7 +33,7 @@
 
 \title[Machine learning methods for radio source cross-identification]{Radio Galaxy Zoo: Machine learning methods for radio source host galaxy cross-identification}
 
-\author[RGZ ML Team]{M. J. Alger$^{1}$, J. K. Banfield$^{1, 2, 3}$, C. S. Ong$^{4, 5}$, O. I. Wong$^{2, 6}$, others
+\author[Alger et al.]{M. J. Alger$^{1}$, J. K. Banfield$^{1, 2, 3}$, C. S. Ong$^{4, 5}$, O. I. Wong$^{2, 6}$, others
 \\
 % List of institutions
 $^{1}$Research School of Astronomy and Astrophysics, The Australian National University, Canberra, ACT 2611, Australia\\
@@ -732,7 +732,7 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
     cross-identifications.
 
 \section{Results}\label{sec:results}
-
+\subsection{Application to CDFS}
   \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{images/cdfs_ba_grid.pdf}
@@ -766,14 +766,42 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
       \label{fig:cross-id-accuracy}}
   \end{figure}
 
-  We show the balanced accuracy of each classifier in \autoref{fig:ba} for only compact radio components, resolved radio components, and then for all the radio components. For each subplot, we show the label set used to train the classifiers. We find that the
+  \begin{table*}
+    \caption{Average balanced accuracies across quadrants shown in Fig.~\ref{fig:ba} for CDFS.
+      Uncertainties represent standard deviations. 
+      The classifiers were trained and tested on compact sources, resolved sources, and all
+      sources separately. `Labeller' indicates what label set the classifiers were trained
+      on. `Norris' is the expert label set, `RGZ' is the Radio Galaxy Zoo label
+      set, and `RGZ N' is the Radio Galaxy Zoo label set with only radio sources
+      that were also labelled by experts. `LR' refers to
+      logistic regression, `CNN' refers to our convolutional neural network, and
+      `RF' refers to random forests.}
+    \label{ba:average-accuracies}
+    \begin{tabular}{llccc}
+\hline
+Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
+ & & (per cent) & (per cent) & (per cent)\\
+\hline
+Norris & CNN & $92.59 \pm 0.70$ & $91.16 \pm 0.54$ & $92.05 \pm 0.62$\\
+ & LR & $91.55 \pm 1.01$ & $93.21 \pm 0.97$ & $93.05 \pm 1.20$\\
+ & RF & $97.50 \pm 0.58$ & $90.86 \pm 4.81$ & $96.74 \pm 2.25$\\
+RGZ N & CNN & $89.36 \pm 0.56$ & $89.56 \pm 1.31$ & $89.36 \pm 0.54$\\
+ & LR & $89.46 \pm 0.80$ & $90.47 \pm 1.68$ & $90.19 \pm 0.81$\\
+ & RF & $94.55 \pm 0.11$ & $95.78 \pm 0.51$ & $94.73 \pm 0.49$\\
+RGZ & CNN & $87.74 \pm 0.90$ & $87.74 \pm 0.90$ & $87.74 \pm 0.90$\\
+ & LR & $91.44 \pm 0.82$ & $89.80 \pm 0.81$ & $90.82 \pm 1.39$\\
+ & RF & $94.00 \pm 0.56$ & $94.65 \pm 0.62$ & $94.12 \pm 0.27$\\
+\hline
+\end{tabular}
+\end{table*}
+
+  We show the balanced accuracy of each classifier in \autoref{fig:ba} for only compact radio components, resolved radio components, and then for all the radio components. For each subplot, we show the label set used to train the classifiers. Table \ref{ba:average-accuracies} lists the average accuracies across the four quadrants for the resolved components and all radio components. We find that the
   best overall performance is attained by random forests trained on expert
-  labels (`Norris' labels). With the exception of random forests trained only on resolved
+  labels (`Norris' labels) with averaged balanced accuracies of $97.50 \pm 0.58$ per cent for compact, $90.86 \pm 4.81$ per cent for resolved, and $96.74 \pm 2.25$ per cent all components. With the exception of random forests trained only on resolved
   components, classifiers trained on expert labels on average perform better
   than those trained on Radio Galaxy Zoo labels. Nevertheless, classifiers
   trained on Radio Galaxy Zoo labels still attain good accuracies on
-  all tasks. Averaging over quadrants, random forests outperform all other
-  classifiers overall. When trained on resolved components and expert labels,
+  all tasks with averaged balanced accuracies ranging between 87.74 per cent for the CNN and 94.65 per cent for random forests.  When trained on resolved components and expert labels,
   the accuracy of random forests on the classification task has a very high
   spread over the CDFS quadrants. This may be due to the limited number of
   resolved components in the expert-labelled data set.
@@ -984,14 +1012,14 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
   of an ATLAS object.\label{fig:colour-colour-all}}
   \end{figure}
 
-  \begin{figure}
+  \begin{figure*}
   \centering
-  \includegraphics[width=\columnwidth]{colour_colour_predictions.pdf}
+  \includegraphics[width=\textwidth]{colour_colour_predictions.pdf}
   \caption{Colour-colour diagrams for each
   classifier.\label{fig:colour-colour}}
-  \end{figure}
+  \end{figure*}
 
-\section{Application to ATLAS-ELAIS}
+\subsection{Application to ATLAS-ELAIS}
 \label{sec:elais}
 
 We applied the classifiers trained on CDFS to perform cross identification on the ELIAS field.
