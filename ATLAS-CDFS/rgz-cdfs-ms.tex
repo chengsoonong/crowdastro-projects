@@ -23,7 +23,7 @@
 \renewcommand{\vec}[1]{\mathbf{#1}}
 % \newcommand{\text}{\mathrm}
 \newcommand{\jansky}{\text{Jy}}
-\newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng:~{#1}}]} }
+\newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng TODO:~{#1}}]} }
 \newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
 
@@ -80,6 +80,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 %%%%%%%%%%%%%%%%% BODY OF PAPER %%%%%%%%%%%%%%%%%%
 
 \section{Introduction}\label{introduction}
+
+  \cheng{Set up rgz.github.io}
 
   Next generation radio telescopes such as the Australian SKA Pathfinder
   \citep[ASKAP;][]{johnston07} and Apertif \citep{verheijen08} will conduct
@@ -151,7 +153,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \end{figure}
 
 \section{Data}\label{sec:data}
-    
+
   We use data from the citizen science project Radio Galaxy Zoo
   \citep{banfield15}, the Australia Telescope Large Area Survey
   \citep[ATLAS;][]{franzen15}, and the \emph{Spitzer} Wide-area Infrared
@@ -340,9 +342,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     machine learning and there are many different methods readily available to
     solve it.
 
-    % \cheng{Be careful about the difference between a binary classifier and
-    % a class probability estimator. $\mathcal{Y}$ can be binary or in the unit
-    % interval.}
     Solving the radio cross-identification task amounts to modelling a function
     $f$ from infrared sources $\mathcal{X}$ to the probability that an infrared
     source belongs to a binary class in $\mathcal{Y} = \{0, 1\}$:
@@ -498,7 +497,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     ATLAS. As the visual appearance of objects in SWIRE are likely irrelevant to
     whether the galaxy is a host galaxy, the candidate host location encodes
     almost all information we could gain from the infrared image. We therefore
-    only use the radio image for object localisation. \matthew{Julie}{How is the
+    only use the radio image for object localisation. \cheng{How is the
     wording?}
 
     We represent each candidate host as 1034 real-valued features. For a given
@@ -533,7 +532,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     independent features for all classifiers, with the convolutional neural
     network (\autoref{sec:convolutional-neural-networks}) automatically
     extracting features, and note that better feature selection may improve our
-    performance. \matthew{Cheng}{This is pretty clunky; can it be improved?}
+    performance. \cheng{This is pretty clunky; can it be improved?}
 
   \subsection{Classifiers}\label{sec:classifiers}
 
@@ -839,7 +838,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       random class probabilities and hence represents the expected minimum
       attainable accuracy with our cross-identification method. `LR' refers to
       logistic regression, `CNN' refers to our convolutional neural network, and
-      `RF' refers to random forests.}
+      `RF' refers to random forests.\cheng{two column wide}}
     \label{tab:cross-id-accuracies}
     \begin{tabular}{lll|l}
       \hline
@@ -999,6 +998,37 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
 \section{Application to ATLAS-ELAIS}
 \label{sec:elais}
+
+We applied the classifiers trained on CDFS to perform cross identification on the ELIAS field.
+This tests two different important aspects of our proposed solution. First we are interested
+in the ability of the classifier to generalize to different parts of the sky. In the results
+shown in \autoref{fig:elais-ba} and \autoref{fig:elais-cross-id-accuracy} we see that our
+proposed solution indeed performs very well in the new region. Furthermore, it is comforting
+to see that variation between the classifiers trained on different datasets are the same or
+smaller than the variation in the CDFS field.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{images/elais_ba_grid.pdf}
+\caption{Balanced accuracies for each quadrant in the galaxy
+  classification task on the ELAIS field. Markers and axes are as in \autoref{fig:ba}.
+  The classifiers in \autoref{fig:ba}
+  were applied to the whole ELAIS field, and performance was measured against
+  ground truth labels from~\citet{middelberg08}.
+  \label{fig:elais-ba}}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\columnwidth]{images/elais_cross_identification_grid.pdf}
+  \caption{Accuracies for each quadrant in the cross-identification
+    task on the ELAIS field. Markers and axes are as in \autoref{fig:ba}.
+    The classifiers in \autoref{fig:cross-id-accuracy}
+    were applied to the whole ELIAS field, and performance was measured against
+    ground truth labels from~\citet{middelberg08}.
+    \label{fig:elais-cross-id-accuracy}}
+\end{figure}
+
 
 \section{Summary}
 %
