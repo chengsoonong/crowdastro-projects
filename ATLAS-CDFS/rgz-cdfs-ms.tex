@@ -106,7 +106,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   An important part of processing this data is cross-identifying observed radio
   emission regions with observations of their host galaxy in surveys at other
-  wavelengths. Radio host cross-identification can be a difficult task. Fig.~\ref{fig1} illustrates the different radio emission regions that a host galaxy may have. Compact components are unresolved or point-like regions of radio emission while compact radio sources are one compact component usually consistent with the host galaxy location. Extended radio sources consist of resolved single components and/or multiple or resolved or unresolved components. Fanaroff \& Riley type I \citep[FRI; ][]{Fanaroff1974} and Fanaroff \& Riley type II (FRII) are examples of resolved radio sources.   
+  wavelengths. Radio host cross-identification can be a difficult task. Fig.~\ref{fig1} illustrates the different radio emission regions that a host galaxy may have. Compact components are unresolved or point-like regions of radio emission while compact radio sources are one compact component usually consistent with the host galaxy location. Extended radio sources consist of resolved single components and/or multiple or resolved or unresolved components. Fanaroff \& Riley type I \citep[FRI; ][]{Fanaroff1974} and Fanaroff \& Riley type II (FRII) are examples of resolved radio sources.
   Radio emissions from radio-loud active galactic nuclei (AGN) may be
   complicated structures not clearly related to the host galaxy. These are often
   composed of multiple, separate components. This type of AGN are expected to dominate
@@ -120,9 +120,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   galaxy. This is the premise of Radio Galaxy Zoo\footnote{\url{https://radio.galaxyzoo.org}} \citep{banfield15},
   a citizen science project hosted on the highly successful Zooniverse platform
   \citep{lintott08}. Volunteers are shown images of the radio sky, and are asked
-  to identify the radio components in each image that correspond to the same host galaxy. They are then asked to cross-identify the radio source with its host galaxy in a corresponding infrared image. A more thorough explanation of the project can be found in \citet{banfield15}. The first data release for Radio Galaxy Zoo will 
+  to identify the radio components in each image that correspond to the same host galaxy. They are then asked to cross-identify the radio source with its host galaxy in a corresponding infrared image. A more thorough explanation of the project can be found in \citet{banfield15}. The first data release for Radio Galaxy Zoo will
   provide a large dataset of 100~267 radio host cross-identifications and radio
-  source morphologies \citep{wong17}. While this is a much larger number of visual 
+  source morphologies \citep{wong17}. While this is a much larger number of visual
   cross-identifications than have been made by experts \citep[i.e., ][]{Taylor2007,Gendre2008,Grant2010,norris06,middelberg08} it is still far short of
   the millions of radio sources expected to be detected in upcoming radio
   surveys.
@@ -134,7 +134,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   component and two lobe components. The core radio component is coincident with
   the host galaxy, so cross-identification amounts to finding the galaxy
   coincident with the core radio component in the most likely model fit. This method is easily
-  extended to use other, more complex models, but it is purely geometric.  However, the model 
+  extended to use other, more complex models, but it is purely geometric.  However, the model
   does not incorporate other information such as the physical properties of the potential
   host galaxy. Additionally, there may be new classes of radio sources detected
   in future surveys like EMU which do not fit the model. \citet{weston17}
@@ -142,8 +142,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   cross-identification \citep{richter75likelihood} for application to ATLAS and EMU. \citet{weston17} does well on single (resolved or compact) radio sources with a 69 and 71 per cent success rate in the two ATLAS fields.
   However, the current method does not handle extended multiple component radio sources \citep{norris17unexpected}.
 
-  %In order to investigate methods for efficiently and effectively classifying the galaxy host of the 
-  %radio emission for upcoming large radio surveys, 
+  %In order to investigate methods for efficiently and effectively classifying the galaxy host of the
+  %radio emission for upcoming large radio surveys,
   We have developed a
   machine learning approach for radio host cross-identification using standard
   machine learning techniques for efficient and effective classification. In \autoref{sec:data} we describe the data we
@@ -203,7 +203,7 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
       \end{tabular}
     \end{table}
 
-   
+
 
     % \citet{norris06} produced a catalogue of cross-identifications of 784
     % radio sources with their infrared counterparts in SWIRE.
@@ -257,7 +257,7 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
     volunteers who agreed with the most common radio morphology classification
     are combined by maximising over a kernel density estimate of the locations.
     These locations are then matched to the nearest SWIRE object within
-    3~arcsec. A full description of the catalogue generation can be found in the Radio Galaxy Zoo first data release 
+    3~arcsec. A full description of the catalogue generation can be found in the Radio Galaxy Zoo first data release
     \citep{wong17}. As of 30 March 2016, there are 97~807 complete
     classifications of FIRST components, and 2460 complete classifications of
     ATLAS CDFS components. In this paper we focus on the Radio Galaxy Zoo cross-identifications of
@@ -265,8 +265,8 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
     like ours will be used; and (2) ATLAS is composed of two
     fields, so we can train methods on one field (CDFS) and test these methods on
     the other field (ELAIS S1) to ensure that our methods apply in different areas of
-    the sky observed by the same telescope. 
-    
+    the sky observed by the same telescope.
+
     The ATLAS third data release by \citet{franzen15} provides a catalogue of radio components (both resolved and unresolved) for each ATLAS field.  Each radio component was fit with a two dimensional Gaussian. Depending on the residual of the fit, more then one Gaussian may be fit to one region of radio emission.  Each of these Gaussian fits are listed as a radio component in the ATLAS catalogue.  The primary component is the brightest radio component from the multiple Gaussian fit to the region of radio emission. The Each primary
     component found in the ATLAS DR3 component catalogue appears in Radio Galaxy
     Zoo. Non-primary components may appear within the image of a primary
@@ -489,18 +489,19 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
   \subsection{Feature vector representation of infrared sources}
   \label{vector-representation-of-infrared-sources}
 
-    Most binary classification methods require that the inputs to be classified
+    Binary classification methods require that the inputs to be classified
     are an array of real values called \emph{feature vectors}. We thus need to
     choose a feature vector representation of our candidate host galaxies.
 
     Infrared observations of the CDFS field are taken from SWIRE. We use the
     CDFS Fall '05 SWIRE catalogue \citep{surace05swire} to generate candidate
     hosts to classify. Radio observations of the CDFS field are taken from
-    ATLAS. As the visual appearance of objects in SWIRE are likely irrelevant to
+    ATLAS. The radio image is taken to be a 32 $\times$ 32 pixel image from
+    ATLAS, centered on the candidate host location from SWIRE.
+    As the visual appearance of objects in SWIRE are likely irrelevant to
     whether the galaxy is a host galaxy, the candidate host location encodes
     almost all information we could gain from the infrared image. We therefore
-    only use the radio image for object localisation. \cheng{How is the
-    wording?}
+    do not use the infrared image for object localisation.
 
     We represent each candidate host as 1034 real-valued features. For a given
     candidate host, these features are:
@@ -526,15 +527,17 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
     strong PAH emission at low redshift \citep{citeneeded}. The stellarity index
     represents how likely the object is to be a star rather than a galaxy.
 
+    We use the pixels of each $32 \times 32$ radio image as
+    independent features for all classifiers, with the convolutional neural
+    network (\autoref{sec:convolutional-neural-networks}) automatically
+    extracting features that are relevant.
     There has been limited research on extracting features from radio images.
     \citet{proctor06} describe hand-selected features for radio doubles in
     FIRST, and \citet{aniyan17cnn} and \citet{lukic17compact} make use of deep
     convolutional neural networks which automatically extract features as part
-    of classification. We use the pixels of each $32 \times 32$ radio image as
-    independent features for all classifiers, with the convolutional neural
-    network (\autoref{sec:convolutional-neural-networks}) automatically
-    extracting features, and note that better feature selection may improve our
-    performance. \cheng{This is pretty clunky; can it be improved?}
+    of classification. A more comprehensive search of neural network architectures
+    for processing radio images is beyond the scope of this initial study,
+    and is a good avenue for potential improvement in our pipeline.
 
   \subsection{Classifiers}\label{sec:classifiers}
 
@@ -836,39 +839,33 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
       random class probabilities and hence represents the expected minimum
       attainable accuracy with our cross-identification method. `LR' refers to
       logistic regression, `CNN' refers to our convolutional neural network, and
-      `RF' refers to random forests.\cheng{two column wide}}
+      `RF' refers to random forests.}
     \label{tab:cross-id-accuracies}
-    \begin{tabular}{lll|l}
+    {\bf Resolved}\\
+    \begin{tabular}{l|rrrrr}
       \hline
-      Data set & Labeller & Classifier & Mean accuracy (\%)\\
+      Label set & Norris & RGZ N & RGZ\\
       \hline
-      Resolved & Norris & Perfect & $92.06 \pm 1.46$\\
-       &  & Random & $4.68 \pm 3.91$\\
-       &  & LR & $66.47 \pm 6.93$\\
-       &  & CNN & $61.06 \pm 15.05$\\
-       &  & RF & $67.21 \pm 5.90$\\
-       & RGZ N & LR & $64.63 \pm 11.10$\\
-       &  & CNN & $48.61 \pm 11.54$\\
-       &  & RF & $65.77 \pm 4.72$\\
-       & RGZ & LR & $59.97 \pm 11.49$\\
-       &  & CNN & $37.90 \pm 8.72$\\
-       &  & RF & $56.99 \pm 6.13$\\
-      All & Norris & Perfect & $96.74 \pm 1.76$\\
-       &  & Random & $79.71 \pm 5.43$\\
-       &  & LR & $92.81 \pm 1.54$\\
-       &  & CNN & $92.95 \pm 1.49$\\
-       &  & RF & $92.36 \pm 1.24$\\
-       & RGZ N & LR & $91.73 \pm 0.95$\\
-       &  & CNN & $87.55 \pm 2.13$\\
-       &  & RF & $89.19 \pm 3.38$\\
-       & RGZ & LR & $92.55 \pm 1.93$\\
-       &  & CNN & $86.37 \pm 2.67$\\
-       &  & RF & $87.12 \pm 2.58$\\
+      LR & $66.47 \pm 6.93$ & $64.63 \pm 11.10$ & $59.97 \pm 11.49$\\
+      CNN & $61.06 \pm 15.05$ & $48.61 \pm 11.54$ & $37.90 \pm 8.72$\\
+      RF & $67.21 \pm 5.90$ & $65.77 \pm 4.72$ & $56.99 \pm 6.13$\\
+      Perfect & $92.06 \pm 1.46$\\
+      Random & $4.68 \pm 3.91$\\
+    \end{tabular}\\
+
+    {\bf All}\\
+    \begin{tabular}{l|rrrrr}
+      \hline
+      Label set & Norris & RGZ N & RGZ\\
+      \hline
+      LR & $92.81 \pm 1.54$& $91.73 \pm 0.95$& $92.55 \pm 1.93$\\
+      CNN & $92.95 \pm 1.49$& $87.55 \pm 2.13$& $86.37 \pm 2.67$\\
+      RF & $92.36 \pm 1.24$& $89.19 \pm 3.38$& $87.12 \pm 2.58$\\
+      Perfect & $96.74 \pm 1.76$\\
+      Random & $79.71 \pm 5.43$\\
       \hline
     \end{tabular}
   \end{table}
-
-  \cheng{Generate results and plots for accuracy, for the supplement}
 
   \begin{table*}
     \caption{Predicted probabilities that each object in SWIRE is a host
@@ -996,22 +993,9 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
 
 \section{Application to ATLAS-ELAIS}
 \label{sec:elais}
-\begin{figure}
-\includegraphics[scale=0.75]{./images/elais_cross_identification_grid.png}
-\caption{PLACEHOLDER: Accuracies for each quadrant in the cross-identification
-      task. Markers and axes are as in \autoref{fig:ba}. The upper horizontal line
-      indicates the accuracy of a `perfect' classifier on the cross-identification
-      task, with the surrounding dashed lines indicating the standard deviation
-      across CDFS quadrants. A `perfect' classifier simply reads the expert
-      labels. This represents the maximum attainable cross-identification accuracy
-      under our assumptions. The lower horizontal line indicates the average
-      accuracy of 15 random classifiers, and hence represents the minimum accuracy
-      we would expect to attain. The surrounding dashed lines indicate the
-      standard deviation across CDFS quadrants and classifiers.}
-\end{figure}
 
 We applied the classifiers trained on CDFS to perform cross identification on the ELIAS field.
-This tests two different important aspects of our proposed solution. First we are interested
+We are interested
 in the ability of the classifier to generalize to different parts of the sky. In the results
 shown in \autoref{fig:elais-ba} and \autoref{fig:elais-cross-id-accuracy} we see that our
 proposed solution indeed performs very well in the new region. Furthermore, it is comforting
@@ -1042,6 +1026,11 @@ smaller than the variation in the CDFS field.
 
 
 \section{Summary}
+
+
+\matthew{}{Generate results and plots for accuracy, for the supplement}
+
+
 %
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
 \bibliographystyle{mnras}
