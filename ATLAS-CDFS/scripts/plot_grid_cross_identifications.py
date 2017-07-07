@@ -86,11 +86,17 @@ def plot(field='cdfs'):
             elais_components = elais_components_fits[1].data
             atlas_cid_to_name = {}
             atlas_names = []  # Indices correspond to table 4 rows.
+            atlas_name_to_compact = {}
             for component in elais_components:
                 cid = component['CID']
                 name = component['ATELAIS']
                 atlas_names.append(name)
                 atlas_cid_to_name[cid] = name
+                row = {'Component S (Franzen)': component['Sint'],  # Fitting in with the CDFS API...
+                       'Component S_ERR (Franzen)': component['e_Sint'],
+                       'Component Sp (Franzen)': component['Sp'],
+                       'Component Sp_ERR (Franzen)': component['e_Sp']}
+                atlas_name_to_compact[name] = pipeline.compact_test(row)
         with open(pipeline.MIDDELBERG_TABLE5_PATH) as elais_file:
             # Took this code from pipeline.py, probably should make it a function
             lines = [line.split('|') for line in elais_file]
@@ -155,7 +161,10 @@ def plot(field='cdfs'):
             atlas_indices = atlas_test_sets[:, 0, 0].nonzero()[0]
             assert atlas_test_sets.shape[0] == len(atlas_names)
             for index in atlas_indices:
+                # Screen resolved here.
                 atlas_name = atlas_names[index]
+                if 'resolved' in cid.dataset_name and atlas_name_to_compact[atlas_name]:
+                    continue
                 if atlas_name not in atlas_to_swire_expert:
                     n_skipped += 1
                     continue
@@ -205,7 +214,10 @@ def plot(field='cdfs'):
                 atlas_indices = atlas_test_sets[:, 0, 0].nonzero()[0]
                 assert atlas_test_sets.shape[0] == len(atlas_names)
                 for index in atlas_indices:
+                    # Screen resolved here (because the test sets aren't useful for that for ELAIS)
                     atlas_name = atlas_names[index]
+                    if 'resolved' in dataset_name and atlas_name_to_compact[atlas_name]:
+                        continue
                     if atlas_name not in atlas_to_swire_expert:
                         n_skipped += 1
                         continue
