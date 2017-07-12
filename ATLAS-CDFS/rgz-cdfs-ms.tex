@@ -163,7 +163,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   We use data from the citizen science project Radio Galaxy Zoo
   \citep{banfield15}, the Australia Telescope Large Area Survey
-  \citep[ATLAS;][]{norris08,franzen15}, and the \emph{Spitzer} Wide-area Infrared
+  \citep[ATLAS;][]{norris06,franzen15}, and the \emph{Spitzer} Wide-area Infrared
   Extragalactic survey \citep[SWIRE;][]{lonsdale03swire, surace05swire}.
 
   \subsection{ATLAS}\label{sec:atlas}
@@ -520,10 +520,11 @@ ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
     both galaxies with faint polycyclic aromatic hydrocarbon (PATH) emission and
     elliptical galaxies dominated by old stellar popluations. The
     \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission
-    is dominated by non-equilibrium emission of dust grains (PAH destruction by
-    the hard UV spectrum of AGN), while the \unit{8.0}{\micro\meter} flux traces
-    strong PAH emission at low redshift \citep{citeneeded}. The stellarity index
-    represents how likely the object is to be a star rather than a galaxy.
+    is dominated by non-equilibrium emission of dust grains (PAH destruction
+    by the hard UV spectrum of AGN), while the \unit{8.0}{\micro\meter} flux
+    traces strong PAH emission at low redshift \matthew{Julie}{Cite this?}.
+    The stellarity index represents how likely the object is to be a star
+    rather than a galaxy.
 
     We use the pixels of each $32 \times 32$ radio image as
     independent features for all classifiers, with the convolutional neural
@@ -1041,7 +1042,6 @@ smaller than the variation in the CDFS field.
 
 \begin{figure}
   \centering
-\end{figure}
   \includegraphics[width=\columnwidth]{images/elais_cross_identification_grid.pdf}
   \caption{Accuracies for each quadrant in the cross-identification
     task on the ELAIS field. Markers and axes are as in \autoref{fig:ba}.
