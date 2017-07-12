@@ -147,4 +147,4 @@ if __name__ == '__main__':
 
     # for classifier in ['CNN', 'LogisticRegression', 'RandomForestClassifier']:
     #     for labeller in ['Norris', 'RGZ']:
-    main(examples_all.get_examples(), 'CNN', 'Norris')
+    main(examples_all.get_examples(field='cdfs'), 'CNN', 'Norris')

@@ -15,9 +15,12 @@ Research School of Astronomy and Astrophysics
 The Australian National University
 2017
 """
+from collections import defaultdict
 import itertools
 
+import astropy.table
 import matplotlib.pyplot as plt
+import numpy
 
 import configure_plotting
 import pipeline
@@ -90,6 +93,8 @@ def plot_grid(field='cdfs'):
     markers = ['o', '^', 'x', 's']
     handles = {}
     plt.figure(figsize=(5, 8))
+
+    accuracy_map = defaultdict(lambda: defaultdict(dict))  # For table output.
     for j, (classifier_name, classifier_set) in enumerate([
             ('LR', [lr_norris_accuracies, lr_rgz_accuracies]),
             ('CNN', [cnn_norris_accuracies, cnn_rgz_accuracies]),
@@ -104,7 +109,18 @@ def plot_grid(field='cdfs'):
                            color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
                 ax.scatter([2 + (j - 1) / 5], classifier_set[1][fullmap[set_name]][k] * 100,
                            color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
-
+            # Compute for table.
+            for labeller in ['Norris', 'RGZ N', 'RGZ']:
+                if labeller == 'Norris':
+                    mean = numpy.mean(classifier_set[0][set_name]) * 100
+                    stdev = numpy.std(classifier_set[0][set_name]) * 100
+                elif labeller == 'RGZ N':
+                    mean = numpy.mean(classifier_set[1][set_name]) * 100
+                    stdev = numpy.std(classifier_set[1][set_name]) * 100
+                elif labeller == 'RGZ':
+                    mean = numpy.mean(classifier_set[1][fullmap[set_name]]) * 100
+                    stdev = numpy.std(classifier_set[1][fullmap[set_name]]) * 100
+                accuracy_map[labeller][classifier_name][titlemap[set_name]] = '${:.02f} \\pm {:.02f}$'.format(mean, stdev)
             ax.set_ylim((80, 100))
             ax.set_xlim((-0.5, 2.5))
             ax.set_xticks([0, 1, 2])
@@ -123,6 +139,25 @@ def plot_grid(field='cdfs'):
                 tick.set_fontsize(10)
 
             ax.grid(which='major', axis='y', color='#EEEEEE')
+
+    # Assemble table.
+    col_labeller = []
+    col_classifier = []
+    col_compact = []
+    col_resolved = []
+    col_all = []
+    for labeller in ['Norris', 'RGZ N', 'RGZ']:
+        for classifier in ['CNN', 'LR', 'RF']:
+            col_labeller.append(labeller)
+            col_classifier.append(classifier)
+            col_compact.append(accuracy_map[labeller][classifier]['Compact'])
+            col_resolved.append(accuracy_map[labeller][classifier]['Resolved'])
+            col_all.append(accuracy_map[labeller][classifier]['All'])
+    out_table = astropy.table.Table([col_labeller, col_classifier, col_compact, col_resolved, col_all],
+                                    names=['Labeller', 'Classifier', "Mean `Compact' accuracy\\\\(per cent)",
+                                           "Mean `Resolved' accuracy\\\\(per cent)",
+                                           "Mean `All' accuracy\\\\(per cent)"])
+    out_table.write('../{}_accuracy_table.tex'.format(field), format='latex')
 
     plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'], 'lower center', ncol=3, fontsize=10)
     plt.subplots_adjust(bottom=0.15, hspace=0.25)

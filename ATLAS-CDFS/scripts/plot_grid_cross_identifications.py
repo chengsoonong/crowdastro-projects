@@ -68,6 +68,8 @@ def plot(field='cdfs'):
 
     swire_tree = scipy.spatial.KDTree(swire_coords[swire_test_sets[:, 0, 0]])
 
+    failed_coords = []
+
     if field == 'cdfs':
         table = astropy.io.ascii.read(pipeline.TABLE_PATH)
 
@@ -122,6 +124,9 @@ def plot(field='cdfs'):
                 dist, nearest = swire_tree.query(coord)
                 if dist > 5 / 60 / 60:
                     logging.warning('No SWIRE match found for Middelberg cross-identification {}'.format(line[0]))
+                    logging.warning('Nearest is {} ({:.01f} arcsec)'.format(numpy.array(swire_names)[swire_test_sets[:, 0, 0]][nearest], dist * 60 * 60))
+                    logging.warning('Middelberg: {}'.format(swire_coord_re.group()))
+                    failed_coords.append(coord)
                     continue
                 name = numpy.array(swire_names)[swire_test_sets[:, 0, 0]][nearest]
                 for cid in line_cids:
@@ -141,6 +146,7 @@ def plot(field='cdfs'):
         n_total = 0
         n_correct = 0
         n_skipped = 0
+        n_compact = 0
         if field == 'cdfs':
             atlas_keys = atlas_test_sets[:, pipeline.SET_NAMES[whatset[cid.dataset_name]], cid.quadrant].nonzero()[0]
             # For each ATLAS object in RGZ & Norris...
@@ -163,19 +169,20 @@ def plot(field='cdfs'):
             for index in atlas_indices:
                 # Screen resolved here.
                 atlas_name = atlas_names[index]
-                if 'resolved' in cid.dataset_name and atlas_name_to_compact[atlas_name]:
-                    continue
                 if atlas_name not in atlas_to_swire_expert:
                     n_skipped += 1
                     continue
                 if atlas_name not in atlas_to_swire_predictor:
                     n_skipped += 1
                     continue
+                if 'resolved' in cid.dataset_name and atlas_name_to_compact[atlas_name]:
+                    n_compact += 1
+                    continue
                 swire_middelberg = atlas_to_swire_expert[atlas_name]
                 swire_predictor = atlas_to_swire_predictor[atlas_name]
                 n_correct += swire_middelberg == swire_predictor
                 n_total += 1
-
+            print('Compact: {:.02%}'.format(n_compact / (n_total + n_compact)))
         if 'Norris' in cid.dataset_name and cid.labeller == 'rgz':
             labeller = 'RGZ N'
         elif cid.labeller == 'rgz':

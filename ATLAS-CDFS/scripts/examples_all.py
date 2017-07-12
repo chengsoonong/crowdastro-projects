@@ -13,12 +13,15 @@ import numpy
 
 import pipeline
 
-def get_examples():
-    table = astropy.io.ascii.read(pipeline.TABLE_PATH)
-    for row in table:
-        name = row['Component Name (Franzen)']
-        if not name:
-            continue
+def get_examples(field='cdfs'):
+    if field == 'cdfs':
+        table = astropy.io.ascii.read(pipeline.TABLE_PATH)
+        for row in table:
+            name = row['Component Name (Franzen)']
+            if not name:
+                continue
 
-        yield (name, row['Component Zooniverse ID (RGZ)'], row['Component ID (Franzen)'])
+            yield (name, row['Component Zooniverse ID (RGZ)'], row['Component ID (Franzen)'])
+    else:
+        
 
