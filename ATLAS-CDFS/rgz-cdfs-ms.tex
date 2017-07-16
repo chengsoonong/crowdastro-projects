@@ -1004,19 +1004,31 @@ RGZ & CNN & $87.74 \pm 0.90$ & $87.74 \pm 0.90$ & $87.74 \pm 0.90$\\
   % \caption{Distribution of non-image features.\label{fig:distributions}}
   % \end{figure}
 
-  \begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{colour-colour-all.pdf}
-  \caption{Colour-colour diagram for sample of SWIRE objects within \(R\)
-  of an ATLAS object.\label{fig:colour-colour-all}}
-  \end{figure}
+  % \begin{figure}
+  % \centering
+  % \includegraphics[width=\columnwidth]{images/swire_colour_colour.pdf}
+  % \caption{Colour-colour diagram for sample of SWIRE objects in CDFS.
+  %   \label{fig:colour-colour-all}}
+  % \end{figure}
 
   \begin{figure*}
   \centering
-  \includegraphics[width=\textwidth]{colour_colour_predictions.pdf}
-  \caption{Colour-colour diagrams for each
-  classifier.\label{fig:colour-colour}}
+  \subfloat[\label{fig:colour-colour-norris}]{\includegraphics[width=0.45\linewidth]{images/\detokenize{swire_colour_colour_norris}.pdf}}%
+  \subfloat[\label{fig:colour-colour-rgz}]{\includegraphics[width=0.45\linewidth]{images/\detokenize{swire_colour_colour_rgz}.pdf}}\\
+  \caption{Colour-colour diagram for \protect\subref{fig:colour-colour-norris}
+    expert-identified infrared host galaxies in CDFS and
+    \protect\subref{fig:colour-colour-rgz} Radio Galaxy Zoo-identified infrared
+    host galaxies in CDFS. Dots indicate the colour-colour distribution of all
+    SWIRE objects in CDFS, and triangles indicate identified host galaxies.
+    \label{fig:colour-colour-norris-rgz}}
   \end{figure*}
+
+  % \begin{figure*}
+  % \centering
+  % \includegraphics[width=\textwidth]{colour_colour_predictions.pdf}
+  % \caption{Colour-colour diagrams for each
+  % classifier.\label{fig:colour-colour}}
+  % \end{figure*}
 
 \subsection{Application to ATLAS-ELAIS}
 \label{sec:elais}
