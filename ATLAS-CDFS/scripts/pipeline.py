@@ -78,7 +78,7 @@ FRANZEN_PATH = '/Users/alger/data/SWIRE/middelberg_2008_table5.dat'
 SWIRE_CDFS_PATH = '/Users/alger/data/SWIRE/SWIRE3_CDFS_cat_IRAC24_21Dec05.tbl'
 SWIRE_ELAIS_PATH = '/Users/alger/data/SWIRE/SWIRE3_ELAIS_cat_IRAC24_21Dec05.tbl'
 TABLE_PATH = '/Users/alger/data/Crowdastro/one-table-to-rule-them-all.tbl'
-WORKING_DIR = '/tmp/atlas-ml/'
+WORKING_DIR = '/Users/alger/data/Crowdastro/atlas-ml/'
 IMAGE_SIZE = 1024
 
 # Sensitivities of Spitzer (in µJy).
@@ -1395,9 +1395,13 @@ def cross_identify_all(
                 probabilities = norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]]
                 labeller = 'norris'
             else:
-                probabilities = swire_labels[swire_sets[:, 0, 0], 0]
+                probabilities = swire_labels[swire_sets[:, 0, 0], 0].astype(float)
+                # Noise the probabilities *ever* so slightly to fix non-determinism.
+                probabilities += numpy.random.normal(
+                    size=probabilities.shape,
+                    scale=0.1) ** 2
                 labeller = 'middelberg'
-            labels = probabilities
+            labels = probabilities > 0.5
             predictions = Predictions(
                 probabilities=probabilities,
                 labels=labels,
