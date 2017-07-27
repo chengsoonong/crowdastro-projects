@@ -69,12 +69,12 @@ $^{7}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
   crowdsourced cross-identifications of CDFS from Radio Galaxy Zoo, and the
   trained models were used to cross-identify sources in CDFS and ELAIS-S1. We
   find that the best-performing expert-trained models had a mean accuracy of
-  $(92.95 \pm 1.49)\%$ on CDFS and $(90.42 \pm 1.54)\%$ on ELAIS-S1, while the
-  best-performing RGZ-trained models had a mean accuracy of $(92.55 \pm
-  1.93)\%$ on CDFS and $(88.33 \pm 0.78)\%$ on ELAIS-S1. While expert-trained
-  models generally outperformed models trained on the Radio Galaxy Zoo labels,
-  these models were comparable and the crowdsourced labels hence provide a
-  valuable training set for future machine learning methods.
+  $92.95 \pm 1.49$ per cent on CDFS and $90.42 \pm 1.54$ per cent on ELAIS-S1,
+  while the best-performing RGZ-trained models had a mean accuracy of $92.55
+  \pm 1.93$ per cent on CDFS and $88.33 \pm 0.78$ per cent on ELAIS-S1. While
+  expert-trained models generally outperformed models trained on the Radio
+  Galaxy Zoo labels, these models were comparable and the crowdsourced labels
+  hence provide a valuable training set for future machine learning methods.
   Cross-identification performance with our method is limited by a lack of
   radio morphology information as our assumptions require that radio sources
   are isolated from other sources. This assumption breaks down particularly
@@ -97,64 +97,92 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \citep[ASKAP;][]{johnston07} and Apertif \citep{verheijen08} will conduct
   increasingly wide, deep, and high-resolution radio surveys, producing large
   amounts of data. The Evolutionary Map of the Universe survey
-  \citep[EMU;][]{norris11} using ASKAP and the WODAN survey \citep{rottgering11}
-  using Apertif are expected to detect over 100 million radio components between
-  them, compared to the 2.5 million radio components already known
-  \citep{banfield15}.
+  \citep[EMU;][]{norris11} using ASKAP and the WODAN survey
+  \citep{rottgering11} using Apertif are expected to detect over 100 million
+  radio components between them, compared to the 2.5 million radio components
+  already known \citep{banfield15}.
 
-  An important part of processing this data is cross-identifying observed radio
-  emission regions with observations of their host galaxy in surveys at other
-  wavelengths. Radio host cross-identification can be a difficult task. \autoref{fig1} illustrates the different radio emission regions that a host galaxy may have. Compact components are unresolved or point-like regions of radio emission while compact radio sources are one compact component usually consistent with the host galaxy location. Extended radio sources consist of resolved single components and/or multiple or resolved or unresolved components. Fanaroff \& Riley type I \citep[FRI; ][]{Fanaroff1974} and Fanaroff \& Riley type II (FRII) are examples of resolved radio sources.
+  An important part of processing this data is cross-identifying observed
+  radio emission regions with observations of their host galaxy in surveys at
+  other wavelengths. Radio host cross-identification can be a difficult task.
+  \autoref{fig1} illustrates the different radio emission regions that a host
+  galaxy may have. Compact components are unresolved or point-like regions of
+  radio emission while compact radio sources are one compact component usually
+  consistent with the host galaxy location. Extended radio sources consist of
+  resolved single components and/or multiple or resolved or unresolved
+  components. Fanaroff \& Riley type I \citep[FRI; ][]{Fanaroff1974} and
+  Fanaroff \& Riley type II (FRII) are examples of resolved radio sources.
   Radio emissions from radio-loud active galactic nuclei (AGN) may be
-  complicated structures not clearly related to the host galaxy. These are often
-  composed of multiple, separate components. This type of AGN are expected to dominate
-  approximately 30 per cent of sources detected by EMU \citep{norris11}. Small surveys
-  of a few thousand sources such as the Australia Telescope Large Area Survey
-  \citep[ATLAS;][]{norris06,middelberg08} can be cross-identified manually, but
-  this is impractical for larger surveys.
+  complicated structures not clearly related to the host galaxy. These are
+  often composed of multiple, separate components. This type of AGN are
+  expected to dominate approximately 30 per cent of sources detected by EMU
+  \citep{norris11}. Small surveys of a few thousand sources such as the
+  Australia Telescope Large Area Survey
+  \citep[ATLAS;][]{norris06,middelberg08} can be cross-identified manually,
+  but this is impractical for larger surveys.
 
-  One approach to cross-identification is crowdsourcing, where volunteers cross-identify radio components (both resolved and unresolved; see \autoref{fig1}) with their host
-  galaxy. This is the premise of Radio Galaxy Zoo\footnote{\url{https://radio.galaxyzoo.org}} \citep{banfield15},
-  a citizen science project hosted on the highly successful Zooniverse platform
-  \citep{lintott08}. Volunteers are shown images of the radio sky, and are asked
-  to identify the radio components in each image that correspond to the same host galaxy. They are then asked to cross-identify the radio source with its host galaxy in a corresponding infrared image. A more thorough explanation of the project can be found in \citet{banfield15}. The first data release for Radio Galaxy Zoo will
-  provide a large dataset of 100~267 radio host cross-identifications and radio
-  source morphologies \citep{wong17}. While this is a much larger number of visual
-  cross-identifications than have been made by experts \citep[i.e., ][]{Taylor2007,Gendre2008,Grant2010,norris06,middelberg08} it is still far short of
-  the millions of radio sources expected to be detected in upcoming radio
-  surveys.
+  One approach to cross-identification is crowdsourcing, where volunteers
+  cross-identify radio components (both resolved and unresolved; see
+  \autoref{fig1}) with their host galaxy. This is the premise of Radio Galaxy
+  Zoo\footnote{\url{https://radio.galaxyzoo.org}} \citep{banfield15}, a
+  citizen science project hosted on the highly successful Zooniverse platform
+  \citep{lintott08}. Volunteers are shown images of the radio sky, and are
+  asked to identify the radio components in each image that correspond to the
+  same host galaxy. They are then asked to cross-identify the radio source
+  with its host galaxy in a corresponding infrared image. A more thorough
+  explanation of the project can be found in \citet{banfield15}. The first
+  data release for Radio Galaxy Zoo will provide a large dataset of 100~267
+  radio host cross-identifications and radio source morphologies
+  \citep{wong17}. While this is a much larger number of visual
+  cross-identifications than have been made by experts \citep[e.g.,
+  ][]{Taylor2007,Gendre2008,Grant2010,norris06,middelberg08} it is still far
+  short of the millions of radio sources expected to be detected in upcoming
+  radio surveys.
 
   Automated algorithms have been developed for this cross-identification
   problem. \citet{fan15} developed a method of cross-identification using
-  Bayesian hypothesis testing, fitting a three-component model to extended radio
-  sources. This was achieved under the assumption that extended radio sources are composed of a core radio
-  component and two lobe components. The core radio component is coincident with
-  the host galaxy, so cross-identification amounts to finding the galaxy
-  coincident with the core radio component in the most likely model fit. This method is easily
-  extended to use other, more complex models, but it is purely geometric.  However, the model
-  does not incorporate other information such as the physical properties of the potential
-  host galaxy. Additionally, there may be new classes of radio sources detected
-  in future surveys like EMU which do not fit the model. \citet{weston17}
-  developed a modification of the likelihood ratio method of
-  cross-identification \citep{richter75likelihood} for application to ATLAS and EMU. \citet{weston17} does well on single (resolved or compact) radio sources with a 69 and 71 per cent success rate in the two ATLAS fields.
-  However, the current method does not handle extended multiple component radio sources \citep{norris17unexpected}.
+  Bayesian hypothesis testing, fitting a three-component model to extended
+  radio sources. This was achieved under the assumption that extended radio
+  sources are composed of a core radio component and two lobe components. The
+  core radio component is coincident with the host galaxy, so
+  cross-identification amounts to finding the galaxy coincident with the core
+  radio component in the most likely model fit. This method is easily extended
+  to use other, more complex models, but it is purely geometric. The model
+  does not incorporate other information such as the physical properties of
+  the potential host galaxy. Additionally, there may be new classes of radio
+  sources detected in future surveys like EMU which do not fit the model.
+  \citet{weston17} developed a modification of the likelihood ratio method of
+  cross-identification \citep{richter75likelihood} for application to ATLAS
+  and EMU. This method does well on single (resolved or compact) radio sources
+  with a 69 and 71 per cent success rate in the two ATLAS fields, but does not
+  currently handle extended multiple component radio sources
+  \citep{norris17unexpected}. A hope is that machine learning techniques can
+  be developed for cross-identification problem. Machine learning describes a
+  class of methods that learn approximations to functions, and so if the
+  cross-identification task can be cast as a machine learning problem, data
+  sets such as that provided by Radio Galaxy Zoo can be generalised to work on
+  data unseen by the original cross-identifiers.
 
-  %In order to investigate methods for efficiently and effectively classifying the galaxy host of the
-  %radio emission for upcoming large radio surveys,
-  We have developed a
-  machine learning approach for radio host cross-identification using standard
-  machine learning techniques for efficient and effective classification. In \autoref{sec:data} we describe the data we
-  used to train our methods. In \autoref{sec:method} we discuss how we cast the
-  radio host galaxy cross-identification problem as a standard machine learning
-  problem. In \autoref{sec:results} we present results of applying our method to
-  the \emph{Chandra} Deep Field - South (CDFS) and in \autoref{sec:elais} we
-  apply the cross-identifiers trained on CDFS to the ESO Large Area ISO Survey -
-  South 1 (ELAIS-S1) field. Data and code are available at \url{radiogalaxyzoo.github.io/atlas-xid}.
+  We have developed a machine learning approach for radio host
+  cross-identification. This approach casts the cross-identification task as
+  binary classification, which is very well-understood in machine learning
+  literature and can be solved using a variety of standard, well-known
+  techniques. We have trained these methods on expert cross-identifications
+  and cross-identifications from Radio Galaxy Zoo. In \autoref{sec:data} we
+  describe the data we used to train our methods. In \autoref{sec:method} we
+  discuss how we cast the radio host galaxy cross-identification problem as a
+  machine learning problem. In \autoref{sec:results} we present results of
+  applying our method to ATLAS observations of the \emph{Chandra} Deep Field -
+  South (CDFS) and in \autoref{sec:elais} we apply the cross-identifiers
+  trained on CDFS to the ESO Large Area ISO Survey - South 1 (ELAIS-S1) field.
+  Our data and code are available at \url{radiogalaxyzoo.github.io/atlas-xid}.
 
   \begin{figure}
-\begin{center}
+  \begin{center}
     \includegraphics[width=0.75\linewidth]{images/fig1.png}
-    \caption{The Radio Galaxy Zoo tutorial image illustrating key definitions used through out this paper. A colour version of this figure is available online.}\label{fig1}
+    \caption{The Radio Galaxy Zoo tutorial image illustrating key definitions
+      used throughout this paper. A colour version of this figure is available
+      online.}\label{fig1}
   \end{center}
   \end{figure}
 
