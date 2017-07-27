@@ -33,7 +33,7 @@
 
 \title[Machine learning methods for radio source cross-identification]{Radio Galaxy Zoo: Machine learning methods for radio source host galaxy cross-identification}
 
-\author[Alger et al.]{M. J. Alger$^{1}$, J. K. Banfield$^{1, 2, 3}$, C. S. Ong$^{4, 5}$, O. I. Wong$^{2, 6}$, others
+\author[Alger et al.]{M.~J.~Alger$^{1}$, J.~K.~Banfield$^{1, 2, 3}$, C.~S.~Ong$^{4, 5}$, O.~I.~Wong$^{2, 6}$, R.~P.~Norris$^{3, 7}$, others
 \\
 % List of institutions
 $^{1}$Research School of Astronomy and Astrophysics, The Australian National University, Canberra, ACT 2611, Australia\\
@@ -41,7 +41,8 @@ $^{2}$ARC Centre of Excellence for All-Sky Astrophysics (CAASTRO)\\
 $^{3}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
 $^{4}$Data61, CSIRO, 7 London Circuit, Canberra ACT 2601, Australia\\
 $^{5}$Research School of Computer Science, The Australian National University, Canberra, ACT 2601, Australia\\
-$^{6}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia
+$^{6}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia\\
+$^{7}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
 }
 
 % These dates will be filled out by the publisher
@@ -59,14 +60,31 @@ $^{6}$International Centre for Radio Astronomy Research-M468, The University of 
 % Abstract of the paper
 \begin{abstract}
   We present a machine learning approach for the task of determining the
-  infrared host galaxies of radio emissions detected in wide-area radio surveys.
-  We used the Australian Telescope Large Area Survey (ATLAS) at $1.4\,$GHz with both expert labels from \citet{norris06} and citizen science labels from Radio Galaxy Zoo. We trained the convolution neural network, logistic regression and random forests on both the expert labels and the citizen science labels. We find that the
-  best overall performance is attained by random forests trained on expert
-  labels with balanced accuracies of 97.50 per cent for compact radio sources 90.86 per cent for resolved radio sources and 96.74 pre cent when using both compact and resolved radio sources. 
-  We find that while machine learning algorithms trained on expert
-  labels outperform those trained on the Radio Galaxy Zoo labels,
-  the accuracies are comparable and the citizen science labels are still useful for
-  training. 
+  infrared host galaxies of radio emissions detected in wide-area radio
+  surveys. We test our methods on the radio sources detected in the $1.4$~GHz
+  Australian Telescope Large Area Survey (ATLAS) observations of the
+  \emph{Chandra} Deep Field - South (CDFS) and the ESO Large Area ISO Survey -
+  South 1 (ELAIS-S1) fields. These methods were trained on both expert
+  cross-identifications of CDFS from the initial ATLAS data release and
+  crowdsourced cross-identifications of CDFS from Radio Galaxy Zoo, and the
+  trained models were used to cross-identify sources in CDFS and ELAIS-S1. We
+  find that the best-performing expert-trained models had a mean accuracy of
+  $(92.95 \pm 1.49)\%$ on CDFS and $(?? \pm ??)\%$ on ELAIS-S1, while the
+  best-performing RGZ-trained models had a mean accuracy of $(92.55 \pm
+  1.93)\%$ on CDFS and $(?? \pm ??)\%$ on ELAIS-S1.
+
+  We found
+  - expert-trained outperforms RGZ-trained,
+  - accuracies were limited by lack of radio morphology information
+
+  We find that the best overall
+  performance is attained by random forests trained on expert labels with
+  balanced accuracies of 97.50 per cent for compact radio sources 90.86 per
+  cent for resolved radio sources and 96.74 pre cent when using both compact
+  and resolved radio sources. We find that while machine learning algorithms
+  trained on expert labels outperform those trained on the Radio Galaxy Zoo
+  labels, the accuracies are comparable and the citizen science labels are
+  still useful for training.
     \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -944,7 +962,50 @@ RGZ & CNN & $88.46 \pm 0.30$ & $88.46 \pm 0.30$ & $88.46 \pm 0.30$ \\
 \end{tabular}
 \end{table*}
 
-We applied the classifiers trained on CDFS to perform cross-identification on the ELAIS field. Both CDFS and ELAIS were imaged by the same radio telescope and to similar sensitivities and angular resolution for the ATLAS survey.  As ELAIS has been cross-identified with SWIRE host galaxies by \citet{middelberg08}, we are able to determine the accuracy of our classifier in the ability to generalize to different parts of the sky. We report the balanced accuracies for our classifier applied to ELAIS in Fig.~\ref{fig:elais-ba} and Table \ref{ba:average-accuracies-elais}. Fig.~\ref{fig:elais-cross-id-accuracy} shows the accuracies in the cross-identification task on ELAIS and we list averages accuracies in Table \#\#.
+\begin{table}
+    \caption{Average cross-identification accuracies.
+      Uncertainties represent standard deviations across classifiers trained
+      on CDFS quadrants. Columns and classifiers as defined in Table
+      \ref{ba:average-accuracies}.  A `perfect' classifier reads the expert
+      labels directly and hence represents the maximum attainable accuracy
+      under our assumptions. A `random' classifier generates uniform random
+      class probabilities and hence represents the expected minimum attainable
+      accuracy with our cross-identification method.}
+      \label{tab:cross-id-accuracies}
+\begin{tabular}{llcc}
+\hline
+Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
+ & & accuracy (per cent) & accuracy (per cent)\\
+\hline
+Middelberg & Perfect & $85.82 \pm 0.64$ & $92.41 \pm 0.33$\\
+           & Random  & $4.72 \pm 0.99$   & $50.68 \pm 0.51$\\
+ \\
+Norris & CNN     & $68.05 \pm 2.53$ & $85.58 \pm 0.66$\\
+       & LR      & $79.63 \pm 0.91$ & $90.15 \pm 0.56$\\
+       & RF      & $76.13 \pm 3.41$ & $90.42 \pm 1.54$\\
+ \\
+RGZ-N & CNN & $61.01 \pm 1.40$ & $78.38 \pm 0.49$\\
+      & LR  & $75.71 \pm 1.11$ & $86.72 \pm 1.10$\\
+      & RF  & $75.00 \pm 2.42$ & $86.96 \pm 1.80$\\
+ \\
+RGZ & CNN & $54.87 \pm 1.02$ & $76.48 \pm 0.53$\\
+    & LR  & $75.76 \pm 2.08$ & $88.33 \pm 0.78$\\
+    & RF  & $75.24 \pm 2.88$ & $86.16 \pm 1.31$\\
+ \hline
+\end{tabular}
+\end{table}
+
+We applied the classifiers trained on CDFS to perform cross-identification on
+the ELAIS field. Both CDFS and ELAIS were imaged by the same radio telescope
+and to similar sensitivities and angular resolution for the ATLAS survey.  As
+ELAIS has been cross-identified with SWIRE host galaxies by
+\citet{middelberg08}, we are able to determine the accuracy of our classifier
+in the ability to generalize to different parts of the sky. We report the
+balanced accuracies for our classifier applied to ELAIS in
+Fig.~\ref{fig:elais-ba} and Table \ref{ba:average-accuracies-elais}.
+Fig.~\ref{fig:elais-cross-id-accuracy} shows the accuracies in the
+cross-identification task on ELAIS and we list averages accuracies in Table
+\#\#.
 
 We see that our proposed solution indeed performs very well in the new region. Both the CNN and logistic regression remain 
 

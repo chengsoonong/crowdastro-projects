@@ -247,6 +247,7 @@ def plot(field='cdfs'):
     labeller_classifier_to_accuracy = {}
     labeller_classifier_to_stdev = {}
     for key, accuracies in labeller_classifier_to_accuracies.items():
+        print('Best {}:'.format(key), max(accuracies))
         labeller_classifier_to_accuracy[key] = numpy.mean(accuracies)
         labeller_classifier_to_stdev[key] = numpy.std(accuracies)
 
