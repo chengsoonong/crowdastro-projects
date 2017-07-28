@@ -67,19 +67,21 @@ $^{7}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
   South 1 (ELAIS-S1) fields. These methods were trained on both expert
   cross-identifications of CDFS from the initial ATLAS data release and
   crowdsourced cross-identifications of CDFS from Radio Galaxy Zoo, and the
-  trained models were used to cross-identify sources in CDFS and ELAIS-S1. We
-  find that the best-performing expert-trained models had a mean accuracy of
-  $92.95 \pm 1.49$ per cent on CDFS and $90.42 \pm 1.54$ per cent on ELAIS-S1,
-  while the best-performing RGZ-trained models had a mean accuracy of $92.55
-  \pm 1.93$ per cent on CDFS and $88.33 \pm 0.78$ per cent on ELAIS-S1. While
-  expert-trained models generally outperformed models trained on the Radio
-  Galaxy Zoo labels, these models were comparable and the crowdsourced labels
-  hence provide a valuable training set for future machine learning methods.
+  trained models were used to cross-identify sources in CDFS and ELAIS-S1.
+  \todo{Compare the expert and RGZ performances somehow.}  % We find that the best-performing expert-trained models had a mean accuracy
+  % of $93.0 \pm 1.5$ per cent on CDFS and $90.4 \pm 1.5$ per cent on ELAIS-S1,
+  % while the best-performing RGZ-trained models had a mean accuracy of $92.6
+  % \pm 1.9$ per cent on CDFS and $88.3 \pm 0.8$ per cent on ELAIS-S1. While
+  % expert-trained models outperformed models trained on the Radio Galaxy Zoo
+  % labels by up to $4.3 \pm 1.1$ percentage points on CDFS and $9.1 \pm 0.9$
+  % percentage points on ELAIS-S1, these models were generally comparable and
+  % the crowdsourced labels hence provide a valuable training set for future
+  % machine learning methods.
   Cross-identification performance with our method is limited by a lack of
   radio morphology information as our assumptions require that radio sources
   are isolated from other sources. This assumption breaks down particularly
-  with high-sensitivity surveys. We suggest that source identifications and
-  radio morphology information would resolve this problem.
+  with high surface brightness sensitivity surveys. We suggest that source
+  identifications and radio morphology information would resolve this problem.
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -131,8 +133,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   same host galaxy. They are then asked to cross-identify the radio source
   with its host galaxy in a corresponding infrared image. A more thorough
   explanation of the project can be found in \citet{banfield15}. The first
-  data release for Radio Galaxy Zoo will provide a large dataset of 100~267
-  radio host cross-identifications and radio source morphologies
+  data release for Radio Galaxy Zoo will provide a large dataset of over
+  75~000 radio host cross-identifications and radio source morphologies
   \citep{wong17}. While this is a much larger number of visual
   cross-identifications than have been made by experts \citep[e.g.,
   ][]{Taylor2007,Gendre2008,Grant2010,norris06,middelberg08} it is still far
@@ -169,7 +171,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   literature and can be solved using a variety of standard, well-known
   techniques. We have trained these methods on expert cross-identifications
   and cross-identifications from Radio Galaxy Zoo. In \autoref{sec:data} we
-  describe the data we used to train our methods. In \autoref{sec:method} we
+  describe the data we use to train our methods. In \autoref{sec:method} we
   discuss how we cast the radio host galaxy cross-identification problem as a
   machine learning problem. In \autoref{sec:results} we present results of
   applying our method to ATLAS observations of the \emph{Chandra} Deep Field -
@@ -309,6 +311,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     in Radio Galaxy Zoo. We will henceforth only discuss the primary
     components.
 
+    We use the ATLAS cross-identifications from a preliminary version of the
+    Radio Galaxy Zoo first data release catalogue with no filtering based on
+    volunteer agreement. The final catalogue will introduce a cut on the
+    percentage of volunteers who agreed with a cross-identification, and will
+    hence have more accurate cross-identifications.
+
   \section{Method}\label{sec:method}
     \begin{figure}
       \centering
@@ -365,28 +373,29 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{figure}
         
     We focus on the problem of host galaxy cross-identification without
-    reference to radio morphology. Given a radio component, we want to find the
-    corresponding host galaxy as a citizen scientist would using Radio Galaxy
-    Zoo. The input is thus a radio image and an infrared image with a given
-    radius. We choose a radius of 1~arcmin to match Radio Galaxy Zoo, which uses
-    $2 \times 2$~arcmin cutouts of ATLAS images. We make the assumption that
-    each radio image represents a single, complex extended source. This is not
-    the case in general and a radio image may contain many different radio
-    sources with unique host galaxies. If we had access to radio morphology
-    information, we could use this to isolate relevant components and hence more
-    accurately cross-identify sources, but this is outside the scope of this
-    paper. We also note that this assumption will bias our results against radio
-    emission that extends beyond the 1~arcmin cutout size, however, these are
-    uncommon in ATLAS with 9 radio sources identified by \citet{norris06} as
-    having components further than 1~arcmin apart (and of these, 5 are in Radio
-    Galaxy Zoo). The radio cross-identification task then amounts to locating
-    the host galaxy within the associated radio and infrared images. This is
-    formalised as an object localisation problem: Given a radio image and an
-    infrared image centred on a radio component, locate the host galaxy of the
-    radio component.    % S031, S336, S081, S576, S136, S719, S618, S707, S287
+    reference to radio morphology. Given a radio component, we want to find
+    the corresponding host galaxy as a citizen scientist would using Radio
+    Galaxy Zoo. The input is thus a radio image and an infrared image with a
+    given radius \todo{Clarify what this means --- we aren't actually taking
+    an infrared image}. We choose a radius of 1~arcmin to match the size of
+    the images used by Radio Galaxy Zoo. We make the assumption that each
+    radio image represents a single, complex extended source. This is not the
+    case in general and a radio image may contain many different radio sources
+    with unique host galaxies. If we had access to radio morphology
+    information, we could use this to isolate relevant components and hence
+    more accurately cross-identify sources, but this is beyond the scope of
+    this paper. We also note that this assumption will bias our results
+    against radio emission that extends beyond the 1~arcmin cutout size,
+    however, these are uncommon in ATLAS with 9 radio sources identified by
+    \citet{norris06} as having components further than 1~arcmin apart (and of
+    these, only 5 are in Radio Galaxy Zoo). The radio cross-identification
+    task then amounts to locating the host galaxy within the associated radio
+    and infrared images. This is formalised as an object localisation problem:
+    given a radio image and an infrared image centred on a radio component,
+    locate the host galaxy of the radio component.    % S031, S336, S081, S576, S136, S719, S618, S707, S287
     % ARG0003r2r, -, -, ARG0003r5h, ARG0003r2d, -, ARG0003r1s, -, ARG0003r8q
 
-   A common approach to object localisation is to estimate the probability
+    A common approach to object localisation is to estimate the probability
     that each location in the image is coincident with the desired object. In
     practice this amounts to taking fixed-size windows of the image centred on
     each pixel and estimating the probability that each window is centred on
@@ -394,9 +403,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     then assumed to be the location of the object. Applying this to radio host
     cross-identification, we consider windows of a radio/infrared image and
     estimate the probability that each window is centred on the host galaxy.
-    This approach is illustrated in \autoref{fig:windows}.
-    In computer vision a sliding window is commonly used: every possible patch
-    in the image is considered.
+    This approach is illustrated in \autoref{fig:windows}. In computer vision
+    a sliding window is commonly used: every possible patch in the image is
+    considered \citep[e.g.][]{rowley1996facedetection}.
 
     This task can be made more efficient if we have a prior on the location of
     the object we are localising. For our prior, we assume that the host galaxy
@@ -404,7 +413,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     centred on infrared sources. This assumption usually holds, except for a
     rare class of infrared-faint radio sources. \citet{norris06} found 22 such
     radio sources in their sample of 784 bright ATLAS components in CDFS. This
-    leads us to a binary classification task: Given an infrared source, compute
+    leads us to a binary classification task: given an infrared source, compute
     the probability that it is a host galaxy. To find the host galaxy given a
     radio source, classify each galaxy within 1~arcmin of the source and select
     the galaxy with the highest probability of being a host galaxy. This is a
@@ -521,9 +530,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \subsection{Feature vector representation of infrared sources}
   \label{vector-representation-of-infrared-sources}
 
-    Binary classification methods require that the inputs to be classified
-    are an array of real values called \emph{feature vectors}. We thus need to
-    choose a feature vector representation of our candidate host galaxies.
+    Binary classification methods require that the inputs to be classified are
+    represented by an array of real values called \emph{feature vectors}. We
+    thus need to choose a feature vector representation of our candidate host
+    galaxies.
 
     Infrared observations of the CDFS field are taken from SWIRE. We use the
     CDFS Fall '05 SWIRE catalogue \citep{surace05swire} to generate candidate
@@ -574,7 +584,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{Classifiers}\label{sec:classifiers}
 
-    We used three different classifiers as our binary classification model:
+    We use three different classifiers as our binary classification model:
     logistic regression, convolutional neural networks, and random forests.
 
     \subsubsection{Logistic Regression}
@@ -606,7 +616,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       is differentiable with respect to the values of the filters and the
       filters can be learned using gradient methods. The final layer of the
       network is logistic regression, with the convolved outputs as input
-      features. For more detail, see \citet[subsection II.A][]{lecun98}. We used
+      features. For more detail, see \citet[subsection II.A][]{lecun98}. We use
       \textsc{Keras} \citep{chollet15keras} to implement our CNN.
 
       % \begin{figure*}
@@ -647,7 +657,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       astronomy \citep[e.g.][]{dieleman15cnn, lukic17compact}. We employ only a
       simple CNN model in this paper as a proof of concept that CNNs may be used
       for class probability prediction on radio images. The model architecture
-      we used is shown in \autoref{fig:cnn}.
+      we use is shown in \autoref{fig:cnn}.
 
     \subsubsection{Random Forests}
     \label{sec:random-forests}
@@ -656,11 +666,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       trees~\citep{breiman01random-forest}. It considers multiple subsamples
       of the training set, where each bootstrap subsample is sampled with
       replacement from the training set. For each subsample a decision tree
-      classifier is constructed, which builds an axis parallel split based on
-      individual features in a greedy fashion. In a random forest the split
-      decision is taken based on a random subset of features. For each test
-      point, the random forest takes the weighted average of all the
-      classifications produced by each decision tree.
+      classifier is constructed. The decision tree is built by repeatedly
+      making axis-parallel splits based on individual features. In a random
+      forest the split decision is taken based on a random subset of features.
+      To classify a new data point, the random forest takes the weighted
+      average of all classifications produced by each decision tree.
 
   \subsection{Labels}\label{labels}
     \begin{figure}
@@ -698,7 +708,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \emph{which} radio object an infrared object is associated with, only that
     it is associated with \emph{some} radio object. We make the na\"ive
     assumption that any given radio image contains only one host galaxy as the
-    first method in solving this problem.
+    first step in solving this problem.
 
     We then generate positive labels from a cross-identification catalogue.
     We decide that if an infrared object is listed in the catalogue, then it
@@ -713,44 +723,44 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     compared to $S_{1.4} \geq \unit{85}{\micro\jansky}\text{ beam}^{-1}$ for the
     third data release used by Radio Galaxy Zoo \citep{franzen15}. The expert
     labels may therefore disagree with labels from Radio Galaxy Zoo even if they
-    are both correct. We train and test our classifiers on infrared objects
+    are both plausible. We train and test our classifiers on infrared objects
     within a 1~arcmin radius of an ATLAS radio object.
 
   \subsection{Experimental Setup}
   \label{sec:experimental-setup}
 
-  \begin{figure}
-  \centering
-  \includegraphics[width=\columnwidth]{images/cdfs_ba_grid.pdf}
-  \caption{Balanced accuracies for each quadrant in the galaxy
-    classification task. The accuracies of different classifiers are represented
-    by different shapes. The horizontal axis shows which label set was used to
-    train the classifiers: `Norris' represents the expert labels, `RGZ'
-    represents the Radio Galaxy Zoo labels, and `RGZ N' represents the Radio
-    Galaxy Zoo labels applied only to the radio components that appeared in the
-    expert cross-identification catalogue. The three plots show different sets
-    of training and testing data: the `compact' contains only compact radio
-    components, `resolved' only contains resolved radio components, and `all'
-    contains all radio components. The maximum attainable balanced accuracy is
-    100~percent, when every galaxy label matches the expert labels.
-    \label{fig:ba}}
-  \end{figure}
-
-  \begin{figure}
+    \begin{figure}
     \centering
-    \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
-    \caption{Accuracies for each quadrant in the cross-identification
-      task. Markers and axes are as in \autoref{fig:ba}. The upper horizontal line
-      indicates the accuracy of a `perfect' classifier on the cross-identification
-      task, with the surrounding dashed lines indicating the standard deviation
-      across CDFS quadrants. A `perfect' classifier simply reads the expert
-      labels. This represents the maximum attainable cross-identification accuracy
-      under our assumptions. The lower horizontal line indicates the average
-      accuracy of 15 random classifiers, and hence represents the minimum accuracy
-      we would expect to attain. The surrounding dashed lines indicate the
-      standard deviation across CDFS quadrants and classifiers.
-      \label{fig:cross-id-accuracy}}
-  \end{figure}
+    \includegraphics[width=\columnwidth]{images/cdfs_ba_grid.pdf}
+    \caption{Balanced accuracies for each quadrant in the galaxy
+      classification task. The accuracies of different classifiers are represented
+      by different shapes. The horizontal axis shows which label set was used to
+      train the classifiers: `Norris' represents the expert labels, `RGZ'
+      represents the Radio Galaxy Zoo labels, and `RGZ N' represents the Radio
+      Galaxy Zoo labels applied only to the radio components that appeared in the
+      expert cross-identification catalogue. The three plots show different sets
+      of training and testing data: the `compact' contains only compact radio
+      components, `resolved' only contains resolved radio components, and `all'
+      contains all radio components. The maximum attainable balanced accuracy is
+      100~percent, when every galaxy label matches the expert labels.
+      \label{fig:ba}}
+    \end{figure}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
+      \caption{Accuracies for each quadrant in the cross-identification
+        task. Markers and axes are as in \autoref{fig:ba}. The upper horizontal line
+        indicates the accuracy of a `perfect' classifier on the cross-identification
+        task, with the surrounding dashed lines indicating the standard deviation
+        across CDFS quadrants. A `perfect' classifier simply reads the expert
+        labels. This represents the maximum attainable cross-identification accuracy
+        under our assumptions. The lower horizontal line indicates the average
+        accuracy of 15 random classifiers, and hence represents the minimum accuracy
+        we would expect to attain. The surrounding dashed lines indicate the
+        standard deviation across CDFS quadrants and classifiers.
+        \label{fig:cross-id-accuracy}}
+    \end{figure}
 
     We trained cross-identifiers on radio objects from the ATLAS observations of
     the CDFS field, using two label sets. One label set was derived from Radio
@@ -768,7 +778,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     in][]{norris06} and we would expect any machine learning approach for host
     cross-identification to attain high accuracy on this set. Whether a
     component was resolved was decided based on its flux; a radio component was
-    considered resolved if \citep{franzen15}:
+    considered resolved if
     \begin{equation}
         \ln \left(
           \frac{S_{\text{int}}}
@@ -781,39 +791,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
                {S_{\text{peak}}}
         \right)^2}\,\,\,\,,
     \end{equation}%
-    and compact otherwise, where \(S_{\text{int}}\) is the integrated flux
-    density and \(S_{\text{peak}}\) is the peak flux density.
-
-  \begin{table*}
-    \caption{Average balanced accuracies across quadrants shown in \autoref{fig:ba} for CDFS.
-      Uncertainties represent standard deviations.
-      The classifiers were trained and tested on compact sources, resolved sources, and all
-      sources separately. `Labeller' indicates what label set the classifiers were trained
-      on. `Norris' is the expert label set, `RGZ' is the Radio Galaxy Zoo label
-      set, and `RGZ N' is the Radio Galaxy Zoo label set with only radio sources
-      that were also labelled by experts. `LR' refers to
-      logistic regression, `CNN' refers to our convolutional neural network, and
-      `RF' refers to random forests.}
-    \label{ba:average-accuracies}
-    \begin{tabular}{llccc}
-\hline
-Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
- & & (per cent) & (per cent) & (per cent)\\
-\hline
-Norris & CNN & $92.59 \pm 0.70$ & $91.16 \pm 0.54$ & $92.05 \pm 0.62$\\
- & LR & $91.55 \pm 1.01$ & $93.21 \pm 0.97$ & $93.05 \pm 1.20$\\
- & RF & $97.50 \pm 0.58$ & $90.86 \pm 4.81$ & $96.74 \pm 2.25$\\
- \\
-RGZ N & CNN & $89.36 \pm 0.56$ & $89.56 \pm 1.31$ & $89.36 \pm 0.54$\\
- & LR & $89.46 \pm 0.80$ & $90.47 \pm 1.68$ & $90.19 \pm 0.81$\\
- & RF & $94.55 \pm 0.11$ & $95.78 \pm 0.51$ & $94.73 \pm 0.49$\\
- \\
-RGZ & CNN & $87.74 \pm 0.90$ & $87.74 \pm 0.90$ & $87.74 \pm 0.90$\\
- & LR & $91.44 \pm 0.82$ & $89.80 \pm 0.81$ & $90.82 \pm 1.39$\\
- & RF & $94.00 \pm 0.56$ & $94.65 \pm 0.62$ & $94.12 \pm 0.27$\\
-\hline
-\end{tabular}
-\end{table*}
+    where \(S_{\text{int}}\) is the integrated flux density and
+    \(S_{\text{peak}}\) is the peak flux density \citep{franzen15}.
 
     Candidate hosts were selected from the SWIRE catalogue. For a given subset
     of radio objects, all SWIRE objects within 1~arcmin of all radio objects in
@@ -828,7 +807,7 @@ RGZ & CNN & $87.74 \pm 0.90$ & $87.74 \pm 0.90$ & $87.74 \pm 0.90$\\
 
     Each classifier was trained on the training examples and used to predict
     labels for the test examples. The predicted labels were compared to the
-    expert labels and the balanced accuracy was computed. We used balanced
+    expert labels and the balanced accuracy was computed. We use balanced
     accuracy as our accuracy measure due to the highly imbalanced classes --- in
     our total set of SWIRE objects within 1~arcmin of an ATLAS object, only
     4~percent have positive labels. Only examples within 1~arcmin of ATLAS
@@ -845,54 +824,117 @@ RGZ & CNN & $87.74 \pm 0.90$ & $87.74 \pm 0.90$ & $87.74 \pm 0.90$\\
     cross-identifications.
 
 \section{Results}\label{sec:results}
-\subsection{Application to ATLAS-CDFS}
-\begin{table}
-    \caption{Average cross-identification accuracies across quadrants.
-      Uncertainties represent standard deviations. Columns and classifiers as defined in \autoref{ba:average-accuracies}.  A `perfect' classifier reads the
-      expert labels directly and hence represents the maximum attainable
-      accuracy under our assumptions. A `random' classifier generates uniform
-      random class probabilities and hence represents the expected minimum
-      attainable accuracy with our cross-identification method.}    
-      \label{tab:cross-id-accuracies}
-\begin{tabular}{llcc}
-\hline
-Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
- & & accuracy (per cent) & accuracy (per cent)\\
-\hline
-Norris & CNN & $61.06 \pm 15.05$ & $92.95 \pm 1.49$\\
- & LR & $66.47 \pm 6.93$ & $92.81 \pm 1.54$\\
- & RF & $67.21 \pm 5.90$ & $92.36 \pm 1.24$\\
- & Perfect & $92.06 \pm 1.46$ & $96.74 \pm 1.76$\\
- & Random & $4.68 \pm 3.91$ & $79.71 \pm 5.43$\\
- \\
-RGZ-N & CNN & $48.61 \pm 11.54$ & $87.55 \pm 2.13$\\
- & LR & $64.63 \pm 11.10$ & $91.73 \pm 0.95$\\
- & RF & $65.77 \pm 4.72$ & $89.19 \pm 3.38$\\
- \\
-RGZ & CNN & $37.90 \pm 8.72$ & $86.37 \pm 2.67$\\
- & LR & $59.97 \pm 11.49$ & $92.55 \pm 1.93$\\
- & RF & $56.99 \pm 6.13$ & $87.12 \pm 2.58$\\
- \hline
-\end{tabular}
-\end{table}
+  \subsection{Application to ATLAS-CDFS}
+    \begin{table*}
+      \caption{Average balanced accuracies across quadrants shown in
+        \autoref{fig:ba} for CDFS. Uncertainties represent standard
+        deviations. The classifiers were trained and tested on compact
+        sources, resolved sources, and all sources separately. `Labeller'
+        indicates what label set the classifiers were trained on. `Norris' is
+        the expert label set, `RGZ' is the Radio Galaxy Zoo label set.%, and
+        %`RGZ N' is the Radio Galaxy Zoo label set with only radio sources that
+        %were also labelled by experts.
+        `LR' refers to logistic regression, `CNN' refers to our convolutional
+        neural network, and `RF' refers to random forests.}
+      \label{tab:average-accuracies}
+      \begin{tabular}{llccc}
+        \hline
+        Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
+         & & (per cent) & (per cent) & (per cent)\\
+        \hline
+        Norris & CNN & $92.6 \pm 0.7$ & $91.2 \pm 0.5$ & $92.1 \pm 0.6$\\
+         & LR & $91.6 \pm 1.0$ & $93.2 \pm 1.0$ & $93.1 \pm 1.2$\\
+         & RF & $97.5 \pm 0.6$ & $90.9 \pm 4.8$ & $96.7 \pm 2.3$\\
+         \\
+        % RGZ N & CNN & $89.4 \pm 0.6$ & $89.6 \pm 1.3$ & $89.4 \pm 0.5$\\
+        %  & LR & $89.5 \pm 0.8$ & $90.5 \pm 1.7$ & $90.2 \pm 0.8$\\
+        %  & RF & $94.6 \pm 0.1$ & $95.8 \pm 0.5$ & $94.7 \pm 0.5$\\
+        %  \\
+        RGZ & CNN & $87.7 \pm 0.9$ & $87.7 \pm 0.9$ & $87.7 \pm 0.9$\\
+         & LR & $91.4 \pm 0.8$ & $89.8 \pm 0.8$ & $90.8 \pm 1.4$\\
+         & RF & $94.0 \pm 0.6$ & $94.7 \pm 0.6$ & $94.1 \pm 0.3$\\
+        \hline
+      \end{tabular}
+    \end{table*}
 
-  We show the balanced accuracy of each classifier in \autoref{fig:ba} for only compact radio components, resolved radio components, and then for all the radio components. For each subplot, we show the label set used to train the classifiers. \autoref{ba:average-accuracies} lists the average accuracies across the four quadrants for the resolved components and all radio components. We find that the
-  best overall performance is attained by random forests trained on expert
-  labels (`Norris' labels) with averaged balanced accuracies of $97.50 \pm 0.58$ per cent for compact, $90.86 \pm 4.81$ per cent for resolved, and $96.74 \pm 2.25$ per cent all components. With the exception of random forests trained only on resolved
-  components, classifiers trained on expert labels on average perform better
-  than those trained on Radio Galaxy Zoo labels. Nevertheless, classifiers
-  trained on Radio Galaxy Zoo labels still attain good accuracies on
-  all tasks with averaged balanced accuracies ranging between 87.74 per cent for the CNN and 94.65 per cent for random forests.  When trained on resolved components and expert labels,
-  the accuracy of random forests on the classification task has a very high
-  spread over the CDFS quadrants. This may be due to the limited number of
-  resolved components in the expert-labelled data set.
+    \begin{table}
+      \caption{Average cross-identification accuracies across quadrants.
+        Uncertainties represent standard deviations across quadrants and, for
+        the `random' classifier, 25 random classifiers. Columns and
+        classifiers as defined in \autoref{tab:average-accuracies}.  A
+        `perfect' classifier reads the expert labels directly and hence
+        represents the maximum attainable accuracy on the test set under our
+        assumptions. A `random' classifier generates uniform random class
+        probabilities and hence represents the expected minimum attainable
+        accuracy with our cross-identification method.}
+        \label{tab:cross-id-accuracies}
+      \begin{tabular}{llcc}
+      \hline
+      Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
+       & & accuracy (per cent) & accuracy (per cent)\\
+      \hline
+      Norris & CNN & $61.1 \pm 15.1$ & $93.0 \pm 1.5$\\
+       & LR & $66.5 \pm 6.9$ & $92.8 \pm 1.5$\\
+       & RF & $67.2 \pm 5.9$ & $92.4 \pm 1.2$\\
+       & Perfect & $92.1 \pm 1.5$ & $96.7 \pm 1.8$\\
+       & Random & $4.7 \pm 3.9$ & $79.7 \pm 5.4$\\
+       \\
+      % RGZ-N & CNN & $48.6 \pm 11.5$ & $87.6 \pm 2.1$\\
+      %  & LR & $64.6 \pm 11.1$ & $91.7 \pm 1.0$\\
+      %  & RF & $65.8 \pm 4.7$ & $89.2 \pm 3.4$\\
+      %  \\
+      RGZ & CNN & $37.9 \pm 8.7$ & $86.4 \pm 2.7$\\
+       & LR & $60.0 \pm 11.5$ & $92.6 \pm 1.9$\\
+       & RF & $57.0 \pm 6.1$ & $87.1 \pm 2.6$\\
+       \hline
+      \end{tabular}
+    \end{table}
+
+    We report two sets of accuracies: first, the balanced accuracies for the
+    task of classifying individual SWIRE objects as host galaxies or not host
+    galaxies (the `galaxy classification task'); and second, the accuracies
+    for the task of cross-identifying ATLAS radio components with their host
+    galaxies (the `cross-identification task'). Balanced accuracy is a useful
+    metric for evaluating classifiers on classification tasks with highly
+    imbalanced classes like we have here, and we find that the balanced
+    accuracy on the galaxy classification task is correlated with the accuracy
+    on the cross-identification task. This correlation is shown in
+    \autoref{fig:gct-to-xid}.
+
+    For the galaxy classification task, we report the balanced accuracy of
+    each classification model and training set in \autoref{fig:ba} for SWIRE
+    objects within $1'$ of (1) compact radio components, (2) resolved radio
+    components, and (3) all radio components. These accuracies averaged across
+    the four quadrants are reported in \autoref{tab:average-accuracies}. We
+    find that the classifiers trained on expert labels generally outperform
+    those trained on Radio Galaxy Zoo labels,
+
+    We find that the best overall performance is attained by random forests
+    trained on expert labels (`Norris' labels) with averaged balanced
+    accuracies of $97.5 \pm 0.6$ per cent for compact, $90.9 \pm 4.8$ per cent
+    for resolved, and $96.7 \pm 2.3$ per cent all components. With the
+    exception of random forests trained only on resolved components,
+    classifiers trained on expert labels on average perform better than those
+    trained on Radio Galaxy Zoo labels. Nevertheless, classifiers trained on
+    Radio Galaxy Zoo labels still attain good accuracies on all tasks with
+    averaged balanced accuracies ranging between 87.74 per cent for the CNN
+    and 94.65 per cent for random forests.  When trained on resolved
+    components and expert labels, the accuracy of random forests on the
+    classification task has a very high spread over the CDFS quadrants. This
+    may be due to the limited number of resolved components in the
+    expert-labelled data set.
 
   We report the predicted probabilities for each SWIRE object in \autoref{tab:probs}. Probabilities reported for a given object
   were predicted by classifiers tested on the quadrant containing that object. The cross-identification accuracy for each classifier is shown in
   \autoref{fig:cross-id-accuracy}. We report the averaged cross-identification accuracies across all four quadrants in \autoref{tab:cross-id-accuracies}. Despite relatively poor performance on the
-  classification task, CNN produce a cross-identification accuracy of $92.95 \pm 1.49$\,per cent when trained on the expert labels. Logistic regression gives consistent results on both expert ($92.81 \pm 1.54$\,per cent) and Radio Galaxy Zoo labels ($92.55 \pm 1.93$\,per cent). Random forests perform
-  much more poorly on the cross-identification task than on the classification
-  task, possibly as they produce discrete predicted probabilities. We list the predicted cross-identification for each ATLAS object is reported in
+  classification task, CNN produce a cross-identification accuracy of $93.0
+  \pm 1.5$\,per cent when trained on the expert labels. Logistic regression
+  gives consistent results on both expert ($92.8 \pm 1.5$\,per cent) and Radio
+  Galaxy Zoo labels ($92.6 \pm 1.9$\,per cent). Random forests perform much
+  more poorly on the cross-identification task than on the classification
+  task, \todo{? possibly as they produce discrete predicted probabilities ?}.
+  We list the predicted cross-identification for each ATLAS object is reported
+  in
   \autoref{tab:cids}. As with SWIRE predictions, reported cross-identifications
   for a given object were generated by classifiers tested on the quadrant
   containing that object. 
@@ -921,18 +963,17 @@ RGZ & CNN & $37.90 \pm 8.72$ & $86.37 \pm 2.67$\\
       candidate hosts.}\label{fig:cnnexamples}
 \end{figure*}
 
- 
-  % \begin{figure}
-  % \centering
-  % \includegraphics[width=\columnwidth]{gct-to-xid.pdf}
-  % \caption{Classification balanced accuracy against accuracy on the
-  % cross-identification task. Cross-identification accuracy is computed from a
-  % binary comparison between the predicted host and the \citet{norris06}
-  % cross-identification; neither distance to the true host nor broken assumptions
-  % of one host per image are accommodated. \todo{explain this caption better
-  % so that it is understandable to non-ML people; regenerate this with the new
-  % pipeline}\label{fig:gct-to-xid}}
-  % \end{figure}
+  \begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{gct-to-xid.pdf}
+    \caption{\todo{caption this}\label{fig:gct-to-xid}}
+  \end{figure}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{gct-to-xid-precision.pdf}
+    \caption{\todo{caption this}\label{fig:gct-to-xid-precision}}
+  \end{figure}
 
   % \begin{figure}
   % \centering
@@ -990,7 +1031,7 @@ RGZ & CNN & $37.90 \pm 8.72$ & $86.37 \pm 2.67$\\
       Uncertainties represent standard deviations.
       The classifiers were applied to compact sources, resolved sources, and all
       sources separately.}
-    \label{ba:average-accuracies-elais}
+    \label{tab:average-accuracies-elais}
 \begin{tabular}{ccccc}
 \hline
 Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy \\
@@ -1015,7 +1056,7 @@ RGZ & CNN & $88.46 \pm 0.30$ & $88.46 \pm 0.30$ & $88.46 \pm 0.30$ \\
     \caption{Average cross-identification accuracies for ELAIS-S1.
       Uncertainties represent standard deviations across classifiers trained
       on CDFS quadrants. Columns and classifiers as defined in Table
-      \ref{ba:average-accuracies}.  A `perfect' classifier reads the expert
+      \ref{tab:average-accuracies}.  A `perfect' classifier reads the expert
       labels directly and hence represents the maximum attainable accuracy
       under our assumptions. A `random' classifier generates uniform random
       class probabilities and hence represents the expected minimum attainable
@@ -1051,7 +1092,7 @@ ELAIS has been cross-identified with SWIRE host galaxies by
 \citet{middelberg08}, we are able to determine the accuracy of our classifier
 in the ability to generalize to different parts of the sky. We report the
 balanced accuracies for our classifier applied to ELAIS in
-\autoref{fig:elais-ba} and \autoref{ba:average-accuracies-elais}.
+\autoref{fig:elais-ba} and \autoref{tab:average-accuracies-elais}.
 \autoref{fig:elais-cross-id-accuracy} shows the accuracies in the
 cross-identification task on ELAIS and we list averages accuracies in
 \autoref{tab:cross-id-accuracies-elais}.
@@ -1084,10 +1125,23 @@ smaller than the variation in the CDFS field.
     \label{fig:elais-cross-id-accuracy}}
 \end{figure}
 
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{images/elais-accuracies-flux.pdf}
+  \caption{ELAIS-S1 accuracies for random forests and logistic regression}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\columnwidth]{images/cdfs-accuracies-flux.pdf}
+  \caption{CDFS accuracies for random forests and logistic regression}
+\end{figure}
+
+  \subsection{Implications and Lessons}
 
 \section{Summary}
 
-We present a machine learning approach for cross-identification of radio components with their corresponding infrared host galaxy. We used data from Radio Galaxy Zoo and ATLAS.  Expert labels were available from \citet{norris06} and crowdsourced labels from Radio Galaxy Zoo for the CDFS field.
+We present a machine learning approach for cross-identification of radio components with their corresponding infrared host galaxy. We use data from Radio Galaxy Zoo and ATLAS.  Expert labels were available from \citet{norris06} and crowdsourced labels from Radio Galaxy Zoo for the CDFS field.
 
 
 %
