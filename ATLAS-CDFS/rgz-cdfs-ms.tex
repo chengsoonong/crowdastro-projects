@@ -67,8 +67,11 @@ $^{7}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
   South 1 (ELAIS-S1) fields. These methods were trained on both expert
   cross-identifications of CDFS from the initial ATLAS data release and
   crowdsourced cross-identifications of CDFS from Radio Galaxy Zoo, and the
-  trained models were used to cross-identify sources in CDFS and ELAIS-S1.
-  \todo{Compare the expert and RGZ performances somehow.}  % We find that the best-performing expert-trained models had a mean accuracy
+  trained models were used to cross-identify sources in CDFS and ELAIS-S1. The
+  expert-trained methods generally outperform the Radio Galaxy Zoo-trained
+  methods, but the Radio Galaxy Zoo-trained methods still perform reasonably
+  well. Crowdsourced labels thus provide a valuable training set for future
+  work.  % We find that the best-performing expert-trained models had a mean accuracy
   % of $93.0 \pm 1.5$ per cent on CDFS and $90.4 \pm 1.5$ per cent on ELAIS-S1,
   % while the best-performing RGZ-trained models had a mean accuracy of $92.6
   % \pm 1.9$ per cent on CDFS and $88.3 \pm 0.8$ per cent on ELAIS-S1. While
@@ -376,23 +379,22 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     reference to radio morphology. Given a radio component, we want to find
     the corresponding host galaxy as a citizen scientist would using Radio
     Galaxy Zoo. The input is thus a radio image and an infrared image with a
-    given radius \todo{Clarify what this means --- we aren't actually taking
-    an infrared image}. We choose a radius of 1~arcmin to match the size of
-    the images used by Radio Galaxy Zoo. We make the assumption that each
-    radio image represents a single, complex extended source. This is not the
-    case in general and a radio image may contain many different radio sources
-    with unique host galaxies. If we had access to radio morphology
-    information, we could use this to isolate relevant components and hence
-    more accurately cross-identify sources, but this is beyond the scope of
-    this paper. We also note that this assumption will bias our results
-    against radio emission that extends beyond the 1~arcmin cutout size,
-    however, these are uncommon in ATLAS with 9 radio sources identified by
-    \citet{norris06} as having components further than 1~arcmin apart (and of
-    these, only 5 are in Radio Galaxy Zoo). The radio cross-identification
-    task then amounts to locating the host galaxy within the associated radio
-    and infrared images. This is formalised as an object localisation problem:
-    given a radio image and an infrared image centred on a radio component,
-    locate the host galaxy of the radio component.    % S031, S336, S081, S576, S136, S719, S618, S707, S287
+    given radius. We choose a radius of 1~arcmin to match the size of the
+    images used by Radio Galaxy Zoo. We make the assumption that each radio
+    image represents a single, complex extended source. This is not the case
+    in general and a radio image may contain many different radio sources with
+    unique host galaxies. If we had access to radio morphology information, we
+    could use this to isolate relevant components and hence more accurately
+    cross-identify sources, but this is beyond the scope of this paper. We
+    also note that this assumption will bias our results against radio
+    emission that extends beyond the 1~arcmin cutout size, however, these are
+    uncommon in ATLAS with 9 radio sources identified by \citet{norris06} as
+    having components further than 1~arcmin apart (and of these, only 5 are in
+    Radio Galaxy Zoo). The radio cross-identification task then amounts to
+    locating the host galaxy within the associated radio and infrared images.
+    This is formalised as an object localisation problem: given a radio image
+    and an infrared image centred on a radio component, locate the host galaxy
+    of the radio component.    % S031, S336, S081, S576, S136, S719, S618, S707, S287
     % ARG0003r2r, -, -, ARG0003r5h, ARG0003r2d, -, ARG0003r1s, -, ARG0003r8q
 
     A common approach to object localisation is to estimate the probability
@@ -677,10 +679,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \centering
       \includegraphics[width=\columnwidth]{images/quadrants.pdf}
       \caption{CDFS field training and testing quadrants labelled 0 -- 3. The
-        central dot is located at $\alpha = 52^\text{h}48^\text{m}00^\text{s},
-        \delta = -28^\circ{}06'00''$. \todo{No, it's at (52.8, -28.1)} The
-        quadrants were chosen such that there are similar numbers of radio
-        sources in each quadrant.\label{fig:quadrants}}
+        central dot is located at $\alpha = 03^\text{h}31^\text{m}12^\text{s},
+        \delta = -28^\circ{}06'00''$. The quadrants were chosen such that
+        there are similar numbers of radio sources in each
+        quadrant.\label{fig:quadrants}}
     \end{figure}
 
     \begin{figure}
@@ -855,7 +857,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         %  & LR & $89.5 \pm 0.8$ & $90.5 \pm 1.7$ & $90.2 \pm 0.8$\\
         %  & RF & $94.6 \pm 0.1$ & $95.8 \pm 0.5$ & $94.7 \pm 0.5$\\
         %  \\
-        RGZ & CNN & $87.7 \pm 0.9$ & $87.7 \pm 0.9$ & $87.7 \pm 0.9$\\
+        RGZ & CNN & $87.8 \pm 0.7$ & $89.2 \pm 0.7$ & $87.7 \pm 0.9$\\
          & LR & $91.4 \pm 0.8$ & $89.8 \pm 0.8$ & $90.8 \pm 1.4$\\
          & RF & $94.0 \pm 0.6$ & $94.7 \pm 0.6$ & $94.1 \pm 0.3$\\
         \hline
@@ -888,7 +890,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       %  & LR & $64.6 \pm 11.1$ & $91.7 \pm 1.0$\\
       %  & RF & $65.8 \pm 4.7$ & $89.2 \pm 3.4$\\
       %  \\
-      RGZ & CNN & $37.9 \pm 8.7$ & $86.4 \pm 2.7$\\
+      RGZ & CNN & $41.3 \pm 4.9$ & $86.4 \pm 2.7$\\
        & LR & $60.0 \pm 11.5$ & $92.6 \pm 1.9$\\
        & RF & $57.0 \pm 6.1$ & $87.1 \pm 2.6$\\
        \hline
@@ -921,11 +923,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     balanced accuracies for random forests trained on the expert-labelled
     resolved set, which have a standard deviation of $4.8$ percentage points
     compared to a standard deviation of $0.6$ percentage points when trained
-    on the Radio Galaxy Zoo-labelled resolved set. \todo{Re-run pipeline for
-    CNN(RGZ).} Despite being lower, the accuracies attained by the classifiers
-    trained on Radio Galaxy Zoo labels are still comparable to those trained
-    on expert labels, with most Radio Galaxy Zoo-trained models achieving
-    accuracies within a few percentage points of the expert-trained models.
+    on the Radio Galaxy Zoo-labelled resolved set. Despite being lower, the
+    accuracies attained by the classifiers trained on Radio Galaxy Zoo labels
+    are still comparable to those trained on expert labels, with most Radio
+    Galaxy Zoo-trained models achieving accuracies within a few percentage
+    points of the expert-trained models.
 
     We report the probabilities predicted by each classifier for each SWIRE
     object in \autoref{tab:probs}. Probabilities reported for a given object
@@ -1084,7 +1086,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       %  & LR & $91.81 \pm 0.29$ & $91.94 \pm 0.53$ & $92.01 \pm 0.24$ \\
       %  & RF & $95.18 \pm 0.30$ & $95.16 \pm 0.69$ & $95.50 \pm 0.24$ \\
       %  \\
-      RGZ & CNN & $88.5 \pm 0.3$ & $88.5 \pm 0.3$ & $88.5 \pm 0.3$ \\
+      RGZ & CNN & $88.8 \pm 0.6$ & $89.9 \pm 0.3$ & $88.5 \pm 0.3$ \\
        & LR & $93.2 \pm 0.5$ & $91.4 \pm 0.3$ & $91.6 \pm 0.6$ \\
        & RF & $94.9 \pm 0.2$ & $95.2 \pm 0.3$ & $95.1 \pm 0.2$ \\
        \hline
@@ -1106,20 +1108,20 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
        & & accuracy (per cent) & accuracy (per cent)\\
       \hline
-      Middelberg & Perfect & $85.82 \pm 0.64$ & $92.41 \pm 0.33$\\
-                 & Random  & $4.72 \pm 0.99$   & $50.68 \pm 0.51$\\
+      Middelberg & Perfect & $85.8 \pm 0.6$ & $92.4 \pm 0.3$\\
+                 & Random  & $4.7 \pm 1.0$  & $50.7 \pm 0.5$\\
        \\
-      Norris & CNN     & $68.05 \pm 2.53$ & $85.58 \pm 0.66$\\
-             & LR      & $79.63 \pm 0.91$ & $90.15 \pm 0.56$\\
-             & RF      & $76.13 \pm 3.41$ & $90.42 \pm 1.54$\\
+      Norris & CNN     & $68.1 \pm 2.5$ & $85.6 \pm 0.7$\\
+             & LR      & $79.6 \pm 0.9$ & $90.2 \pm 0.6$\\
+             & RF      & $76.1 \pm 3.4$ & $90.4 \pm 1.5$\\
        \\
       % RGZ-N & CNN & $61.01 \pm 1.40$ & $78.38 \pm 0.49$\\
       %       & LR  & $75.71 \pm 1.11$ & $86.72 \pm 1.10$\\
       %       & RF  & $75.00 \pm 2.42$ & $86.96 \pm 1.80$\\
       %  \\
-      RGZ & CNN & $54.87 \pm 1.02$ & $76.48 \pm 0.53$\\
-          & LR  & $75.76 \pm 2.08$ & $88.33 \pm 0.78$\\
-          & RF  & $75.24 \pm 2.88$ & $86.16 \pm 1.31$\\
+      RGZ & CNN & $59.1 \pm 3.2$ & $76.5 \pm 0.5$\\
+          & LR  & $75.8 \pm 2.1$ & $88.3 \pm 0.8$\\
+          & RF  & $75.2 \pm 2.9$ & $86.2 \pm 1.3$\\
        \hline
     \end{tabular}
   \end{table}
