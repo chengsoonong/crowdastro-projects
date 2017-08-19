@@ -8,25 +8,55 @@ The Australian National University
 
 import aplpy
 import astropy.io.fits
+import matplotlib.patches as patches, numpy
+
+import matplotlib
+
+# http://bkanuka.com/articles/native-latex-plots/
+def figsize(scale):
+    fig_width_pt = 240.0
+    inches_per_pt = 1.0/72.27
+    golden_mean = (numpy.sqrt(5.0)-1.0)/2.0
+    fig_width = fig_width_pt*inches_per_pt*scale
+    fig_height = fig_width*golden_mean
+    fig_size = [fig_width,fig_height]
+    return fig_size
+
+pgf_with_latex = {
+    "pgf.texsystem": "pdflatex",
+    "text.usetex": True,
+    "font.family": "serif",
+    "font.serif": [],
+    "font.sans-serif": [],
+    "font.monospace": [],
+    "axes.labelsize": 10,
+    "font.size": 10,
+    "legend.fontsize": 10,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "figure.figsize": figsize(0.9),
+    "pgf.preamble": [
+        r"\usepackage[utf8x]{inputenc}",
+        r"\usepackage[T1]{fontenc}",
+    ]
+}
+matplotlib.rcParams.update(pgf_with_latex)
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 
-import configure_plotting
-configure_plotting.configure()
-
-radio_path = 'J:/repos/crowdastro-projects/ATLAS-CDFS/EI0093C1_radio.fits'
-fig = aplpy.FITSFigure(radio_path)
+radio_path = '../EI0093C1_radio.fits'
+fig = aplpy.FITSFigure(radio_path, figsize=(5, 5))
 fig.show_grayscale(stretch='arcsinh')
 # fig = plt.figure(figsize=(10, 10), dpi=50)
 # ax = plt.subplot2grid((3, 3), (0, 0), rowspan=2, colspan=3)
 # ax.imshow(radio)
 ax = plt.gca()
-rect = patches.Rectangle((201-75, 10), 71, 71, edgecolor='red', linewidth=5, fill=None)
+rect = patches.Rectangle((201-75, 10), 71, 71, edgecolor='red', linewidth=1, fill=None)
 ax.add_patch(rect)
-rect = patches.Rectangle((100-71/2, 100-71/2), 71, 71, edgecolor='red', linewidth=5, fill=None)
+rect = patches.Rectangle((100-71/2, 100-71/2), 71, 71, edgecolor='red', linewidth=1, fill=None)
 ax.add_patch(rect)
-rect = patches.Rectangle((5, 50), 71, 71, edgecolor='red', linewidth=5, fill=None)
+rect = patches.Rectangle((5, 50), 71, 71, edgecolor='red', linewidth=1, fill=None)
 ax.add_patch(rect)
+plt.savefig('../images/localisation-example.pdf')
 # plt.axis('off')
 # plt.title('a)')
 # ax = plt.subplot2grid((3, 3), (2, 0))
@@ -81,4 +111,4 @@ ax.add_patch(rect)
 # plt.subplots_adjust(hspace=0.2, bottom=0.1)
 # plt.savefig('/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/windows.pdf')
 # plt.savefig('/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/windows.eps')
-plt.show()
+# plt.show()

@@ -42,6 +42,6 @@ if __name__ == '__main__':
     # plot('J:\\repos\\crowdastro\\data/cdfs/2x2/CI0077C1_radio.fits', plot_atlas_hosts=True)
     # plot("J:\\repos\\crowdastro-projects\\ATLAS-CDFS\\images\\FIRSTJ151227.2+454026_3.fits")
     # plot("J:\\repos\\crowdastro-projects\\ATLAS-CDFS\\images\\FIRSTJ151227.2+454026_8.fits", v=(-5.472e-04, 3.887e-02))
-    plot("J:\\repos\\crowdastro\\data\\cdfs\\2x2\\CI2363_radio.fits")
+    plot("/Users/alger/data/RGZ/cdfs/2x2/CI2363_radio.fits")
     plot_box_ATLAS()
     plt.show()

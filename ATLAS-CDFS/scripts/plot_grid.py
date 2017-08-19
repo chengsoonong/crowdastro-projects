@@ -105,9 +105,9 @@ def plot_grid(field='cdfs'):
             for k in range(4):
                 handles[j] = ax.scatter([0 + (j - 1) / 5], classifier_set[0][set_name][k] * 100,
                                         color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
-                ax.scatter([1 + (j - 1) / 5], classifier_set[1][set_name][k] * 100,
-                           color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
-                ax.scatter([2 + (j - 1) / 5], classifier_set[1][fullmap[set_name]][k] * 100,
+                # ax.scatter([1 + (j - 1) / 5], classifier_set[1][set_name][k] * 100,
+                #            color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
+                ax.scatter([1 + (j - 1) / 5], classifier_set[1][fullmap[set_name]][k] * 100,
                            color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
             # Compute for table.
             for labeller in ['Norris', 'RGZ N', 'RGZ']:
@@ -115,17 +115,18 @@ def plot_grid(field='cdfs'):
                     mean = numpy.mean(classifier_set[0][set_name]) * 100
                     stdev = numpy.std(classifier_set[0][set_name]) * 100
                 elif labeller == 'RGZ N':
-                    mean = numpy.mean(classifier_set[1][set_name]) * 100
-                    stdev = numpy.std(classifier_set[1][set_name]) * 100
+                    continue
+                    # mean = numpy.mean(classifier_set[1][set_name]) * 100
+                    # stdev = numpy.std(classifier_set[1][set_name]) * 100
                 elif labeller == 'RGZ':
                     mean = numpy.mean(classifier_set[1][fullmap[set_name]]) * 100
                     stdev = numpy.std(classifier_set[1][fullmap[set_name]]) * 100
                 accuracy_map[labeller][classifier_name][titlemap[set_name]] = '${:.02f} \\pm {:.02f}$'.format(mean, stdev)
             ax.set_ylim((80, 100))
-            ax.set_xlim((-0.5, 2.5))
-            ax.set_xticks([0, 1, 2])
+            ax.set_xlim((-0.5, 1.5))
+            ax.set_xticks([0, 1])#, 2])
             ax.set_xticklabels(['Norris',
-                                'RGZ N',
+                                # 'RGZ N',
                                 'RGZ',
                                ], rotation='horizontal')
             if i == 2:
@@ -147,6 +148,9 @@ def plot_grid(field='cdfs'):
     col_resolved = []
     col_all = []
     for labeller in ['Norris', 'RGZ N', 'RGZ']:
+        if labeller == 'RGZ N':
+            continue
+
         for classifier in ['CNN', 'LR', 'RF']:
             col_labeller.append(labeller)
             col_classifier.append(classifier)

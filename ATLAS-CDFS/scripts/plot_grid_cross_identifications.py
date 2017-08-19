@@ -283,20 +283,20 @@ def plot(field='cdfs'):
         plt.hlines(random_acc[titlemap[set_name]], -0.5, 2.5, linestyles='solid', colors='blue', linewidth=1, zorder=1, alpha=0.7)
         plt.hlines(random_acc[titlemap[set_name]] + random_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='blue', linewidth=1, zorder=1, alpha=0.7)
         plt.hlines(random_acc[titlemap[set_name]] - random_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='blue', linewidth=1, zorder=1, alpha=0.7)
-        for i, labeller in enumerate(['Norris', 'RGZ N', 'RGZ']):
+        for i, labeller in enumerate(['Norris', 'RGZ']):
             for j, classifier in enumerate(['LogisticRegression', 'CNN', 'RandomForestClassifier']):
                 ys = numpy.array(labeller_classifier_to_accuracies[labeller, classifier, titlemap[set_name]]) * 100
                 xs = [i + (j - 1) / 5] * len(ys)
                 print('{} & {} & {} & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, labeller, classifier, numpy.mean(ys), numpy.std(ys)))
-                ax.set_xlim((-0.5, 2.5))
+                ax.set_xlim((-0.5, 1.5))
                 if k == 0:
                     ax.set_ylim((0, 100))
                 else:
                     ax.set_ylim((70, 100))
-                ax.set_xticks([0, 1, 2])
-                ax.set_xticklabels(['Norris', 'RGZ N', 'RGZ'])
+                ax.set_xticks([0, 1])
+                ax.set_xticklabels(['Norris', 'RGZ'])
                 handles[j] = plt.scatter(xs, ys, color=colours[j], marker=markers[j], zorder=2, edgecolor='k', linewidth=1)
-            if k == 2:
+            if k == 1:
                 plt.xlabel('Labels')
             plt.ylabel('{}\nAccuracy (%)'.format(titlemap[set_name]))
 
