@@ -655,8 +655,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \label{fig:cnn}
       \end{figure}
 
-      % \todo{Add a diagram of convolutional filters?}
-
       CNNs have recently produced good results on large image-based datasets in
       astronomy \citep[e.g.][]{dieleman15cnn, lukic17compact}. We employ only a
       simple CNN model in this paper as a proof of concept that CNNs may be used
@@ -986,34 +984,34 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     of label noise in the testing labels. Specifically, true host galaxies may
     be misidentified as non-host galaxies if the associated radio source was
     below the $5\sigma$ flux density limit in ATLAS DR1 but not in ATLAS DR3.
-    To attempt to characterise the effect of this label noise in the test set, \todo{plot RGZ, Norris masking for CDFS.}
+    This has the effect of reducing the accuracy for Radio Galaxy Zoo-trained
+    classifiers.
 
-\begin{figure*}
-\includegraphics[width=\textwidth]{images/CNN-examples-CDFS.png}
-    \caption{Radio sources in CDFS incorrectly cross-identified by a
-      convolutional neural network trained on expert labels.
-      (a), (e), and (f) have multiple SWIRE host galaxies very close
-      together and the predicted host galaxy is close to the true host galaxy.
-      (b) contains multiple radio sources, and the
-      identified host likely \emph{is} a host galaxy, but not one labelled in
-      the initial ATLAS data release, as it is a low flux source. In
-      (c), the classifier seems to be distracted by the
-      right lobe of the radio source. This may be due to the large number of
-      compact objects in the training set.
-      (d) and (h) show the
-      classifier failing to correct cross-identify a radio double. This may be
-      due to the window size (both lobes would not be visible in the radio image
-      shown to the classifier) or due to the limited number of radio doubles in
-      the training set. Finally,
-     (g) shows the classifier failing to classify a radio
-      triple. This triple extends outside the 1~arcmin radius used to select
-      candidate hosts.}\label{fig:cnnexamples}
-\end{figure*}
+  \begin{figure*}
+  \includegraphics[width=\textwidth]{images/CNN-examples-CDFS.png}
+      \caption{Radio sources in CDFS incorrectly cross-identified by a
+        convolutional neural network trained on expert labels.
+        (a), (e), and (f) have multiple SWIRE host galaxies very close
+        together and the predicted host galaxy is close to the true host galaxy.
+        (b) contains multiple radio sources, and the
+        identified host likely \emph{is} a host galaxy, but not one labelled in
+        the initial ATLAS data release, as it is a low flux source. In
+        (c), the classifier seems to be distracted by the
+        right lobe of the radio source. This may be due to the large number of
+        compact objects in the training set.
+        (d) and (h) show the
+        classifier failing to correct cross-identify a radio double. This may be
+        due to the window size (both lobes would not be visible in the radio image
+        shown to the classifier) or due to the limited number of radio doubles in
+        the training set. Finally,
+       (g) shows the classifier failing to classify a radio
+        triple. This triple extends outside the 1~arcmin radius used to select
+        candidate hosts.}\label{fig:cnnexamples}
+  \end{figure*}
 
   % \begin{figure}
   %   \centering
   %   \includegraphics[width=\columnwidth]{gct-to-xid-precision.pdf}
-  %   \caption{\todo{caption this}\label{fig:gct-to-xid-precision}}
   % \end{figure}
 
   % \begin{figure}
@@ -1029,7 +1027,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   % \includegraphics[width=\columnwidth]{passive.pdf}
   % \caption{Passive learning plot for the GCT. Trained and tested on RGZ.
   %   This is so that we had maximal training data --- RGZ has many more
-  %   objects than Norris. \todo{Regenerate with Norris testing data}
   %   \label{fig:passive}}
   % \end{figure}
 
@@ -1096,7 +1093,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \caption{Average balanced accuracies across quadrants shown in
       \autoref{fig:elais-ba} for ELAIS-S1. Uncertainties represent standard
       deviations. The classifiers were applied to compact sources, resolved
-      sources, and all sources separately. \todo{Re-run CNN(RGZ)}}
+      sources, and all sources separately.}
     \label{tab:average-accuracies-elais}
     \begin{tabular}{ccccc}
       \hline
