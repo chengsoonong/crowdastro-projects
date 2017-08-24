@@ -39,7 +39,7 @@
 $^{1}$Research School of Astronomy and Astrophysics, The Australian National University, Canberra, ACT 2611, Australia\\
 $^{2}$ARC Centre of Excellence for All-Sky Astrophysics (CAASTRO)\\
 $^{3}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
-$^{4}$Data61, CSIRO, 7 London Circuit, Canberra ACT 2601, Australia\\
+$^{4}$Data61, CSIRO, Canberra ACT 2601, Australia\\
 $^{5}$Research School of Computer Science, The Australian National University, Canberra, ACT 2601, Australia\\
 $^{6}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia\\
 $^{7}$Minnesota Institute for Astrophysics, University of Minnesota, 116 Church St. SE, Minneapolis, MN 55455\\
@@ -62,17 +62,23 @@ $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
 \begin{abstract}
   We present a machine learning approach for the task of determining the
   infrared host galaxies of radio emissions detected in wide-area radio
-  surveys. We test our methods on the radio sources detected in the $1.4$~GHz
+  surveys. We propose a method for reducing the cross identification task
+  to a binary classification task, which is well understood and well
+  supported by machine learning software.
+  We test our methods on the radio sources detected in the $1.4$~GHz
   Australian Telescope Large Area Survey (ATLAS) observations of the
   \emph{Chandra} Deep Field - South (CDFS) and the ESO Large Area ISO Survey -
-  South 1 (ELAIS-S1) fields. These methods were trained on both expert
-  cross-identifications of CDFS from the initial ATLAS data release and
-  crowdsourced cross-identifications of CDFS from Radio Galaxy Zoo, and the
-  trained models were used to cross-identify sources in CDFS and ELAIS-S1. The
-  expert-trained methods generally outperform the Radio Galaxy Zoo-trained
-  methods, but the Radio Galaxy Zoo-trained methods still perform reasonably
-  well. Crowdsourced labels thus provide a valuable training set for future
-  work.  % We find that the best-performing expert-trained models had a mean accuracy
+  South 1 (ELAIS-S1) fields, and cross identify them with
+  \emph{Spitzer} Wide-area Infrared Extragalactic survey (SWIRE).
+  We compared two categories of labels:
+  expert cross-identifications of CDFS from the initial ATLAS data release and
+  crowdsourced cross-identifications of CDFS from Radio Galaxy Zoo (RGZ).
+  Our empirical results show that the cross-identification accuracy of
+  the predictor trained on RGZ labels is comparable to the predictor trained
+  on expert labels, demonstrating the value of crowdsourced labels.
+  In addition to cross validation performance on CDFS, we demonstrate that
+  our method also generalizes to ELAIS-S1.
+  % We find that the best-performing expert-trained models had a mean accuracy
   % of $93.0 \pm 1.5$ per cent on CDFS and $90.4 \pm 1.5$ per cent on ELAIS-S1,
   % while the best-performing RGZ-trained models had a mean accuracy of $92.6
   % \pm 1.9$ per cent on CDFS and $88.3 \pm 0.8$ per cent on ELAIS-S1. While
@@ -82,7 +88,8 @@ $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
   % the crowdsourced labels hence provide a valuable training set for future
   % machine learning methods.
   Cross-identification performance with our method is limited by a lack of
-  radio morphology information as our assumptions require that radio sources
+  radio morphology information as our method for reducing cross identification
+  to binary classification require that radio sources
   are isolated from other sources. This assumption breaks down particularly
   with high surface brightness sensitivity surveys. We suggest that source
   identifications and radio morphology information would resolve this problem.
@@ -258,7 +265,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     infrared objects in CDFS and 186,059 infrared objects in ELAIS-S1.
 
   \subsection{Radio Galaxy Zoo}\label{sec:rgz}
-    
+
     Radio Galaxy Zoo asks volunteers to cross-identify radio components with
     their infrared host galaxies. There are a total of 177~461 radio
     components in Radio Galaxy Zoo, sourced from ATLAS and Faint Images of the
@@ -340,7 +347,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         the highest probability.}
       \label{fig:windows}
     \end{figure}
-    
+
   \subsection{Cross-identification as binary
   classification}\label{cross-identification-as-binary-classification}
     \begin{figure}
@@ -377,7 +384,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         a probability.}
       \label{fig:flowchart}
     \end{figure}
-        
+
     We focus on the problem of host galaxy cross-identification without
     reference to radio morphology. Given a radio component, we want to find
     the corresponding host galaxy as a citizen scientist would using Radio
@@ -705,7 +712,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         the cutoff is increased.}
       \label{fig:distribution-cutoffs}
     \end{figure}
-    
+
     Converting the Radio Galaxy Zoo and \citet{norris06} cross-identification
     catalogues to binary labels for infrared objects is a non-trivial task. A
     clear problem is that there is no way to capture radio morphology
@@ -973,7 +980,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \autoref{tab:cids}. As with SWIRE predicted probabilities, reported
     cross-identifications for a given object were generated by classifiers
     tested on the quadrant containing that object.
-  
+
     In \autoref{fig:cnnexamples} we show examples of where the incorrect
     cross-identification was selected by the CNN trained on expert labels. We
     find that radio components with multiple possible SWIRE host galaxies,
@@ -1465,7 +1472,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       indicates the expert labels, and `RGZ' indicates the Radio Galaxy Zoo
       labels.
   \end{itemize}
-  
+
 % Don't change these lines
 \bsp	% typesetting comment
 \label{lastpage}
