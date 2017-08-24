@@ -181,7 +181,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   applying our method to ATLAS observations of the \emph{Chandra} Deep Field -
   South (CDFS) and in \autoref{sec:elais} we apply the cross-identifiers
   trained on CDFS to the ESO Large Area ISO Survey - South 1 (ELAIS-S1) field.
-  Our data and code are available at \url{radiogalaxyzoo.github.io/atlas-xid}.
+  Our data and code are available at
+  \url{https://radiogalaxyzoo.github.io/atlas-xid}.
 
   \begin{figure}
   \begin{center}
@@ -447,7 +448,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \subsection{Limitations of our approach}
      \begin{figure}
       \centering
-      \includegraphics[width=\linewidth]{images/ARG0003r2v_radio.pdf}
+      \includegraphics[width=\linewidth]{images/CI0077C1_fig.pdf}
       \caption{$2'$-wide radio image centred on ATLAS3\textunderscore{}J033402.87-282405.8C.
         %(ARG0003r2v)
         This radio source breaks our assumption that there are no other radio
@@ -459,7 +460,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
       \begin{figure}
       \centering
-      \includegraphics[width=\linewidth]{images/ARG0000u0h_first_8.pdf}
+      \includegraphics[width=\linewidth]{images/FIRSTJ151227_fig.pdf}
       \caption{A $8'$-wide radio image from FIRST, centred on
         FIRSTJ151227.2+454026. The $3'$-wide red box indicates the boundaries of
         the image of this radio component shown to volunteers in Radio Galaxy
@@ -472,7 +473,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{figure}
         \begin{figure}
       \centering
-      \includegraphics[width=\linewidth]{images/ARG0003sky_radio}
+      \includegraphics[width=\linewidth]{images/CI2363_fig.pdf}
       \caption{A radio image centred on $\alpha =
         03^\text{h}26^\text{m}39.12^\text{s}$, $\delta = -28^\circ{}07'58.80''$.        %ARG0003sky
         This is an example of a radio source where the window centred on the
@@ -692,6 +693,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         cross-identified in ATLAS DR1 (Norris) and by Radio Galaxy Zoo (RGZ).
         Radio Galaxy Zoo has cross-identified considerably more faint
         objects.}
+      \label{fig:distribution-fluxes}
     \end{figure}
 
     \begin{figure}
@@ -701,6 +703,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         Zoo (RGZ) training sets with different integrated radio flux cutoffs.
         The two training sets converge to the same number of host galaxies as
         the cutoff is increased.}
+      \label{fig:distribution-cutoffs}
     \end{figure}
     
     Converting the Radio Galaxy Zoo and \citet{norris06} cross-identification
@@ -718,16 +721,20 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     is assigned a positive label as a host galaxy. In principle we would
     then assign every other galaxy a negative label. This has some problems
     --- an example is that if the cross-identifier did not observe a radio
-    object (e.g.~it was below the signal-to-noise ratio) then the host galaxy of
-    that radio object would receive a negative label. This occurs with
+    object (e.g.~it was below the signal-to-noise ratio) then the host galaxy
+    of that radio object would receive a negative label. This occurs with
     \citet{norris06} cross-identifications, as these are associated with the
-    first data release of ATLAS. The first data release went to a 5$\sigma$ flux
-    density level of $S_{1.4} \geq 1 \text{ mJy beam}^{-1}$ \citep{norris06},
-    compared to $S_{1.4} \geq \unit{85}{\micro\jansky}\text{ beam}^{-1}$ for the
-    third data release used by Radio Galaxy Zoo \citep{franzen15}. The expert
-    labels may therefore disagree with labels from Radio Galaxy Zoo even if they
-    are both plausible. We train and test our classifiers on infrared objects
-    within a 1~arcmin radius of an ATLAS radio object.
+    first data release of ATLAS. The first data release went to a 5$\sigma$
+    flux density level of $S_{1.4} \geq 1 \text{ mJy beam}^{-1}$
+    \citep{norris06}, compared to $S_{1.4} \geq \unit{85}{\micro\jansky}\text{
+    beam}^{-1}$ for the third data release used by Radio Galaxy Zoo
+    \citep{franzen15}. The expert labels may therefore disagree with labels
+    from Radio Galaxy Zoo even if they are both plausible. The difference in
+    flux distributions between the expert and Radio Galaxy Zoo
+    cross-identified sources is shown in \autoref{fig:distribution-fluxes} and
+    the difference in training set size at different flux cutoffs is shown in
+    \autoref{fig:distribution-cutoffs}. We train and test our classifiers on
+    infrared objects within a 1~arcmin radius of an ATLAS radio object.
 
   \subsection{Experimental Setup}
   \label{sec:experimental-setup}
@@ -1235,12 +1242,105 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{Implications and Lessons}
 
-    flux independent LR CNN?
+    Our main result is that it is possible to cast radio host galaxy
+    cross-identification as a machine learning task for which standard methods
+    can be applied. These methods can then be trained with a variety of label
+    sets derived from cross-identification catalogues. Future work could even
+    combine multiple catalogues or physical priors to boost performance.
+
+    The accuracies of our trained cross-identification methods generally fall
+    below the best possible accuracy attainable using our approach, indicated
+    by the green lines in Figures \ref{fig:cross-id-accuracy} and
+    \ref{fig:elais-cross-id-accuracy}. The balanced accuracies attained by our
+    binary classifiers indicate that there is significant room for improvement
+    in classification. The classification accuracy can be improved by better
+    model selection and more training data, particularly for convolutional
+    neural networks. There is a huge variety of ways to build a convolutional
+    neural network, and we have only investigated one architecture. For an
+    exploration of different convolutional neural network architectures
+    applied to radio astronomy, see \citet{lukic17compact}. Convolutional
+    neural networks generally require more training data than other machine
+    learning models and we have only trained our networks on a few hundred
+    sources. We would thus expect performance on the classification task to
+    greatly increase with larger training sets.
+
+    Another problem is that of the window size used to select radio features.
+    Increasing window size would increase computational expense, but provide
+    more information to the models. Results are also highly sensitive to how
+    large the window size is compared to the size of the radio galaxy we are
+    trying to cross-identify, with large angular sizes requiring large window
+    sizes to ensure that the features contain all the information needed to
+    localise the host galaxy. An ideal implementation of our method would most
+    likely represent a galaxy using radio images taken at multiple window
+    sizes, but this is considerably more expensive.
+
+    Larger training sets, better model selection, and larger window sizes
+    would improve performance, but only so far: we would still be bounded
+    above by the estimated ``perfect'' classifier accuracy. From this point,
+    the performance can only be improved by improving upon our broken
+    assumptions. We detailed these assumptions in \autoref{sec:limitations},
+    and we will discuss here how these could be resolved. Our assumption that
+    we have only one radio object in a given radius is easily broken by radio
+    galaxies with large angular size, as these may overlap other radio
+    objects. Source identification may solve this problem. An example of how
+    source identification could help resolve the issue is to identify all
+    sources, then cross-identify the galaxies in order of angular size,
+    excluding previous host galaxies each time. Source identifications may
+    also provide priors on the true host galaxy location: candidate hosts can
+    be generated based on physical models applied to sources, and then these
+    hosts can be selected from using our model. Our assumption that the host
+    galaxy is contained within the search radius could be improved by
+    dynamically choosing the search radius, perhaps based on the angular
+    extent of the galaxy, or the redshift of candidate hosts. Finally, our
+    assumption that the host galaxy is visible in infrared is technically not
+    needed, as the sliding window approach we have employed will still work
+    even if there are no visible host galaxies --- instead of classifying
+    candidate hosts, simply classify each pixel in the radio image. The
+    downside of removing candidate hosts is that we are no longer able to
+    reliably incorporate host galaxy information such as colour and redshift,
+    though this could be resolved by treating pixels as potentially invisible
+    candidate hosts with noisy features.
+
+    We observe that Radio Galaxy Zoo-trained methods perform comparably to
+    methods trained on expert labels. This shows that the crowdsourced labels
+    from Radio Galaxy Zoo will indeed provide a valuable source of training
+    data for future machine learning methods in radio astronomy.
+
+    \autoref{fig:accuracies-flux} reveals interesting behaviour of different
+    classifier models at different flux cutoffs. Logistic regression and
+    convolutional neural networks seem relatively independent of flux, with
+    these models performing well on the fainter ELAIS-S1 sources even when
+    they were trained on the generally brighter objects in CDFS. Conversely,
+    random forests were sensitive to the changes in flux distribution between
+    datasets. This shows that not all models behave similarly on radio data,
+    and it is therefore important to investigate multiple models when
+    developing machine learning methods for radio astronomy.
+
+    Our methods can be easily incorporated into other cross-identification
+    methods or used as an extra data source for source identification. This is
+    because we have essentially produced a scoring function, which rates
+    galaxies based on the probability that they are a host galaxy. For
+    example, our method could be used to disambiguate between candidate host
+    galaxies selected by model-based algorithms, or used to weight candidate
+    host galaxies while a source identifier attempts to associate radio
+    components. Our method can also be extended using other data sources; for
+    example, information from source identification algorithms could be
+    incorporated into the feature set of candidate host galaxies.
 
 \section{Summary}
 
-We present a machine learning approach for cross-identification of radio components with their corresponding infrared host galaxy. We use data from Radio Galaxy Zoo and ATLAS.  Expert labels were available from \citet{norris06} and crowdsourced labels from Radio Galaxy Zoo for the CDFS field.
-
+  We present a machine learning approach for cross-identification of radio
+  components with their corresponding infrared host galaxy. We trained our
+  methods on expert and crowdsourced cross-identification catalogues, and
+  applied these methods on the CDFS and ELAIS-S1 fields of ATLAS.
+  Expert-trained models generally outperformed the crowdsourced-trained
+  models, but both sets of models performed comparably on the
+  cross-identification task. While our cross-identification performance is not
+  as high as would be ideal, we make no assumptions on the binary
+  classification model used in our methods and so we expect the performance to
+  be improved by further experimentation and model selection. Our method
+  provides a useful framework for generalising cross-identification catalogues
+  to unseen areas of the sky and can be incorporated into existing methods.
 
 %
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
@@ -1253,88 +1353,118 @@ We present a machine learning approach for cross-identification of radio compone
 \section{Catalogues}
   \begin{table*}
     \caption{Predicted probabilities that each object in SWIRE is a host
-      galaxy. Probabilities are reported for each predictor. C(A / B) indicates
-      the predictor using classifier model C, trained on label set A on data set
-      B. Ellipsis indicates columns that have been omitted. The omitted columns
-      are all other combinations of classifier, label set, and data set. If a
-      SWIRE object does not appear in the table, then it was further than 1
-      arcmin from an ATLAS object and hence has a predicted probability of zero
-      by our assumptions. Full table electronic.}
+      galaxy. Probabilities are reported for each predictor. $C(A\ /\ B)$
+      indicates the predictor using classifier model $C$, trained on label set
+      $A$ on data set $B$. Ellipsis indicates columns that have been omitted.
+      The omitted columns are all other combinations of classifier, label set,
+      and data set. If a SWIRE object does not appear in the table, then it
+      was further than 1 arcmin from an ATLAS object and hence has a predicted
+      probability of zero by our assumptions. Full table electronic.}
     \label{tab:probs}
-    \begin{tabular}{c|ccccccccccccccccccccccccccccc}
+    \begin{tabular}{ccccccccccccccccccccc}
       \hline
-      SWIRE & RA & Dec & CNN(Norris / All) & CNN(Norris / Compact) & \dots & RF(RGZ N / Resolved) \\
-       & (degrees) & (degrees)\\
-      \hline
-      SWIRE3\textunderscore J032559.15-284724.2 & 51.4965 & -28.7901 & 0.0001 & 0.3585 & \dots & 0.2815 \\
-      SWIRE3\textunderscore J032559.91-284728.9 & 51.4996 & -28.7914 & 0.0004 & 0.3909 & \dots & 0.0000 \\
-      SWIRE3\textunderscore J032600.02-284736.9 & 51.5001 & -28.7936 & 0.0002 & 0.3395 & \dots & 0.0000 \\
-      SWIRE3\textunderscore J032600.13-284637.5 & 51.5005 & -28.7771 & 0.0004 & 0.4546 & \dots & 0.0696 \\
-      SWIRE3\textunderscore J032600.13-284715.7 & 51.5006 & -28.7877 & 0.0014 & 0.3857 & \dots & 0.0000 \\
-      SWIRE3\textunderscore J032600.98-284705.4 & 51.5041 & -28.7848 & 0.0205 & 0.3742 & \dots & 0.0000 \\
-      SWIRE3\textunderscore J032601.03-284711.6 & 51.5043 & -28.7866 & 0.0699 & 0.3752 & \dots & 0.0000 \\
-      SWIRE3\textunderscore J032601.56-284131.0 & 51.5065 & -28.692 & 0.0001 & 0.3917 & \dots & 0.0819 \\
-      SWIRE3\textunderscore J032601.60-284207.5 & 51.5067 & -28.7021 & 0.0000 & 0.3182 & \dots & 0.0000 \\
-      \hline
+      SWIRE & RA & Dec & CNN(Norris / All) & & RF(RGZ / Resolved) \\\hline
+      SWIRE3\textunderscore{}J032559.15-284724.2 & 51.4965 & -28.7901 & 0.0001 & $\cdots$ & 0.1170 \\
+      SWIRE3\textunderscore{}J032559.91-284728.9 & 51.4996 & -28.7914 & 0.0004 & $\cdots$ & 0.0000 \\
+      SWIRE3\textunderscore{}J032600.02-284736.9 & 51.5001 & -28.7936 & 0.0002 & $\cdots$ & 0.0451 \\
+      SWIRE3\textunderscore{}J032600.13-284637.5 & 51.5005 & -28.7771 & 0.0004 & $\cdots$ & 0.0637 \\
+      SWIRE3\textunderscore{}J032600.13-284715.7 & 51.5006 & -28.7877 & 0.0014 & $\cdots$ & 0.0153 \\
+      SWIRE3\textunderscore{}J032600.98-284705.4 & 51.5041 & -28.7848 & 0.0205 & $\cdots$ & 0.0000 \\
+      SWIRE3\textunderscore{}J032601.03-284711.6 & 51.5043 & -28.7866 & 0.0699 & $\cdots$ & 0.0000 \\
+      SWIRE3\textunderscore{}J032601.56-284131.0 & 51.5065 & -28.692 & 0.0001 & $\cdots$ & 0.0000 \\
+      SWIRE3\textunderscore{}J032601.60-284207.5 & 51.5067 & -28.7021 & 0.0000 & $\cdots$ & 0.0000 \\\hline
     \end{tabular}
   \end{table*}
 
  \begin{table*}
     \small
     \caption{Predicted host galaxy cross-identifications for each object in
-      ATLAS-CDFS. Cross-identifications are reported for each predictor, with
-      the predictor listed as in \autoref{tab:probs}. The cross-identification
-      given by \citet{norris06} is included in the `Norris' column. The
-      cross-identification given by the Radio Galaxy Zoo consensus is included
-      in the `RGZ' column, along with the corresponding consensus levels for
-      the radio morphology and host cross-identification tasks \citep[see][for
-      details on how consensus is calculated]{wong17}. Low radio consensus
-      indicates that the component has multiple nearby components (and thus is
-      more impacted by our assumption that the source is isolated), and low
-      infrared consensus indicates that the host galaxy is unclear in the SWIRE
-      image (possibly due to multiple nearby candidate host galaxies). Full
-      table electronic.}
-    \begin{tabular}{c|cccccccccc}
-      \hline
-      SWIRE & RA & Dec & Norris & RGZ & RGZ radio consensus \\
-       & (degrees) & (degrees) \\
-      \hline
-      ATLAS3\textunderscore{}J032602.82-284708.1C & 51.511734 & -28.785575 & SWIRE3\textunderscore{}J032603.15-284708.5 & & 0.4516\\
-      ATLAS3\textunderscore{}J032615.49-284629.4C & 51.564555 & -28.774847 & SWIRE3\textunderscore{}J032615.41-284630.7 & SWIRE3\textunderscore{}J032615.41-284630.7 & 0.2941\\
-      ATLAS3\textunderscore{}J032615.55-280559.8C & 51.564799 & -28.099955 & SWIRE3\textunderscore{}J032615.52-280559.8 & SWIRE3\textunderscore{}J032615.52-280559.8 & 0.5625\\
-      ATLAS3\textunderscore{}J032617.35-280710.2C & 51.572279 & -28.119491 & SWIRE3\textunderscore{}J032617.89-280707.2 & SWIRE3\textunderscore{}J032617.89-280707.2 & 0.4146\\
-      ATLAS3\textunderscore{}J032625.13-280909.8C & 51.604711 & -28.152731 & SWIRE3\textunderscore{}J032625.19-280910.1 & SWIRE3\textunderscore{}J032625.19-280910.1 & 0.3158\\
-      ATLAS3\textunderscore{}J032629.10-280650.1C & 51.621251 & -28.113924 & SWIRE3\textunderscore{}J032629.13-280650.7 & SWIRE3\textunderscore{}J032626.74-280636.7 & 0.3333\\
-      ATLAS3\textunderscore{}J032629.61-284052.7C & 51.623385 & -28.681315 & SWIRE3\textunderscore{}J032629.54-284055.8 & SWIRE3\textunderscore{}J032629.54-284055.8 & 0.2676\\
-      ATLAS3\textunderscore{}J032629.92-284753.5C & 51.624653 & -28.798195 & SWIRE3\textunderscore{}J032629.81-284754.4 & SWIRE3\textunderscore{}J032629.81-284754.4 & 1.0000\\
-      ATLAS3\textunderscore{}J032630.66-283657.3C & 51.62777 & -28.615917 & SWIRE3\textunderscore{}J032630.64-283658.0 & SWIRE3\textunderscore{}J032628.56-283744.8 & 0.3611\\
-      \hline
-    \end{tabular}
+      ATLAS. Cross-identifications are reported for each predictor, with the
+      predictor listed as in \autoref{tab:probs}. The cross-identification
+      given by \citet{norris06} for CDFS or \citet{middelberg08} for ELAIS-S1
+      is included in the `Expert' column. For CDFS, the cross-identification
+      given by the Radio Galaxy Zoo consensus is included in the `RGZ' column,
+      along with the corresponding consensus levels for the radio morphology
+      and host cross-identification tasks \citep[see][for details on how
+      consensus is calculated]{wong17}. Low radio consensus indicates that the
+      component has multiple nearby components (and thus is more impacted by
+      our assumption that the source is isolated), and low infrared consensus
+      indicates that the host galaxy is unclear in the SWIRE image (possibly
+      due to multiple nearby candidate host galaxies). Full table electronic.}
     \begin{tabular}{ccccc}
       \hline
-      RGZ IR consensus & CNN(Norris / All) & CNN(Norris / Compact) & \dots & RF(RGZ N / Resolved) \\
+      ATLAS & RA & Dec & Expert & RGZ \\\hline
+      ATLAS3\textunderscore{}J032602.82-284708.1C & 51.511734 & -28.785575 & SWIRE3\textunderscore{}J032603.15-284708.5 & -\\
+      ATLAS3\textunderscore{}J032615.49-284629.4C & 51.564555 & -28.774847 & SWIRE3\textunderscore{}J032615.41-284630.7 & SWIRE3\textunderscore{}J032615.41-284630.7\\
+      ATLAS3\textunderscore{}J032615.55-280559.8C & 51.564799 & -28.099955 & SWIRE3\textunderscore{}J032615.52-280559.8 & SWIRE3\textunderscore{}J032615.52-280559.8\\
+      ATLAS3\textunderscore{}J032617.35-280710.2C & 51.572279 & -28.119491 & SWIRE3\textunderscore{}J032617.89-280707.2 & SWIRE3\textunderscore{}J032617.89-280707.2\\
+      ATLAS3\textunderscore{}J032625.13-280909.8C & 51.604711 & -28.152731 & SWIRE3\textunderscore{}J032625.19-280910.1 & SWIRE3\textunderscore{}J032625.19-280910.1\\
+      ATLAS3\textunderscore{}J032629.10-280650.1C & 51.621251 & -28.113924 & SWIRE3\textunderscore{}J032629.13-280650.7 & SWIRE3\textunderscore{}J032626.74-280636.7\\
+      ATLAS3\textunderscore{}J032629.61-284052.7C & 51.623385 & -28.681315 & SWIRE3\textunderscore{}J032629.54-284055.8 & SWIRE3\textunderscore{}J032629.54-284055.8\\
+      ATLAS3\textunderscore{}J032629.92-284753.5C & 51.624653 & -28.798195 & SWIRE3\textunderscore{}J032629.81-284754.4 & SWIRE3\textunderscore{}J032629.81-284754.4\\
+      ATLAS3\textunderscore{}J032630.66-283657.3C & 51.62777 & -28.615917 & SWIRE3\textunderscore{}J032630.64-283658.0 & SWIRE3\textunderscore{}J032628.56-283744.8\\
       \hline
-      0.3214 & SWIRE3\textunderscore{}J032602.36-284711.5 & SWIRE3\textunderscore{}J032602.36-284711.5 & \dots & SWIRE3\textunderscore{}J032603.60-284627.4 \\
-      0.8000 & SWIRE3\textunderscore{}J032615.41-284630.7 & SWIRE3\textunderscore{}J032615.41-284630.7 & \dots & SWIRE3\textunderscore{}J032615.41-284630.7 \\
-      0.8333 & SWIRE3\textunderscore{}J032615.52-280559.8 & SWIRE3\textunderscore{}J032615.52-280559.8 & \dots & SWIRE3\textunderscore{}J032615.52-280559.8 \\
-      1.0000 & SWIRE3\textunderscore{}J032617.89-280707.2 & SWIRE3\textunderscore{}J032617.89-280707.2 & \dots & SWIRE3\textunderscore{}J032616.86-280715.8 \\
-      0.6667 & SWIRE3\textunderscore{}J032625.19-280910.1 & SWIRE3\textunderscore{}J032625.19-280910.1 & \dots & SWIRE3\textunderscore{}J032625.19-280910.1 \\
-      1.0000 & SWIRE3\textunderscore{}J032629.13-280650.7 & SWIRE3\textunderscore{}J032629.13-280650.7 & \dots & SWIRE3\textunderscore{}J032629.13-280650.7 \\
-      1.0000 & SWIRE3\textunderscore{}J032629.13-280650.7 & SWIRE3\textunderscore{}J032629.13-280650.7 & \dots & SWIRE3\textunderscore{}J032629.13-280650.7 \\
-      0.8571 & SWIRE3\textunderscore{}J032629.81-284754.4 & SWIRE3\textunderscore{}J032629.81-284754.4 & \dots & SWIRE3\textunderscore{}J032629.81-284754.4 \\
-      0.7308 & SWIRE3\textunderscore{}J032630.64-283658.0 & SWIRE3\textunderscore{}J032628.56-283744.8 & \dots & SWIRE3\textunderscore{}J032628.56-283744.8 \\
+    \end{tabular}
+    \begin{tabular}{ccccccccccccccccccccccccc}
+      \hline
+      RGZ radio consensus & RGZ IR consensus & CNN(Norris / All) & & RF(RGZ / Resolved) \\\hline
+      0.4516 & 0.3214 & SWIRE3\textunderscore{}J032602.36-284711.5 & $\cdots$ & SWIRE3\textunderscore{}J032603.60-284627.4 \\
+      0.2941 & 0.8000 & SWIRE3\textunderscore{}J032615.41-284630.7 & $\cdots$ & SWIRE3\textunderscore{}J032615.41-284630.7 \\
+      0.5625 & 0.8333 & SWIRE3\textunderscore{}J032615.52-280559.8 & $\cdots$ & SWIRE3\textunderscore{}J032615.52-280559.8 \\
+      0.4146 & 1.0000 & SWIRE3\textunderscore{}J032617.89-280707.2 & $\cdots$ & SWIRE3\textunderscore{}J032617.89-280707.2 \\
+      0.3158 & 0.6667 & SWIRE3\textunderscore{}J032625.19-280910.1 & $\cdots$ & SWIRE3\textunderscore{}J032625.19-280910.1 \\
+      0.3333 & 1.0000 & SWIRE3\textunderscore{}J032629.13-280650.7 & $\cdots$ & SWIRE3\textunderscore{}J032629.13-280650.7 \\
+      0.2676 & 1.0000 & SWIRE3\textunderscore{}J032629.54-284051.9 & $\cdots$ & SWIRE3\textunderscore{}J032629.54-284051.9 \\
+      1.0000 & 0.8571 & SWIRE3\textunderscore{}J032629.81-284754.4 & $\cdots$ & SWIRE3\textunderscore{}J032629.81-284754.4 \\
+      0.3611 & 0.7308 & SWIRE3\textunderscore{}J032630.64-283658.0 & $\cdots$ & SWIRE3\textunderscore{}J032628.56-283744.8 \\
       \hline
     \end{tabular}
     \label{tab:cids}
   \end{table*}
   
-  The predicted probabilities for each SWIRE object is listed in \autoref{tab:probs}. A full version of the table is available electronically.  The columns are defined as follows:
- \begin{itemize}
-\item {\em Column 1}  -- SWIRE. The SWIRE obejct name given in the SWIRE catalogue verison....
-\item {\em Column 2} -- RA. The right ascension of the SWIRE object in decimal degrees (J2000).
-\item {\em Column 3} -- Dec. The declination of the SWIRE object in decimal degrees (J2000).
-\item .....
-\end{itemize}
+  The predicted probabilities for each SWIRE object are listed in \autoref{tab:probs}. A full version of the table is available electronically.  The columns are defined as follows:
+  \begin{itemize}
+    \item {\em Column 1}  -- SWIRE. The SWIRE object name given in \citet{surace05swire}.
+    \item {\em Column 2} -- RA. The right ascension of the SWIRE object in decimal degrees (J2000).
+    \item {\em Column 3} -- Dec. The declination of the SWIRE object in decimal degrees (J2000).
+    \item {\em Columns 4 -- 21} -- $C(A\ /\ B)$. The predicted probability
+      that the SWIRE object is a host galaxy according to classifier $C$ trained
+      on subset $B$ of label set $A$. `LR' indicates logistic regression, `RF'
+      indicates random forests, `CNN' indicates convolutional neural networks,
+      `Norris' indicates the expert labels, and `RGZ' indicates the Radio Galaxy
+      Zoo labels.
+  \end{itemize}
+  
+  The predicted cross-identifications for each ATLAS object are listed in
+  \autoref{tab:cids}. A full version of the table is available electronically.
+  The columns are defined as follows:
+  \begin{itemize}
+    \item {\em Column 1}  -- ATLAS. The ATLAS object name given in \citet{franzen15}.
+    \item {\em Column 2} -- RA. The right ascension of the ATLAS object in decimal degrees (J2000).
+    \item {\em Column 3} -- Dec. The declination of the ATLAS object in decimal degrees (J2000).
+    \item {\em Column 4} -- Expert. The expert SWIRE cross-identification.
+      This is the SWIRE object associated with the ATLAS object according to
+      either \citet{norris06} or \citet{middelberg08} for CDFS and ELAIS-S1,
+      respectively.
+    \item {\em Column 5} -- RGZ. The Radio Galaxy Zoo cross-identification.
+      This is the SWIRE object associated with the ATLAS object according to
+      Radio Galaxy Zoo.
+    \item {\em Column 5} -- RGZ radio consensus. The percentage agreement on
+      the radio source according to Radio Galaxy Zoo. Lower numbers tend to
+      indicate more complex sources. For more information on how consensus is
+      generated, see \citet{wong17}.
+    \item {\em Column 6} -- RGZ IR consensus. The percentage agreement on
+      the host galaxy cross-identification according to Radio Galaxy Zoo.
+      Lower numbers tend to indicate sources that are harder to
+      cross-identify. For more information on how consensus is generated, see
+      \citet{wong17}.
+    \item {\em Columns 7 -- 25} -- $C(A\ /\ B)$. The predicted
+      cross-identification according to classifier $C$ trained on subset $B$
+      of label set $A$. `LR' indicates logistic regression, `RF' indicates
+      random forests, `CNN' indicates convolutional neural networks, `Norris'
+      indicates the expert labels, and `RGZ' indicates the Radio Galaxy Zoo
+      labels.
+  \end{itemize}
   
 % Don't change these lines
 \bsp	% typesetting comment
