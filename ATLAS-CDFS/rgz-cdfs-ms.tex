@@ -60,11 +60,12 @@ $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
 
 % Abstract of the paper
 \begin{abstract}
-  We present a machine learning approach for the task of determining the
+  We consider the problem of determining the
   infrared host galaxies of radio emissions detected in wide-area radio
   surveys. We propose a method for reducing the cross identification task
-  to a binary classification task, which is well understood and well
-  supported by machine learning software.
+  to binary classification, a standard machine learning task.
+  Binary classification is well understood
+  and well supported by machine learning software.
   We test our methods on the radio sources detected in the $1.4$~GHz
   Australian Telescope Large Area Survey (ATLAS) observations of the
   \emph{Chandra} Deep Field - South (CDFS) and the ESO Large Area ISO Survey -
@@ -812,6 +813,24 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     cross-identifications.
 
 \section{Results}\label{sec:results}
+
+  \cheng{Describe the section}
+
+  \subsection{Relation between binary classification and cross-identification}
+
+  We report two sets of accuracies: first, the balanced accuracies for the
+  task of classifying individual SWIRE objects as host galaxies or not host
+  galaxies (the `galaxy classification task'); and second, the accuracies
+  for the task of cross-identifying ATLAS radio components with their host
+  galaxies (the `cross-identification task'). Balanced accuracy is a useful
+  metric for evaluating classifiers on classification tasks with highly
+  imbalanced classes like we have here, and we find that the balanced
+  accuracy on the galaxy classification task is correlated with the accuracy
+  on the cross-identification task for logistic regression classifiers. This
+  correlation is shown in \autoref{fig:gct-to-xid}.
+
+  \cheng{Describe upper and lower bounds}
+
   \subsection{Application to ATLAS-CDFS}
 
     \begin{figure}
@@ -821,7 +840,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       against accuracy on the cross-identification task (X-ID). RF indicates
       results from random forests, and LR indicates results from logistic
       regression. Classifiers were trained on random, small subsets of the
-      training data to artificially restrict their accuracies.
+      training data to artificially restrict their accuracies.\cheng{Why not scatter plot?}
       \label{fig:gct-to-xid}}
     \end{figure}
 
@@ -832,13 +851,16 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       classification task. The accuracies of different classifiers are represented
       by different shapes. The horizontal axis shows which label set was used to
       train the classifiers: `Norris' represents the expert labels, `RGZ'
-      represents the Radio Galaxy Zoo labels, and `RGZ N' represents the Radio
-      Galaxy Zoo labels applied only to the radio components that appeared in the
-      expert cross-identification catalogue. The three plots show different sets
+      represents the Radio Galaxy Zoo labels.
+      %, and `RGZ N' represents the Radio
+      %Galaxy Zoo labels applied only to the radio components that appeared in the
+      %expert cross-identification catalogue.
+      The three plots show different sets
       of training and testing data: the `compact' contains only compact radio
       components, `resolved' only contains resolved radio components, and `all'
-      contains all radio components. The maximum attainable balanced accuracy is
-      100~percent, when every galaxy label matches the expert labels.
+      contains all radio components.
+      %The maximum attainable balanced accuracy is
+      %100~percent, when every galaxy label matches the expert labels.
       \label{fig:ba}}
     \end{figure}
 
@@ -858,89 +880,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \label{fig:cross-id-accuracy}}
     \end{figure}
 
-    \begin{table*}
-      \caption{Average balanced accuracies across quadrants shown in
-        \autoref{fig:ba} for CDFS. Uncertainties represent standard
-        deviations. The classifiers were trained and tested on compact
-        sources, resolved sources, and all sources separately. `Labeller'
-        indicates what label set the classifiers were trained on. `Norris' is
-        the expert label set, `RGZ' is the Radio Galaxy Zoo label set.%, and
-        %`RGZ N' is the Radio Galaxy Zoo label set with only radio sources that
-        %were also labelled by experts.
-        `LR' refers to logistic regression, `CNN' refers to our convolutional
-        neural network, and `RF' refers to random forests.}
-      \label{tab:average-accuracies}
-      \begin{tabular}{llccc}
-        \hline
-        Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
-         & & (per cent) & (per cent) & (per cent)\\
-        \hline
-        Norris & CNN & $92.6 \pm 0.7$ & $91.2 \pm 0.5$ & $92.1 \pm 0.6$\\
-         & LR & $91.6 \pm 1.0$ & $93.2 \pm 1.0$ & $93.1 \pm 1.2$\\
-         & RF & $97.5 \pm 0.6$ & $90.9 \pm 4.8$ & $96.7 \pm 2.3$\\
-         \\
-        % RGZ N & CNN & $89.4 \pm 0.6$ & $89.6 \pm 1.3$ & $89.4 \pm 0.5$\\
-        %  & LR & $89.5 \pm 0.8$ & $90.5 \pm 1.7$ & $90.2 \pm 0.8$\\
-        %  & RF & $94.6 \pm 0.1$ & $95.8 \pm 0.5$ & $94.7 \pm 0.5$\\
-        %  \\
-        RGZ & CNN & $87.8 \pm 0.7$ & $89.2 \pm 0.7$ & $87.7 \pm 0.9$\\
-         & LR & $91.4 \pm 0.8$ & $89.8 \pm 0.8$ & $90.8 \pm 1.4$\\
-         & RF & $94.0 \pm 0.6$ & $94.7 \pm 0.6$ & $94.1 \pm 0.3$\\
-        \hline
-      \end{tabular}
-    \end{table*}
-
-    \begin{table}
-      \caption{Average cross-identification accuracies across quadrants.
-        Uncertainties represent standard deviations across quadrants and, for
-        the `random' classifier, 25 random classifiers. Columns and
-        classifiers as defined in \autoref{tab:average-accuracies}.  A
-        `perfect' classifier reads the expert labels directly and hence
-        represents the maximum attainable accuracy on the test set under our
-        assumptions. A `random' classifier generates uniform random class
-        probabilities and hence represents the expected minimum attainable
-        accuracy with our cross-identification method.}
-        \label{tab:cross-id-accuracies}
-      \begin{tabular}{llcc}
-      \hline
-      Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
-       & & accuracy (per cent) & accuracy (per cent)\\
-      \hline
-      Norris & CNN & $61.1 \pm 15.1$ & $93.0 \pm 1.5$\\
-       & LR & $66.5 \pm 6.9$ & $92.8 \pm 1.5$\\
-       & RF & $67.2 \pm 5.9$ & $92.4 \pm 1.2$\\
-       & Perfect & $92.1 \pm 1.5$ & $96.7 \pm 1.8$\\
-       & Random & $4.7 \pm 3.9$ & $79.7 \pm 5.4$\\
-       \\
-      % RGZ-N & CNN & $48.6 \pm 11.5$ & $87.6 \pm 2.1$\\
-      %  & LR & $64.6 \pm 11.1$ & $91.7 \pm 1.0$\\
-      %  & RF & $65.8 \pm 4.7$ & $89.2 \pm 3.4$\\
-      %  \\
-      RGZ & CNN & $41.3 \pm 4.9$ & $86.4 \pm 2.7$\\
-       & LR & $60.0 \pm 11.5$ & $92.6 \pm 1.9$\\
-       & RF & $57.0 \pm 6.1$ & $87.1 \pm 2.6$\\
-       \hline
-      \end{tabular}
-    \end{table}
-
-    We report two sets of accuracies: first, the balanced accuracies for the
-    task of classifying individual SWIRE objects as host galaxies or not host
-    galaxies (the `galaxy classification task'); and second, the accuracies
-    for the task of cross-identifying ATLAS radio components with their host
-    galaxies (the `cross-identification task'). Balanced accuracy is a useful
-    metric for evaluating classifiers on classification tasks with highly
-    imbalanced classes like we have here, and we find that the balanced
-    accuracy on the galaxy classification task is correlated with the accuracy
-    on the cross-identification task for logistic regression classifiers. This
-    correlation is shown in \autoref{fig:gct-to-xid}.
-
     For the galaxy classification task, we report the balanced accuracy of
     each classification model and training set in \autoref{fig:ba} for SWIRE
     objects within 1~arcmin of (1) compact radio components, (2) resolved
     radio components, and (3) all radio components. These accuracies averaged
     across the four quadrants are reported in
     \autoref{tab:average-accuracies}. We find that the classifiers trained on
-    expert labels generally outperform those trained on Radio Galaxy Zoo
+    expert labels generally outperform \cheng{This is a tough claim} those trained on Radio Galaxy Zoo
     labels on almost all classification models, with random forests trained
     and tested on the resolved set as the only exception. This is likely due
     to the very small size of the expert-labelled resolved set, which had only
@@ -954,6 +900,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     are still comparable to those trained on expert labels, with most Radio
     Galaxy Zoo-trained models achieving accuracies within a few percentage
     points of the expert-trained models.
+    \cheng{Discuss separately: difference between methods (LR, CNN, RF),
+    difference between labellers (Norris, RGZ).}
 
     We report the probabilities predicted by each classifier for each SWIRE
     object in \autoref{tab:probs}. Probabilities reported for a given object
@@ -1102,65 +1050,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       labels from~\citet{middelberg08}.
       \label{fig:elais-cross-id-accuracy}}
   \end{figure}
-
-  \begin{table*}
-    \caption{Average balanced accuracies across quadrants shown in
-      \autoref{fig:elais-ba} for ELAIS-S1. Uncertainties represent standard
-      deviations. The classifiers were applied to compact sources, resolved
-      sources, and all sources separately.}
-    \label{tab:average-accuracies-elais}
-    \begin{tabular}{ccccc}
-      \hline
-      Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy \\
-       & & (per cent) & (per cent) & (per cent)\\
-      \hline
-      Norris & CNN & $94.8 \pm 0.2$ & $92.8 \pm 0.5$ & $94.4 \pm 0.2$ \\
-       & LR & $94.6 \pm 0.4$ & $93.3 \pm 2.0$ & $95.3 \pm 0.1$ \\
-       & RF & $87.4 \pm 5.6$ & $71.5 \pm 2.3$ & $86.0 \pm 2.6$ \\
-       \\
-      % RGZ N & CNN & $90.11 \pm 0.34$ & $91.13 \pm 0.92$ & $90.17 \pm 0.27$ \\
-      %  & LR & $91.81 \pm 0.29$ & $91.94 \pm 0.53$ & $92.01 \pm 0.24$ \\
-      %  & RF & $95.18 \pm 0.30$ & $95.16 \pm 0.69$ & $95.50 \pm 0.24$ \\
-      %  \\
-      RGZ & CNN & $88.8 \pm 0.6$ & $89.9 \pm 0.3$ & $88.5 \pm 0.3$ \\
-       & LR & $93.2 \pm 0.5$ & $91.4 \pm 0.3$ & $91.6 \pm 0.6$ \\
-       & RF & $94.9 \pm 0.2$ & $95.2 \pm 0.3$ & $95.1 \pm 0.2$ \\
-       \hline
-    \end{tabular}
-  \end{table*}
-
-  \begin{table}
-    \caption{Average cross-identification accuracies for ELAIS-S1.
-      Uncertainties represent standard deviations across classifiers trained
-      on CDFS quadrants. Columns and classifiers as defined in Table
-      \ref{tab:average-accuracies}.  A `perfect' classifier reads the expert
-      labels directly and hence represents the maximum attainable accuracy
-      under our assumptions. A `random' classifier generates uniform random
-      class probabilities and hence represents the expected minimum attainable
-      accuracy with our cross-identification method.}
-      \label{tab:cross-id-accuracies-elais}
-    \begin{tabular}{llcc}
-      \hline
-      Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
-       & & accuracy (per cent) & accuracy (per cent)\\
-      \hline
-      Middelberg & Perfect & $85.8 \pm 0.6$ & $92.4 \pm 0.3$\\
-                 & Random  & $4.7 \pm 1.0$  & $50.7 \pm 0.5$\\
-       \\
-      Norris & CNN     & $68.1 \pm 2.5$ & $85.6 \pm 0.7$\\
-             & LR      & $79.6 \pm 0.9$ & $90.2 \pm 0.6$\\
-             & RF      & $76.1 \pm 3.4$ & $90.4 \pm 1.5$\\
-       \\
-      % RGZ-N & CNN & $61.01 \pm 1.40$ & $78.38 \pm 0.49$\\
-      %       & LR  & $75.71 \pm 1.11$ & $86.72 \pm 1.10$\\
-      %       & RF  & $75.00 \pm 2.42$ & $86.96 \pm 1.80$\\
-      %  \\
-      RGZ & CNN & $59.1 \pm 3.2$ & $76.5 \pm 0.5$\\
-          & LR  & $75.8 \pm 2.1$ & $88.3 \pm 0.8$\\
-          & RF  & $75.2 \pm 2.9$ & $86.2 \pm 1.3$\\
-       \hline
-    \end{tabular}
-  \end{table}
 
   We applied the classifiers trained on CDFS to perform cross-identification
   on the ELAIS-S1 field. Both CDFS and ELAIS were imaged by the same radio
@@ -1357,6 +1246,137 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \appendix
+\section{Tables of accuracies}
+
+\cheng{need some descriptive text}
+
+\cheng{why don't we just report the 4 raw numbers? A standard error from four values seems fishy.}
+
+\begin{table*}
+  \caption{Average balanced accuracies across quadrants shown in
+    \autoref{fig:ba} for CDFS. Uncertainties represent standard
+    deviations. The classifiers were trained and tested on compact
+    sources, resolved sources, and all sources separately. `Labeller'
+    indicates what label set the classifiers were trained on. `Norris' is
+    the expert label set, `RGZ' is the Radio Galaxy Zoo label set.%, and
+    %`RGZ N' is the Radio Galaxy Zoo label set with only radio sources that
+    %were also labelled by experts.
+    `LR' refers to logistic regression, `CNN' refers to our convolutional
+    neural network, and `RF' refers to random forests.}
+  \label{tab:average-accuracies}
+  \begin{tabular}{llccc}
+    \hline
+    Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
+     & & (per cent) & (per cent) & (per cent)\\
+    \hline
+    Norris & CNN & $92.6 \pm 0.7$ & $91.2 \pm 0.5$ & $92.1 \pm 0.6$\\
+     & LR & $91.6 \pm 1.0$ & $93.2 \pm 1.0$ & $93.1 \pm 1.2$\\
+     & RF & $97.5 \pm 0.6$ & $90.9 \pm 4.8$ & $96.7 \pm 2.3$\\
+     \\
+    % RGZ N & CNN & $89.4 \pm 0.6$ & $89.6 \pm 1.3$ & $89.4 \pm 0.5$\\
+    %  & LR & $89.5 \pm 0.8$ & $90.5 \pm 1.7$ & $90.2 \pm 0.8$\\
+    %  & RF & $94.6 \pm 0.1$ & $95.8 \pm 0.5$ & $94.7 \pm 0.5$\\
+    %  \\
+    RGZ & CNN & $87.8 \pm 0.7$ & $89.2 \pm 0.7$ & $87.7 \pm 0.9$\\
+     & LR & $91.4 \pm 0.8$ & $89.8 \pm 0.8$ & $90.8 \pm 1.4$\\
+     & RF & $94.0 \pm 0.6$ & $94.7 \pm 0.6$ & $94.1 \pm 0.3$\\
+    \hline
+  \end{tabular}
+\end{table*}
+
+\begin{table}
+  \caption{Average cross-identification accuracies across quadrants.
+    Uncertainties represent standard deviations across quadrants and, for
+    the `random' classifier, 25 random classifiers. Columns and
+    classifiers as defined in \autoref{tab:average-accuracies}.  A
+    `perfect' classifier reads the expert labels directly and hence
+    represents the maximum attainable accuracy on the test set under our
+    assumptions. A `random' classifier generates uniform random class
+    probabilities and hence represents the expected minimum attainable
+    accuracy with our cross-identification method.}
+    \label{tab:cross-id-accuracies}
+  \begin{tabular}{llcc}
+  \hline
+  Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
+   & & accuracy (per cent) & accuracy (per cent)\\
+  \hline
+  Norris & CNN & $61.1 \pm 15.1$ & $93.0 \pm 1.5$\\
+   & LR & $66.5 \pm 6.9$ & $92.8 \pm 1.5$\\
+   & RF & $67.2 \pm 5.9$ & $92.4 \pm 1.2$\\
+   & Perfect & $92.1 \pm 1.5$ & $96.7 \pm 1.8$\\
+   & Random & $4.7 \pm 3.9$ & $79.7 \pm 5.4$\\
+   \\
+  % RGZ-N & CNN & $48.6 \pm 11.5$ & $87.6 \pm 2.1$\\
+  %  & LR & $64.6 \pm 11.1$ & $91.7 \pm 1.0$\\
+  %  & RF & $65.8 \pm 4.7$ & $89.2 \pm 3.4$\\
+  %  \\
+  RGZ & CNN & $41.3 \pm 4.9$ & $86.4 \pm 2.7$\\
+   & LR & $60.0 \pm 11.5$ & $92.6 \pm 1.9$\\
+   & RF & $57.0 \pm 6.1$ & $87.1 \pm 2.6$\\
+   \hline
+  \end{tabular}
+\end{table}
+
+\begin{table*}
+  \caption{Average balanced accuracies across quadrants shown in
+    \autoref{fig:elais-ba} for ELAIS-S1. Uncertainties represent standard
+    deviations. The classifiers were applied to compact sources, resolved
+    sources, and all sources separately.}
+  \label{tab:average-accuracies-elais}
+  \begin{tabular}{ccccc}
+    \hline
+    Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy \\
+     & & (per cent) & (per cent) & (per cent)\\
+    \hline
+    Norris & CNN & $94.8 \pm 0.2$ & $92.8 \pm 0.5$ & $94.4 \pm 0.2$ \\
+     & LR & $94.6 \pm 0.4$ & $93.3 \pm 2.0$ & $95.3 \pm 0.1$ \\
+     & RF & $87.4 \pm 5.6$ & $71.5 \pm 2.3$ & $86.0 \pm 2.6$ \\
+     \\
+    % RGZ N & CNN & $90.11 \pm 0.34$ & $91.13 \pm 0.92$ & $90.17 \pm 0.27$ \\
+    %  & LR & $91.81 \pm 0.29$ & $91.94 \pm 0.53$ & $92.01 \pm 0.24$ \\
+    %  & RF & $95.18 \pm 0.30$ & $95.16 \pm 0.69$ & $95.50 \pm 0.24$ \\
+    %  \\
+    RGZ & CNN & $88.8 \pm 0.6$ & $89.9 \pm 0.3$ & $88.5 \pm 0.3$ \\
+     & LR & $93.2 \pm 0.5$ & $91.4 \pm 0.3$ & $91.6 \pm 0.6$ \\
+     & RF & $94.9 \pm 0.2$ & $95.2 \pm 0.3$ & $95.1 \pm 0.2$ \\
+     \hline
+  \end{tabular}
+\end{table*}
+
+\begin{table}
+  \caption{Average cross-identification accuracies for ELAIS-S1.
+    Uncertainties represent standard deviations across classifiers trained
+    on CDFS quadrants. Columns and classifiers as defined in Table
+    \ref{tab:average-accuracies}.  A `perfect' classifier reads the expert
+    labels directly and hence represents the maximum attainable accuracy
+    under our assumptions. A `random' classifier generates uniform random
+    class probabilities and hence represents the expected minimum attainable
+    accuracy with our cross-identification method.}
+    \label{tab:cross-id-accuracies-elais}
+  \begin{tabular}{llcc}
+    \hline
+    Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
+     & & accuracy (per cent) & accuracy (per cent)\\
+    \hline
+    Middelberg & Perfect & $85.8 \pm 0.6$ & $92.4 \pm 0.3$\\
+               & Random  & $4.7 \pm 1.0$  & $50.7 \pm 0.5$\\
+     \\
+    Norris & CNN     & $68.1 \pm 2.5$ & $85.6 \pm 0.7$\\
+           & LR      & $79.6 \pm 0.9$ & $90.2 \pm 0.6$\\
+           & RF      & $76.1 \pm 3.4$ & $90.4 \pm 1.5$\\
+     \\
+    % RGZ-N & CNN & $61.01 \pm 1.40$ & $78.38 \pm 0.49$\\
+    %       & LR  & $75.71 \pm 1.11$ & $86.72 \pm 1.10$\\
+    %       & RF  & $75.00 \pm 2.42$ & $86.96 \pm 1.80$\\
+    %  \\
+    RGZ & CNN & $59.1 \pm 3.2$ & $76.5 \pm 0.5$\\
+        & LR  & $75.8 \pm 2.1$ & $88.3 \pm 0.8$\\
+        & RF  & $75.2 \pm 2.9$ & $86.2 \pm 1.3$\\
+     \hline
+  \end{tabular}
+\end{table}
+
+
 \section{Catalogues}
   \begin{table*}
     \caption{Predicted probabilities that each object in SWIRE is a host
@@ -1428,7 +1448,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{tabular}
     \label{tab:cids}
   \end{table*}
-  
+
   The predicted probabilities for each SWIRE object are listed in \autoref{tab:probs}. A full version of the table is available electronically.  The columns are defined as follows:
   \begin{itemize}
     \item {\em Column 1}  -- SWIRE. The SWIRE object name given in \citet{surace05swire}.
@@ -1441,7 +1461,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       `Norris' indicates the expert labels, and `RGZ' indicates the Radio Galaxy
       Zoo labels.
   \end{itemize}
-  
+
   The predicted cross-identifications for each ATLAS object are listed in
   \autoref{tab:cids}. A full version of the table is available electronically.
   The columns are defined as follows:
