@@ -848,7 +848,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       against accuracy on the cross-identification task (X-ID). RF indicates
       results from random forests, and LR indicates results from logistic
       regression. Classifiers were trained on random, small subsets of the
-      training data to artificially restrict their accuracies.\cheng{Why not scatter plot?}
+      training data to artificially restrict their accuracies. Colour shows
+      the density of points on the plot estimated by a Gaussian kernel density
+      estimate. The high density of points at 50 per cent balanced accuracy, 0
+      per cent cross-identification accuracy for random forests is an artefact
+      of our method of classifier generation, as random forests have much
+      lower performance than logistic regression with less training data.
       \label{fig:gct-to-xid}}
     \end{figure}
 
@@ -1144,92 +1149,92 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   %   \label{fig:cdfs-accuracies-flux}
   % \end{figure}
 
-  \subsection{Implications and Lessons}
+\section{Discussion}
 
-    Our main result is that it is possible to cast radio host galaxy
-    cross-identification as a machine learning task for which standard methods
-    can be applied. These methods can then be trained with a variety of label
-    sets derived from cross-identification catalogues. Future work could even
-    combine multiple catalogues or physical priors to boost performance.
+  Our main result is that it is possible to cast radio host galaxy
+  cross-identification as a machine learning task for which standard methods
+  can be applied. These methods can then be trained with a variety of label
+  sets derived from cross-identification catalogues. Future work could even
+  combine multiple catalogues or physical priors to boost performance.
 
-    The accuracies of our trained cross-identification methods generally fall
-    below the best possible accuracy attainable using our approach, indicated
-    by the green lines in Figures \ref{fig:cross-id-accuracy} and
-    \ref{fig:elais-cross-id-accuracy}. The balanced accuracies attained by our
-    binary classifiers indicate that there is significant room for improvement
-    in classification. The classification accuracy can be improved by better
-    model selection and more training data, particularly for convolutional
-    neural networks. There is a huge variety of ways to build a convolutional
-    neural network, and we have only investigated one architecture. For an
-    exploration of different convolutional neural network architectures
-    applied to radio astronomy, see \citet{lukic17compact}. Convolutional
-    neural networks generally require more training data than other machine
-    learning models and we have only trained our networks on a few hundred
-    sources. We would thus expect performance on the classification task to
-    greatly increase with larger training sets.
+  The accuracies of our trained cross-identification methods generally fall
+  below the best possible accuracy attainable using our approach, indicated
+  by the green lines in Figures \ref{fig:cross-id-accuracy} and
+  \ref{fig:elais-cross-id-accuracy}. The balanced accuracies attained by our
+  binary classifiers indicate that there is significant room for improvement
+  in classification. The classification accuracy can be improved by better
+  model selection and more training data, particularly for convolutional
+  neural networks. There is a huge variety of ways to build a convolutional
+  neural network, and we have only investigated one architecture. For an
+  exploration of different convolutional neural network architectures
+  applied to radio astronomy, see \citet{lukic17compact}. Convolutional
+  neural networks generally require more training data than other machine
+  learning models and we have only trained our networks on a few hundred
+  sources. We would thus expect performance on the classification task to
+  greatly increase with larger training sets.
 
-    Another problem is that of the window size used to select radio features.
-    Increasing window size would increase computational expense, but provide
-    more information to the models. Results are also highly sensitive to how
-    large the window size is compared to the size of the radio galaxy we are
-    trying to cross-identify, with large angular sizes requiring large window
-    sizes to ensure that the features contain all the information needed to
-    localise the host galaxy. An ideal implementation of our method would most
-    likely represent a galaxy using radio images taken at multiple window
-    sizes, but this is considerably more expensive.
+  Another problem is that of the window size used to select radio features.
+  Increasing window size would increase computational expense, but provide
+  more information to the models. Results are also highly sensitive to how
+  large the window size is compared to the size of the radio galaxy we are
+  trying to cross-identify, with large angular sizes requiring large window
+  sizes to ensure that the features contain all the information needed to
+  localise the host galaxy. An ideal implementation of our method would most
+  likely represent a galaxy using radio images taken at multiple window
+  sizes, but this is considerably more expensive.
 
-    Larger training sets, better model selection, and larger window sizes
-    would improve performance, but only so far: we would still be bounded
-    above by the estimated ``perfect'' classifier accuracy. From this point,
-    the performance can only be improved by improving upon our broken
-    assumptions. We detailed these assumptions in \autoref{sec:limitations},
-    and we will discuss here how these could be resolved. Our assumption that
-    we have only one radio object in a given radius is easily broken by radio
-    galaxies with large angular size, as these may overlap other radio
-    objects. Source identification may solve this problem. An example of how
-    source identification could help resolve the issue is to identify all
-    sources, then cross-identify the galaxies in order of angular size,
-    excluding previous host galaxies each time. Source identifications may
-    also provide priors on the true host galaxy location: candidate hosts can
-    be generated based on physical models applied to sources, and then these
-    hosts can be selected from using our model. Our assumption that the host
-    galaxy is contained within the search radius could be improved by
-    dynamically choosing the search radius, perhaps based on the angular
-    extent of the galaxy, or the redshift of candidate hosts. Finally, our
-    assumption that the host galaxy is visible in infrared is technically not
-    needed, as the sliding window approach we have employed will still work
-    even if there are no visible host galaxies --- instead of classifying
-    candidate hosts, simply classify each pixel in the radio image. The
-    downside of removing candidate hosts is that we are no longer able to
-    reliably incorporate host galaxy information such as colour and redshift,
-    though this could be resolved by treating pixels as potentially invisible
-    candidate hosts with noisy features.
+  Larger training sets, better model selection, and larger window sizes
+  would improve performance, but only so far: we would still be bounded
+  above by the estimated ``perfect'' classifier accuracy. From this point,
+  the performance can only be improved by improving upon our broken
+  assumptions. We detailed these assumptions in \autoref{sec:limitations},
+  and we will discuss here how these could be resolved. Our assumption that
+  we have only one radio object in a given radius is easily broken by radio
+  galaxies with large angular size, as these may overlap other radio
+  objects. Source identification may solve this problem. An example of how
+  source identification could help resolve the issue is to identify all
+  sources, then cross-identify the galaxies in order of angular size,
+  excluding previous host galaxies each time. Source identifications may
+  also provide priors on the true host galaxy location: candidate hosts can
+  be generated based on physical models applied to sources, and then these
+  hosts can be selected from using our model. Our assumption that the host
+  galaxy is contained within the search radius could be improved by
+  dynamically choosing the search radius, perhaps based on the angular
+  extent of the galaxy, or the redshift of candidate hosts. Finally, our
+  assumption that the host galaxy is visible in infrared is technically not
+  needed, as the sliding window approach we have employed will still work
+  even if there are no visible host galaxies --- instead of classifying
+  candidate hosts, simply classify each pixel in the radio image. The
+  downside of removing candidate hosts is that we are no longer able to
+  reliably incorporate host galaxy information such as colour and redshift,
+  though this could be resolved by treating pixels as potentially invisible
+  candidate hosts with noisy features.
 
-    We observe that Radio Galaxy Zoo-trained methods perform comparably to
-    methods trained on expert labels. This shows that the crowdsourced labels
-    from Radio Galaxy Zoo will indeed provide a valuable source of training
-    data for future machine learning methods in radio astronomy.
+  We observe that Radio Galaxy Zoo-trained methods perform comparably to
+  methods trained on expert labels. This shows that the crowdsourced labels
+  from Radio Galaxy Zoo will indeed provide a valuable source of training
+  data for future machine learning methods in radio astronomy.
 
-    \autoref{fig:accuracies-flux} reveals interesting behaviour of different
-    classifier models at different flux cutoffs. Logistic regression and
-    convolutional neural networks seem relatively independent of flux, with
-    these models performing well on the fainter ELAIS-S1 sources even when
-    they were trained on the generally brighter objects in CDFS. Conversely,
-    random forests were sensitive to the changes in flux distribution between
-    datasets. This shows that not all models behave similarly on radio data,
-    and it is therefore important to investigate multiple models when
-    developing machine learning methods for radio astronomy.
+  \autoref{fig:accuracies-flux} reveals interesting behaviour of different
+  classifier models at different flux cutoffs. Logistic regression and
+  convolutional neural networks seem relatively independent of flux, with
+  these models performing well on the fainter ELAIS-S1 sources even when
+  they were trained on the generally brighter objects in CDFS. Conversely,
+  random forests were sensitive to the changes in flux distribution between
+  datasets. This shows that not all models behave similarly on radio data,
+  and it is therefore important to investigate multiple models when
+  developing machine learning methods for radio astronomy.
 
-    Our methods can be easily incorporated into other cross-identification
-    methods or used as an extra data source for source identification. This is
-    because we have essentially produced a scoring function, which rates
-    galaxies based on the probability that they are a host galaxy. For
-    example, our method could be used to disambiguate between candidate host
-    galaxies selected by model-based algorithms, or used to weight candidate
-    host galaxies while a source identifier attempts to associate radio
-    components. Our method can also be extended using other data sources; for
-    example, information from source identification algorithms could be
-    incorporated into the feature set of candidate host galaxies.
+  Our methods can be easily incorporated into other cross-identification
+  methods or used as an extra data source for source identification. This is
+  because we have essentially produced a scoring function, which rates
+  galaxies based on the probability that they are a host galaxy. For
+  example, our method could be used to disambiguate between candidate host
+  galaxies selected by model-based algorithms, or used to weight candidate
+  host galaxies while a source identifier attempts to associate radio
+  components. Our method can also be extended using other data sources; for
+  example, information from source identification algorithms could be
+  incorporated into the feature set of candidate host galaxies.
 
 \section{Summary}
 
@@ -1245,6 +1250,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   be improved by further experimentation and model selection. Our method
   provides a useful framework for generalising cross-identification catalogues
   to unseen areas of the sky and can be incorporated into existing methods.
+  \todo{Add recommendations and update with respect to abstract.}
 
 %
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
