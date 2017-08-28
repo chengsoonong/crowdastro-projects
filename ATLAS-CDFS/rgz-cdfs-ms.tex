@@ -460,6 +460,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     of this alongside a binary classifier is shown in \autoref{fig:flowchart}.
 
   \subsection{Limitations of our approach}
+    \label{sec:limitations}
+
      \begin{figure}
       \centering
       \includegraphics[width=\linewidth]{images/CI0077C1_fig.pdf}
@@ -496,9 +498,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \label{fig:broken-window-size}
     \end{figure}
 
-  \label{sec:limitations}
-
-    Our assumptions are:
+    We make a number of assumptions to reduce the cross-identification task to binary classification:
     \begin{itemize}
       \item A radio image represents a single radio source and contains exactly
         one host galaxy.
@@ -506,8 +506,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         component.
       \item The host galaxy appears in the SWIRE catalogue.
     \end{itemize}
+    These assumptions limit the effectiveness of our approach, regardless of
+    how accurate our binary classification may be.
 
-     The key problem with this approach is our assumption that the radio sky
+    The key problem with this approach is our assumption that the radio sky
     within 1~arcmin radius contains only one, complete radio source. The problem
     is two-fold: This radius may contain multiple sources, or it may not contain
     the entirety of the source. If the radius contains multiple sources then
