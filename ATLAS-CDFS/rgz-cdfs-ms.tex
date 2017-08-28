@@ -826,21 +826,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \subsection{Relation between binary classification and cross-identification}
 
-  We report two sets of accuracies: first, the balanced accuracies for the
-  task of classifying individual SWIRE objects as host galaxies or not host
-  galaxies (the `galaxy classification task'); and second, the accuracies
-  for the task of cross-identifying ATLAS radio components with their host
-  galaxies (the `cross-identification task'). Balanced accuracy is a useful
-  metric for evaluating classifiers on classification tasks with highly
-  imbalanced classes like we have here, and we find that the balanced
-  accuracy on the galaxy classification task is correlated with the accuracy
-  on the cross-identification task for logistic regression classifiers. This
-  correlation is shown in \autoref{fig:gct-to-xid}.
-
-  \cheng{Describe upper and lower bounds}
-
-  \subsection{Application to ATLAS-CDFS}
-
     \begin{figure}
       \centering
       \includegraphics[width=\columnwidth]{gct-to-xid.pdf}
@@ -850,12 +835,56 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       regression. Classifiers were trained on random, small subsets of the
       training data to artificially restrict their accuracies. Colour shows
       the density of points on the plot estimated by a Gaussian kernel density
-      estimate. The high density of points at 50 per cent balanced accuracy, 0
-      per cent cross-identification accuracy for random forests is an artefact
-      of our method of classifier generation, as random forests have much
-      lower performance than logistic regression with less training data.
+      estimate. The solid lines indicate the best linear fit. The high density
+      of points at 50 per cent balanced accuracy, 0 per cent
+      cross-identification accuracy for random forests is an artefact of our
+      method of classifier generation, as random forests have much lower
+      performance than logistic regression with less training data. We did not
+      include convolutional neural networks in this test, as training them is
+      very computationally expensive.
       \label{fig:gct-to-xid}}
     \end{figure}
+
+    We can consider results from a trained classifier either as binary
+    classification, where individual SWIRE objects are classified as either
+    host galaxies or not host galaxies; or as cross-identification, where
+    ATLAS radio components are cross-identified with their host galaxies. We
+    refer to the former as the `galaxy classification task' and the latter as
+    the `cross-identification task'. Results from both tasks are useful, as we
+    need good performance on the cross-identification task to make scientific
+    use of any cross-identifications, and performance on the galaxy
+    classification task is a robust and easily-compared way to compare
+    different classifiers without the limitations of our reduction. We
+    therefore report two sets of accuracies: balanced accuracy for the galaxy
+    classification task, and accuracy for the cross-identification task.
+    Balanced accuracy is a useful metric for evaluating classifiers on
+    classification tasks with highly imbalanced classes like we have here, and
+    we find that the balanced accuracy on the galaxy classification task is
+    correlated with the accuracy on the cross-identification task. This
+    correlation is shown in \autoref{fig:gct-to-xid}. Fitting a line of best
+    fit with \texttt{scipy} gives $R^2 = 0.87$ for logistic regression and
+    $R^2 = 0.96$ for random forests.
+
+    The reduction from cross-identification to binary classification also
+    introduces limitations as described in \autoref{sec:limitations}, which
+    impose upper limits on performance. Additionally, the classification
+    pipeline described in \autoref{fig:flowchart} only uses the binary
+    classification approach for non-compact objects, which imposes lower
+    limits on performance. We estimate the upper limit on performance by
+    assuming we have a `perfect' classifier which simply reads the correct
+    label from the test set, and hence assign all true host galaxies a 100 per
+    cent probability of being host galaxies. Ties between host galaxies within
+    $1'$ of another host galaxy are broken arbitrarily. The accuracy of this
+    classifier on the cross-identification task then represents the best
+    possible cross-identification performance achievable under our
+    assumptions. We estimate the lower limit on performance by taking a random
+    classifier, which outputs random probabilities regardless of input galaxy.
+    Any useful classifier should produce better results than this, so this
+    represents the least possible cross-identification performance. We report
+    the cross-identification accuracies of the perfect and random classifiers
+    alongside the performance of other classifiers.
+
+  \subsection{Application to ATLAS-CDFS}
 
     \begin{figure}
     \centering
