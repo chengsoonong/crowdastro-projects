@@ -71,7 +71,7 @@ from sklearn.linear_model import LogisticRegression
 import sklearn.metrics
 
 CROWDASTRO_PATH = '/Users/alger/data/Crowdastro/crowdastro-swire.h5'
-RGZ_PATH = '/Users/alger/data/RGZ/dr1_weighted/static_rgz_host_full.csv'
+RGZ_PATH = '/Users/alger/data/RGZ/dr1_weighted_old/static_rgz_host_full.csv'
 MIDDELBERG_TABLE5_PATH = '/Users/alger/data/SWIRE/middelberg_2008_table5.dat'
 MIDDELBERG_TABLE4_PATH = '/Users/alger/data/SWIRE/middelberg_2008_table4.fits'
 FRANZEN_PATH = '/Users/alger/data/SWIRE/middelberg_2008_table5.dat'
@@ -757,8 +757,8 @@ def train_classifier(
             ('rgz', 'RGZ & Norris & compact'): 'weights_{}_rgz_compact.h5'.format(quadrant),
             ('rgz', 'RGZ & Norris & resolved'): 'weights_{}_rgz_resolved.h5'.format(quadrant),
             ('rgz', 'RGZ & Norris'): 'weights_{}_rgz.h5'.format(quadrant),
-            ('rgz', 'RGZ & compact'): 'weights_{}_rgz_full.h5'.format(quadrant),
-            ('rgz', 'RGZ & resolved'): 'weights_{}_rgz_full.h5'.format(quadrant),
+            ('rgz', 'RGZ & compact'): 'weights_{}_rgz_full_compact.h5'.format(quadrant),
+            ('rgz', 'RGZ & resolved'): 'weights_{}_rgz_full_resolved.h5'.format(quadrant),
             ('rgz', 'RGZ'): 'weights_{}_rgz_full.h5'.format(quadrant),
         }
         if (labeller, dataset_name) in weights_map:
