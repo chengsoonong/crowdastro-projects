@@ -19,6 +19,7 @@ from collections import defaultdict
 import itertools
 
 import astropy.table
+from crowdastro.crowd.util import balanced_accuracy
 import matplotlib.pyplot as plt
 import numpy
 
@@ -89,26 +90,47 @@ def plot_grid(field='cdfs'):
         else:
             cnn_rgz_accuracies[dataset_name][predictions.quadrant] = predictions.balanced_accuracy
 
+    if field == 'cdfs':
+        # Load RGZ cross-identifications and compute a balanced accuracy with them.
+        swire_names, swire_coords, _ = pipeline.generate_swire_features(overwrite=False, field=field)
+        swire_labels = pipeline.generate_swire_labels(swire_names, swire_coords, overwrite=False, field=field)
+        (_, atlas_test_sets), (_, swire_test_sets) = pipeline.generate_data_sets(swire_coords, swire_labels, overwrite=False, field=field)
+        label_rgz_accuracies = {sstr: [0] * 4 for sstr in pipeline.SET_NAMES}
+        label_norris_accuracies = {sstr: [1] * 4 for sstr in pipeline.SET_NAMES}  # By definition.
+        for dataset_name in pipeline.SET_NAMES:
+            for quadrant in range(4):
+                test_set = swire_test_sets[:, pipeline.SET_NAMES[dataset_name], quadrant]
+                predictions = swire_labels[test_set, 1]
+                trues = swire_labels[test_set, 0]
+                ba = balanced_accuracy(trues, predictions)
+                label_rgz_accuracies[dataset_name][quadrant] = ba
+
     colours = ['grey', 'magenta', 'blue', 'orange']
     markers = ['o', '^', 'x', 's']
     handles = {}
     plt.figure(figsize=(5, 8))
 
     accuracy_map = defaultdict(lambda: defaultdict(dict))  # For table output.
-    for j, (classifier_name, classifier_set) in enumerate([
-            ('LR', [lr_norris_accuracies, lr_rgz_accuracies]),
-            ('CNN', [cnn_norris_accuracies, cnn_rgz_accuracies]),
-            ('RF', [rf_norris_accuracies, rf_rgz_accuracies]),
-            ]):
+    output_sets = [
+        ('LR', [lr_norris_accuracies, lr_rgz_accuracies]),
+        ('CNN', [cnn_norris_accuracies, cnn_rgz_accuracies]),
+        ('RF', [rf_norris_accuracies, rf_rgz_accuracies]),
+    ]
+    if field == 'cdfs':
+        output_sets.append(('Labels', [label_norris_accuracies, label_rgz_accuracies]))
+    for j, (classifier_name, classifier_set) in enumerate(output_sets):
         for i, set_name in enumerate(norris_labelled_sets):
             ax = plt.subplot(3, 1, 1 + i)
             for k in range(4):
-                handles[j] = ax.scatter([0 + (j - 1) / 5], classifier_set[0][set_name][k] * 100,
-                                        color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
+                if j != 3:  # !Labels
+                    ax.scatter([0 + (j - 1) / 5], classifier_set[0][set_name][k] * 100,
+                                color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
+                rgz_offset = ((j - 1.5) / 6) if field == 'cdfs' else (j - 1) / 5
+                handles[j] = ax.scatter([1 + rgz_offset],
+                           classifier_set[1][fullmap[set_name]][k] * 100,
+                           color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
                 # ax.scatter([1 + (j - 1) / 5], classifier_set[1][set_name][k] * 100,
                 #            color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
-                ax.scatter([1 + (j - 1) / 5], classifier_set[1][fullmap[set_name]][k] * 100,
-                           color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
             # Compute for table.
             for labeller in ['Norris', 'RGZ N', 'RGZ']:
                 if labeller == 'Norris':
@@ -151,7 +173,7 @@ def plot_grid(field='cdfs'):
         if labeller == 'RGZ N':
             continue
 
-        for classifier in ['CNN', 'LR', 'RF']:
+        for classifier in ['CNN', 'LR', 'RF'] + ['Labels'] if field == 'cdfs' else []:
             col_labeller.append(labeller)
             col_classifier.append(classifier)
             col_compact.append(accuracy_map[labeller][classifier]['Compact'])
@@ -163,7 +185,7 @@ def plot_grid(field='cdfs'):
                                            "Mean `All' accuracy\\\\(per cent)"])
     out_table.write('../{}_accuracy_table.tex'.format(field), format='latex')
 
-    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'], 'lower center', ncol=3, fontsize=10)
+    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + ['Labels'] if field == 'cdfs' else [], 'lower center', ncol=4, fontsize=10)
     plt.subplots_adjust(bottom=0.15, hspace=0.25)
     plt.savefig('../images/{}_ba_grid.pdf'.format(field),
                 bbox_inches='tight', pad_inches=0)
