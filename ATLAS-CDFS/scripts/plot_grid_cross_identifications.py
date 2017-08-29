@@ -72,16 +72,28 @@ def plot(field='cdfs'):
 
     if field == 'cdfs':
         table = astropy.io.ascii.read(pipeline.TABLE_PATH)
+        rgzcat = astropy.io.ascii.read(pipeline.RGZ_PATH)
 
         atlas_to_swire_expert = {}
+        atlas_to_swire_rgz = {}
         key_to_atlas = {}
+        atlas_id_to_name = {}
+        is_compact = {}
         for row in table:
             name = row['Component Name (Franzen)']
             key_to_atlas[row['Key']] = name
             swire = row['Source SWIRE (Norris)']
             if not swire or not swire.startswith('SWIRE') or not name:
                 continue
+            atlas_id_to_name[row['Component ID (Franzen)']] = name
             atlas_to_swire_expert[name] = swire
+            is_compact[name] = pipeline.compact_test(row)
+        for row in rgzcat:
+            swire_name = row['SWIRE.designation']
+            if not swire_name or swire_name == '-99':
+                continue
+            name = atlas_id_to_name.get(row['atlas_id'], None)
+            atlas_to_swire_rgz[name] = swire_name
     else:
         atlas_to_swire_expert = {}
         with astropy.io.fits.open(pipeline.MIDDELBERG_TABLE4_PATH) as elais_components_fits:
@@ -244,6 +256,41 @@ def plot(field='cdfs'):
                 labeller = 'Norris'
             labeller_classifier_to_accuracies[labeller, cid.classifier, titlemap[dataset_name]].append(n_correct / n_total)
 
+    if field == 'cdfs':
+        # Compute accuracy for RGZ.
+        for dataset_name in pipeline.SET_NAMES:
+            for quadrant in range(4):
+                # Compact objects are cross-identified in a separate pipeline, which is slow so I don't want to reproduce it here.
+                # So I'll read the compact object cross-identifications from the LR(RGZ) cross-identification set, since it ought
+                # to be the same.
+                corresponding_set, = [cid for cid in cids if cid.quadrant == quadrant
+                                                             and cid.dataset_name == dataset_name
+                                                             and cid.labeller == 'rgz'
+                                                             and cid.classifier == 'LogisticRegression']
+                atlas_to_swire_lr = dict(zip(corresponding_set.radio_names, corresponding_set.ir_names))
+                n_total = 0
+                n_correct = 0
+                n_skipped = 0
+                n_compact = 0
+                atlas_keys = atlas_test_sets[:, pipeline.SET_NAMES[whatset[dataset_name]], quadrant].nonzero()[0]
+                # For each ATLAS object in RGZ & Norris...
+                for i in atlas_keys:
+                    name = key_to_atlas[i]
+                    if name not in atlas_to_swire_expert:
+                        n_skipped += 1
+                        continue
+                    if name not in atlas_to_swire_rgz or name not in atlas_to_swire_lr:
+                        n_skipped += 1
+                        continue
+                    if is_compact[name]:
+                        swire_predictor = atlas_to_swire_lr[name]
+                    else:
+                        swire_predictor = atlas_to_swire_rgz[name]
+                    swire_norris = atlas_to_swire_expert[name]
+                    n_correct += swire_norris == swire_predictor
+                    n_total += 1
+                labeller_classifier_to_accuracies['RGZ', 'Label', titlemap[dataset_name]].append(n_correct / n_total)
+
     labeller_classifier_to_accuracy = {}
     labeller_classifier_to_stdev = {}
     for key, accuracies in labeller_classifier_to_accuracies.items():
@@ -284,9 +331,10 @@ def plot(field='cdfs'):
         plt.hlines(random_acc[titlemap[set_name]] + random_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='blue', linewidth=1, zorder=1, alpha=0.7)
         plt.hlines(random_acc[titlemap[set_name]] - random_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='blue', linewidth=1, zorder=1, alpha=0.7)
         for i, labeller in enumerate(['Norris', 'RGZ']):
-            for j, classifier in enumerate(['LogisticRegression', 'CNN', 'RandomForestClassifier']):
+            for j, classifier in enumerate(['LogisticRegression', 'CNN', 'RandomForestClassifier'] + (['Label'] if field == 'cdfs' else [])):
                 ys = numpy.array(labeller_classifier_to_accuracies[labeller, classifier, titlemap[set_name]]) * 100
-                xs = [i + (j - 1) / 5] * len(ys)
+                x_offset = i + (j - 1) / 5 if labeller == 'Norris' or field == 'elais' else i + (j - 1.5) / 6
+                xs = [x_offset] * len(ys)
                 print('{} & {} & {} & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, labeller, classifier, numpy.mean(ys), numpy.std(ys)))
                 ax.set_xlim((-0.5, 1.5))
                 if k == 0:
@@ -308,7 +356,7 @@ def plot(field='cdfs'):
 
             ax.grid(which='major', axis='y', color='#EEEEEE')
 
-    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'], 'lower center', ncol=3, fontsize=10)
+    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + (['Label'] if field == 'cdfs' else []), 'lower center', ncol=4, fontsize=10)
     plt.subplots_adjust(bottom=0.15, hspace=0.25)
     plt.savefig('../images/{}_cross_identification_grid.pdf'.format(field),
                 bbox_inches='tight', pad_inches=0)
