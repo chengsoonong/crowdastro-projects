@@ -657,12 +657,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         %   \hline
         % \end{tabular}
         \includegraphics[width=\linewidth]{images/cnn_model_graph}
-        \caption{Architecture of our CNN. The merge layer flattens the output of
-          the previous layer and adds the 10 features derived from the
-          candidate host in SWIRE, i.e. the flux ratios, stellarity indices,
-          and distance. The dropout layer drops $25\%$ of its
-          inputs. Diagram based on \url{
-          https://github.com/dnouri/nolearn}.}
+        \caption{Architecture of our CNN. The concatenate layer flattens the
+          output of the previous layer and adds the 10 features derived from
+          the candidate host in SWIRE, i.e. the flux ratios, stellarity
+          indices, and distance. The dropout layer randomly sets $25\%$ of its
+          inputs to zero during training to prevent overfitting. Diagram based
+          on \url{ https://github.com/dnouri/nolearn}.}
         \label{fig:cnn}
       \end{figure}
 
