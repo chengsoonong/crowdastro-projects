@@ -339,7 +339,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \section{Method}\label{sec:method}
     \begin{figure}
       \centering
-      \includegraphics[width=\columnwidth]{images/elais_0093C1_with_boxes}
+      \includegraphics[width=\columnwidth]{images/elais_0093C1_with_boxes.pdf}
       \caption{An example of localising the host galaxy of a radio source using
         our method. This image is from ATLAS and is centred on $\alpha =
         00^\text{h}33^\text{m}06.36^\text{s}, \delta = -43^\circ{}10'30.1''$.
@@ -531,13 +531,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     source information, and vice versa.
 
     Our assumptions impose an upper bound on how well we can cross-identify
-    radio sources, which can be estimated by considering how accurately a
-    \emph{perfect} binary classifier cross-identifies radio sources under our
-    method. Using the expert labels (\autoref{labels}) to classify SWIRE objects
-    to 100~percent accuracy on the binary classification task results in a
-    cross-identification accuracy of $(96.74 \pm 1.76)$~percent across the four
-    CDFS quadrants under our assumptions, which we take as an upper bound on our
-    cross-identification accuracy.
+    radio sources. We estimate this upper bound in \autoref{sec:relation}
 
     A related issue is that we need to choose a window size for the image
     representations of each SWIRE object. If this image is too small, radio
@@ -582,7 +576,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     The infrared fluxes provide insight into the properties of the host galaxy
     of the radio emission. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace
-    both galaxies with faint polycyclic aromatic hydrocarbon (PATH) emission and
+    both galaxies with faint polycyclic aromatic hydrocarbon (PAH) emission and
     elliptical galaxies dominated by old stellar popluations. The
     \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission
     is dominated by non-equilibrium emission of dust grains (PAH destruction
@@ -822,9 +816,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
 \section{Results}\label{sec:results}
 
-  \cheng{Describe the section}
+  In this section we present accuracies of our method trained on CDFS and
+  applied to CDFS and ELAIS-S1, as well as results motivating our accuracy
+  measures for the classifiers we have used and estimates of upper and lower
+  bounds for cross-identification accuracy using our method.
 
   \subsection{Relation between binary classification and cross-identification}
+  \label{sec:relation}
 
     \begin{figure}
       \centering
@@ -897,16 +895,28 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       accuracy of the Radio Galaxy Zoo citizen scientists. The horizontal axis
       shows which label set was used to train the classifiers: `Norris'
       represents the expert labels, `RGZ' represents the Radio Galaxy Zoo
-      labels.      %, and `RGZ N' represents the Radio
-      %Galaxy Zoo labels applied only to the radio components that appeared in the
-      %expert cross-identification catalogue.
-      The three plots show different sets
-      of training and testing data: the `compact' contains only compact radio
-      components, `resolved' only contains resolved radio components, and `all'
-      contains all radio components.
-      %The maximum attainable balanced accuracy is
-      %100~percent, when every galaxy label matches the expert labels.
+      labels. The two plots show different sets of training and testing data:
+      the `resolved' only contains SWIRE objects within $1'$ of resolved radio
+      components, and `all' contains SWIRE objects within $1'$ of any radio
+      components.
       \label{fig:ba}}
+    \end{figure}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=0.8\columnwidth]{images/compact-ba.pdf}
+      \caption{Balanced accuracies for different predictors on SWIRE objects
+        within $1'$ of compact radio sources in CDFS. The horizontal axis
+        shows which predictor was used to make the predictions. $C(L)$
+        indicates a predictor using classification model $C$ trained on label
+        set $L$, with models and label sets abbreviated as in
+        \autoref{fig:ba}. `RGZ' indicates the performance of the Radio Galaxy
+        Zoo catalogue, and `NN' indicates the performance of identifying the
+        nearest SWIRE object to an ATLAS object as a host galaxy. Radio Galaxy
+        Zoo-trained predictors are coloured red, and expert-trained are
+        coloured blue. Shapes of points correspond to the classification
+        models in \autoref{fig:ba}.
+        \label{fig:compact-ba}}
     \end{figure}
 
     \begin{figure}
@@ -927,11 +937,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     For the galaxy classification task, we report the balanced accuracy of
     each classification model and training set in \autoref{fig:ba} for SWIRE
-    objects within 1~arcmin of (1) compact radio components, (2) resolved
-    radio components, and (3) all radio components. These accuracies averaged
-    across the four quadrants are reported in
-    \autoref{tab:average-accuracies}. We also report the balanced accuracy of
-    Radio Galaxy Zoo for comparison.
+    objects within 1~arcmin of (1) resolved radio components, and (2) all
+    radio components. These accuracies averaged across the four quadrants are
+    reported in \autoref{tab:average-accuracies}. We also report the balanced
+    accuracy of Radio Galaxy Zoo for comparison.
 
     Classifiers trained on expert labels perform comparably to those trained
     on Radio Galaxy Zoo labels. Differences between accuracies across training
@@ -955,6 +964,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     object in \autoref{tab:probs}. Probabilities reported for a given object
     were predicted by classifiers tested on the quadrant containing that
     object.
+
+    In \autoref{fig:compact-ba} we show the balanced accuracies of the
+    classification models on the set of SWIRE objects within $1'$ of compact
+    radio components. For comparison, we also show the balanced accuracy of
+    the Radio Galaxy Zoo labels, as well as the balanced accuracy of a label
+    set generated by identifying the closest SWIRE object to each ATLAS object
+    as a host galaxy. As compact objects are simple to classify we would
+    expect high accuracies on this set.
 
     For the cross-identification task, we report the accuracy of each
     classification model and training label set in
@@ -1102,7 +1119,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \end{figure}
 
   We applied the classifiers trained on CDFS to perform cross-identification
-  on the ELAIS-S1 field. Both CDFS and ELAIS were imaged by the same radio
+  on the ELAIS-S1 field. Both CDFS and ELAIS-S1 were imaged by the same radio
   telescope and to similar sensitivities and angular resolution for the ATLAS
   survey.  As ELAIS-S1 has been cross-identified with SWIRE host galaxies by
   \citet{middelberg08}, we can use these cross-identifications to derive
@@ -1278,16 +1295,16 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   We present a machine learning approach for cross-identification of radio
   components with their corresponding infrared host galaxy. We trained our
   methods on expert and crowdsourced cross-identification catalogues, and
-  applied these methods on the CDFS and ELAIS-S1 fields of ATLAS.
-  Expert-trained models generally outperformed the crowdsourced-trained
-  models, but both sets of models performed comparably on the
-  cross-identification task. While our cross-identification performance is not
-  as high as would be ideal, we make no assumptions on the binary
-  classification model used in our methods and so we expect the performance to
-  be improved by further experimentation and model selection. Our method
-  provides a useful framework for generalising cross-identification catalogues
-  to unseen areas of the sky and can be incorporated into existing methods.
-  \todo{Add recommendations and update with respect to abstract.}
+  applied these methods on the CDFS and ELAIS-S1 fields of ATLAS. The Radio
+  Galaxy Zoo-trained models performed comparably to the expert-trained models
+  on the cross-identification task, showing that crowdsourced labels are
+  useful for training machine learning methods for cross-identification. While
+  our cross-identification performance is not as high as would be ideal, we
+  make no assumptions on the binary classification model used in our methods
+  and so we expect the performance to be improved by further experimentation
+  and model selection. Our method provides a useful framework for generalising
+  cross-identification catalogues to unseen areas of the sky and can be
+  incorporated into existing methods.
 
 %
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
@@ -1299,7 +1316,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 \appendix
 \section{Tables of accuracies}
 
-\cheng{need some descriptive text}
+In \autoref{tab:average-accuracies} and \autoref{tab:average-accuracies-elais}
+we list the balanced accuracies of classifiers on CDFS and ELAIS-S1
+respectively, averaged over quadrants. In \autoref{tab:cross-id-accuracies}
+and \autoref{tab:cross-id-accuracies-elais} we list the accuracies of our
+method on the cross-identification task on CDFS and ELAIS-S1 respectively,
+averaged over quadrants.
 
 \begin{table*}
   \caption{Average balanced accuracies across quadrants shown in
@@ -1311,7 +1333,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     %`RGZ N' is the Radio Galaxy Zoo label set with only radio sources that
     %were also labelled by experts.
     `LR' refers to logistic regression, `CNN' refers to our convolutional
-    neural network, and `RF' refers to random forests.}
+    neural network, and `RF' refers to random forests. `Labels' refers to a
+    classifier that simply reads the test labels, and hence represents the
+    balanced accuracy of the Radio Galaxy Zoo citizen scientists.}
+    \todo{update this with new thresholded balanced accuracies}
   \label{tab:average-accuracies}
   \begin{tabular}{llccc}
     \hline
@@ -1329,6 +1354,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     RGZ & CNN & $87.8 \pm 0.7$ & $89.2 \pm 0.7$ & $87.7 \pm 0.9$\\
      & LR & $91.4 \pm 0.8$ & $89.8 \pm 0.8$ & $90.8 \pm 1.4$\\
      & RF & $94.0 \pm 0.6$ & $94.7 \pm 0.6$ & $94.1 \pm 0.3$\\
+     & Labels & $94.5 \pm 0.8$ & $89.0 \pm 2.5$ & $93.1 \pm 0.9$\\
     \hline
   \end{tabular}
 \end{table*}
@@ -1362,6 +1388,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   RGZ & CNN & $41.3 \pm 4.9$ & $86.4 \pm 2.7$\\
    & LR & $60.0 \pm 11.5$ & $92.6 \pm 1.9$\\
    & RF & $57.0 \pm 6.1$ & $87.1 \pm 2.6$\\
+   & Labels & $56.7 \pm 5.9$ & $90.5 \pm 2.6$\\
    \hline
   \end{tabular}
 \end{table}
@@ -1427,6 +1454,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
 
 \section{Catalogues}
+
   \begin{table*}
     \caption{Predicted probabilities that each object in SWIRE is a host
       galaxy. Probabilities are reported for each predictor. $C(A\ /\ B)$
