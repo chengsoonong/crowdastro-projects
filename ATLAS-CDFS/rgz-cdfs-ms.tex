@@ -834,13 +834,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       training data to artificially restrict their accuracies. Colour shows
       the density of points on the plot estimated by a Gaussian kernel density
       estimate. The solid lines indicate the best linear fit; these fits have
-      $R^2 = 0.86$ for logistic regression and $R^2 = 0.95$ for random
-      forests. The high density of points at 50 per cent balanced accuracy, 0
-      per cent cross-identification accuracy for random forests is an artefact
-      of our method of classifier generation, as random forests have much
-      lower performance than logistic regression with less training data. We
-      did not include convolutional neural networks in this test, as training
-      them is very computationally expensive.
+      $R^2 = 0.85$ for logistic regression and $R^2 = 0.64$ for random
+      forests. We did not include convolutional neural networks in this test,
+      as training them is very computationally expensive. These results
+      exclude classifiers witih balanced accuracies less than 51 per cent, as
+      these are essentially random.
       \label{fig:gct-to-xid}}
     \end{figure}
 
@@ -861,8 +859,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     we find that the balanced accuracy on the galaxy classification task is
     correlated with the accuracy on the cross-identification task. This
     correlation is shown in \autoref{fig:gct-to-xid}. Fitting a line of best
-    fit with \texttt{scipy} gives $R^2 = 0.86$ for logistic regression and
-    $R^2 = 0.95$ for random forests.
+    fit with \texttt{scipy} gives $R^2 = 0.85$ for logistic regression and
+    $R^2 = 0.64$ for random forests.
 
     The reduction from cross-identification to binary classification also
     introduces limitations as described in \autoref{sec:limitations}, which
