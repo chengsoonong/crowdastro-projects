@@ -85,15 +85,6 @@ $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
   on expert labels, demonstrating the value of crowdsourced labels.
   In addition to cross validation performance on CDFS, we demonstrate that
   our method also generalizes to ELAIS-S1.
-  % We find that the best-performing expert-trained models had a mean accuracy
-  % of $93.0 \pm 1.5$ per cent on CDFS and $90.4 \pm 1.5$ per cent on ELAIS-S1,
-  % while the best-performing RGZ-trained models had a mean accuracy of $92.6
-  % \pm 1.9$ per cent on CDFS and $88.3 \pm 0.8$ per cent on ELAIS-S1. While
-  % expert-trained models outperformed models trained on the Radio Galaxy Zoo
-  % labels by up to $4.3 \pm 1.1$ percentage points on CDFS and $9.1 \pm 0.9$
-  % percentage points on ELAIS-S1, these models were generally comparable and
-  % the crowdsourced labels hence provide a valuable training set for future
-  % machine learning methods.
   Cross-identification performance with our method is limited by a lack of
   radio morphology information as our method for reducing cross identification
   to binary classification require that radio sources
@@ -224,7 +215,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \begin{tabular}{llcc}
         \hline
         Catalogue & Method & CDFS & ELAIS-S1\\
-         % & & components & components\\
         \hline
         \citet{norris06} & Manual & 784 & 0\\
         \citet{middelberg08} & Manual & 0 & 1366\\
@@ -246,21 +236,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     covers 2.7~deg$^2$ and contains 2084 radio components above 5$\sigma$
     \citep{franzen15}. \autoref{tab:atlas-cids} summarises catalogues that
     cross-identify radio components in ATLAS with host galaxies in SWIRE.
-
-    % Table 1 summarises recent catalogues that cross-identify radio components in ATLAS with host galaxies in SWIRE.
-
-    % \citet{norris06} produced a catalogue of cross-identifications of 784
-    % radio sources with their infrared counterparts in SWIRE.
-    % \citet{middelberg08} produced a catalogue of cross-identifications of
-    % {[}NNNN{]} radio sources with their infrared counterparts in SWIRE.
-    % {[}TODO: Make this less clunky and talk about Fan et al.{]}
-
-    % Radio Galaxy Zoo (\autoref{sec:rgz}) produced a catalogue of
-    % crowdsourced cross-identifications of 2460 ATLAS radio objects in CDFS
-    % \citep{wong17}.
-    % % As these cross-identifications have been based on
-    % % volunteer classifications, this catalogue is expected to be less accurate
-    % % than an expert catalogue like that produced by \citet{norris06}.
 
   \subsection{SWIRE}\label{sec:swire}
 
@@ -291,23 +266,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     visible in the infrared image. A more detailed description can be found in
     \citet{banfield15} and a full description of how the final catalogue of
     cross-identifications is generated can be found in \citet{wong17}.
-
-    % To reduce noise in the classification, each radio component is shown to
-    % multiple volunteers. Compact radio components are shown to 5 volunteers,
-    % while extended radio components are shown to 20 volunteers. Once a radio
-    % object has been classified by the required number of volunteers, it is
-    % considered `complete'. Complete classifications are combined to produce
-    % the final catalogue of Radio Galaxy Zoo source components and
-    % cross-identifications. The most commonly chosen associations of radio
-    % components to radio sources are chosen as the radio morphology
-    % classification for the image. The host galaxy locations selected by
-    % volunteers who agreed with the most common radio morphology classification
-    % are combined by maximising over a kernel density estimate of the locations.
-    % These locations are then matched to the nearest SWIRE object within
-    % 3~arcsec. A full description of the catalogue generation can be found in the Radio Galaxy Zoo first data release
-    % \citep{wong17}. %As of 30 March 2016, there are 97~807 complete
-    % %classifications of FIRST components, and There are 2460 complete classifications of
-    % %ATLAS CDFS components within the Radio Galaxy database.
 
     In this paper we focus on the Radio Galaxy Zoo cross-identifications of
     the ATLAS~CDFS and SWIRE surveys. The two main reasons are: (1) ATLAS is
@@ -413,8 +371,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     locating the host galaxy within the associated radio and infrared images.
     This is formalised as an object localisation problem: given a radio image
     and an infrared image centred on a radio component, locate the host galaxy
-    of the radio component.    % S031, S336, S081, S576, S136, S719, S618, S707, S287
-    % ARG0003r2r, -, -, ARG0003r5h, ARG0003r2d, -, ARG0003r1s, -, ARG0003r8q
+    of the radio component.
 
     A common approach to object localisation is to estimate the probability
     that each location in the image is coincident with the desired object. In
@@ -636,28 +593,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       features. For more detail, see \citet[subsection II.A][]{lecun98}. We use
       \textsc{Keras} \citep{chollet15keras} to implement our CNN.
 
-      % \begin{figure*}
-      %   \centering
-      %   \includegraphics[width=\textwidth]{convnet.pdf}
-      %   \caption{Convolutional neural network model.}
-      %   \label{fig:cnn}
-      % \end{figure*}
-
       \begin{figure}
-        % \begin{tabular}{l|c}
-        %   \hline
-        %   Layer type & Output size\\
-        %   \hline
-        %   Image Input & $1 \times 32 \times 32$\\
-        %   Convolution & $32 \times 28 \times 28$\\
-        %   Max pooling & $32 \times 14 \times 14$\\
-        %   Convolution & $32 \times 10 \times 10$\\
-        %   Max pooling & $32 \times 5 \times 5$\\
-        %   Dropout & $32 \times 5 \times 5$\\
-        %   Merge & $810$\\
-        %   Logistic regression & $1$\\
-        %   \hline
-        % \end{tabular}
         \includegraphics[width=\linewidth]{images/cnn_model_graph}
         \caption{Architecture of our CNN. The concatenate layer flattens the
           output of the previous layer and adds the 10 features derived from
@@ -1038,59 +974,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         candidate hosts.}\label{fig:cnnexamples}
   \end{figure*}
 
-  % \begin{figure}
-  %   \centering
-  %   \includegraphics[width=\columnwidth]{gct-to-xid-precision.pdf}
-  % \end{figure}
-
-  % \begin{figure}
-  % \centering
-  % \includegraphics[width=\columnwidth]{gct-to-arcsec-error.pdf}
-  % \caption{Classification balanced accuracy against average radial
-  % distance between the predicted and the \citet{norris06} cross-identified
-  % host on the cross-identification task.\label{fig:gct-to-arcsec-error}}
-  % \end{figure}
-
-  % \begin{figure}
-  % \centering
-  % \includegraphics[width=\columnwidth]{passive.pdf}
-  % \caption{Passive learning plot for the GCT. Trained and tested on RGZ.
-  %   This is so that we had maximal training data --- RGZ has many more
-  %   \label{fig:passive}}
-  % \end{figure}
-
-  % \begin{figure}
-  % \centering
-  % \includegraphics[width=\columnwidth]{distributions.pdf}
-  % \caption{Distribution of non-image features.\label{fig:distributions}}
-  % \end{figure}
-
-  % \begin{figure}
-  % \centering
-  % \includegraphics[width=\columnwidth]{images/swire_colour_colour.pdf}
-  % \caption{Colour-colour diagram for sample of SWIRE objects in CDFS.
-  %   \label{fig:colour-colour-all}}
-  % \end{figure}
-
-  % \begin{figure*}
-  % \centering
-  % \subfloat[\label{fig:colour-colour-norris}]{\includegraphics[width=0.45\linewidth]{images/\detokenize{swire_colour_colour_norris}.pdf}}%
-  % \subfloat[\label{fig:colour-colour-rgz}]{\includegraphics[width=0.45\linewidth]{images/\detokenize{swire_colour_colour_rgz}.pdf}}\\
-  % \caption{Colour-colour diagram for \protect\subref{fig:colour-colour-norris}
-  %   expert-identified infrared host galaxies in CDFS and
-  %   \protect\subref{fig:colour-colour-rgz} Radio Galaxy Zoo-identified infrared
-  %   host galaxies in CDFS. Dots indicate the colour-colour distribution of all
-  %   SWIRE objects in CDFS, and triangles indicate identified host galaxies.
-  %   \label{fig:colour-colour-norris-rgz}}
-  % \end{figure*}
-
-  % \begin{figure*}
-  % \centering
-  % \includegraphics[width=\textwidth]{colour_colour_predictions.pdf}
-  % \caption{Colour-colour diagrams for each
-  % classifier.\label{fig:colour-colour}}
-  % \end{figure*}
-
 \subsection{Application to ATLAS-ELAIS}
   \label{sec:elais}
 
@@ -1332,8 +1215,6 @@ averaged over quadrants.
     sources, resolved sources, and all sources separately. `Labeller'
     indicates what label set the classifiers were trained on. `Norris' is
     the expert label set, `RGZ' is the Radio Galaxy Zoo label set.%, and
-    %`RGZ N' is the Radio Galaxy Zoo label set with only radio sources that
-    %were also labelled by experts.
     `LR' refers to logistic regression, `CNN' refers to our convolutional
     neural network, and `RF' refers to random forests. `Labels' refers to a
     classifier that simply reads the test labels, and hence represents the
@@ -1348,10 +1229,6 @@ averaged over quadrants.
      & LR & $91.6 \pm 1.0$ & $93.2 \pm 1.0$ & $93.1 \pm 1.2$\\
      & RF & $97.5 \pm 0.6$ & $90.9 \pm 4.8$ & $96.7 \pm 2.3$\\
      \\
-    % RGZ N & CNN & $89.4 \pm 0.6$ & $89.6 \pm 1.3$ & $89.4 \pm 0.5$\\
-    %  & LR & $89.5 \pm 0.8$ & $90.5 \pm 1.7$ & $90.2 \pm 0.8$\\
-    %  & RF & $94.6 \pm 0.1$ & $95.8 \pm 0.5$ & $94.7 \pm 0.5$\\
-    %  \\
     RGZ & CNN & $87.8 \pm 0.7$ & $89.2 \pm 0.7$ & $87.7 \pm 0.9$\\
      & LR & $91.4 \pm 0.8$ & $89.8 \pm 0.8$ & $90.8 \pm 1.4$\\
      & RF & $94.0 \pm 0.6$ & $94.7 \pm 0.6$ & $94.1 \pm 0.3$\\
@@ -1382,10 +1259,6 @@ averaged over quadrants.
    & Perfect & $92.1 \pm 1.5$ & $96.7 \pm 1.8$\\
    & Random & $4.7 \pm 3.9$ & $79.7 \pm 5.4$\\
    \\
-  % RGZ-N & CNN & $48.6 \pm 11.5$ & $87.6 \pm 2.1$\\
-  %  & LR & $64.6 \pm 11.1$ & $91.7 \pm 1.0$\\
-  %  & RF & $65.8 \pm 4.7$ & $89.2 \pm 3.4$\\
-  %  \\
   RGZ & CNN & $41.3 \pm 4.9$ & $86.4 \pm 2.7$\\
    & LR & $60.0 \pm 11.5$ & $92.6 \pm 1.9$\\
    & RF & $57.0 \pm 6.1$ & $87.1 \pm 2.6$\\
@@ -1409,10 +1282,6 @@ averaged over quadrants.
      & LR & $94.6 \pm 0.4$ & $93.3 \pm 2.0$ & $95.3 \pm 0.1$ \\
      & RF & $87.4 \pm 5.6$ & $71.5 \pm 2.3$ & $86.0 \pm 2.6$ \\
      \\
-    % RGZ N & CNN & $90.11 \pm 0.34$ & $91.13 \pm 0.92$ & $90.17 \pm 0.27$ \\
-    %  & LR & $91.81 \pm 0.29$ & $91.94 \pm 0.53$ & $92.01 \pm 0.24$ \\
-    %  & RF & $95.18 \pm 0.30$ & $95.16 \pm 0.69$ & $95.50 \pm 0.24$ \\
-    %  \\
     RGZ & CNN & $88.8 \pm 0.6$ & $89.9 \pm 0.3$ & $88.5 \pm 0.3$ \\
      & LR & $93.2 \pm 0.5$ & $91.4 \pm 0.3$ & $91.6 \pm 0.6$ \\
      & RF & $94.9 \pm 0.2$ & $95.2 \pm 0.3$ & $95.1 \pm 0.2$ \\
@@ -1442,10 +1311,6 @@ averaged over quadrants.
            & LR      & $79.6 \pm 0.9$ & $90.2 \pm 0.6$\\
            & RF      & $76.1 \pm 3.4$ & $90.4 \pm 1.5$\\
      \\
-    % RGZ-N & CNN & $61.01 \pm 1.40$ & $78.38 \pm 0.49$\\
-    %       & LR  & $75.71 \pm 1.11$ & $86.72 \pm 1.10$\\
-    %       & RF  & $75.00 \pm 2.42$ & $86.96 \pm 1.80$\\
-    %  \\
     RGZ & CNN & $59.1 \pm 3.2$ & $76.5 \pm 0.5$\\
         & LR  & $75.8 \pm 2.1$ & $88.3 \pm 0.8$\\
         & RF  & $75.2 \pm 2.9$ & $86.2 \pm 1.3$\\
