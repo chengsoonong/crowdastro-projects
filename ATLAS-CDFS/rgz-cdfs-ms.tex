@@ -34,22 +34,23 @@
 \title[Machine learning methods for radio source cross-identification]{Radio Galaxy Zoo: Machine learning methods for radio source host galaxy cross-identification}
 
 \author[Alger et al.]{
-  M.~J.~Alger$^{1}$,
-  J.~K.~Banfield$^{2, 1}$,
-  C.~S.~Ong$^{3, 4}$,
-  O.~I.~Wong$^{5, 2}$,
-  L.~Rudnick$^{6}$,
-  R.~P.~Norris$^{7, 8}$, others
+  % M.~J.~Alger$^{1}$,
+  % J.~K.~Banfield$^{2, 1}$,
+  % C.~S.~Ong$^{3, 4}$,
+  % O.~I.~Wong$^{5, 2}$,
+  % L.~Rudnick$^{6}$,
+  % R.~P.~Norris$^{7, 8}$, others
+  Alger$^{1}$ et al.
 \\
 % List of institutions
 $^{1}$Research School of Astronomy and Astrophysics, The Australian National University, Canberra, ACT 2611, Australia\\
-$^{2}$ARC Centre of Excellence for All-Sky Astrophysics (CAASTRO)\\
-$^{3}$Data61, CSIRO, Canberra, ACT 2601, Australia\\
-$^{4}$Research School of Computer Science, The Australian National University, Canberra, ACT 2601, Australia\\
-$^{5}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia\\
-$^{6}$Minnesota Institute for Astrophysics, University of Minnesota, 116 Church St. SE, Minneapolis, MN 55455\\
-$^{7}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
-$^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
+% $^{2}$ARC Centre of Excellence for All-Sky Astrophysics (CAASTRO)\\
+% $^{3}$Data61, CSIRO, Canberra, ACT 2601, Australia\\
+% $^{4}$Research School of Computer Science, The Australian National University, Canberra, ACT 2601, Australia\\
+% $^{5}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia\\
+% $^{6}$Minnesota Institute for Astrophysics, University of Minnesota, 116 Church St. SE, Minneapolis, MN 55455\\
+% $^{7}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
+% $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
 }
 
 % These dates will be filled out by the publisher
@@ -181,7 +182,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   class of methods that learn approximations to functions, and so if the
   cross-identification task can be cast as a machine learning problem, data
   sets such as that provided by Radio Galaxy Zoo can be generalised to work on
-  data unseen by the original cross-identifiers.
+  data not seen by the original cross-identifiers.
 
   We have developed a machine learning approach for radio host
   cross-identification. This approach casts the cross-identification task as
@@ -240,13 +241,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     million new radio sources. EMU will be conducted at the same depth and
     resolution as ATLAS, so methods developed for processing ATLAS data are
     expected to work for EMU. ATLAS is a wide-area radio survey of the CDFS
-    and ELAIS-S1 fields at 1.4~GHz with a sensitivity of
-    14 and \unit{17}{\micro\jansky} on CDFS and ELAIS-S1 respectively.
-    CDFS covers 3.6~deg$^2$ and contains 3034 radio components above
-    5$\sigma$. ELAIS-S1 covers 2.7~deg$^2$ and contains 2084 radio components
-    above 5$\sigma$ \citep{franzen15}. A number of catalogues have been
-    produced cross-identifying radio components in ATLAS with host galaxies in
-    SWIRE. These catalogues are summarised in \autoref{tab:atlas-cids}.
+    and ELAIS-S1 fields at 1.4~GHz with a sensitivity of 14 and
+    \unit{17}{\micro\jansky} on CDFS and ELAIS-S1 respectively. CDFS covers
+    3.6~deg$^2$ and contains 3034 radio components above 5$\sigma$. ELAIS-S1
+    covers 2.7~deg$^2$ and contains 2084 radio components above 5$\sigma$
+    \citep{franzen15}. \autoref{tab:atlas-cids} summarises catalogues that
+    cross-identify radio components in ATLAS with host galaxies in SWIRE.
+
+    % Table 1 summarises recent catalogues that cross-identify radio components in ATLAS with host galaxies in SWIRE.
 
     % \citet{norris06} produced a catalogue of cross-identifications of 784
     % radio sources with their infrared counterparts in SWIRE.
@@ -320,8 +322,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     on the third data release of ATLAS by \citet{franzen15}. This release
     provides a catalogue of radio components (both resolved and unresolved)
     for each ATLAS field. Each radio component was fit with a two-dimensional
-    Gaussian. Depending on the residual of the fit, more then one Gaussian may
-    be fit to one region of radio emission.  Each of these Gaussian fits are
+    Gaussian. Depending on the residual of the fit, more than one Gaussian may
+    be fit to one region of radio emission.  Each of these Gaussian fits is
     listed as a radio component in the ATLAS catalogue. The brightest radio
     component from the multiple Gaussian fit is called the `primary
     component'. Each primary component found in the ATLAS DR3 component
@@ -331,27 +333,28 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     components.
 
     We use the ATLAS cross-identifications from a preliminary version of the
-    Radio Galaxy Zoo first data release catalogue with no filtering based on
-    volunteer agreement. The final catalogue will introduce a cut on the
-    percentage of volunteers who agreed with a cross-identification, and will
-    hence have more accurate cross-identifications.
+    Radio Galaxy Zoo first data release catalogue. This preliminary catalogue
+    includes all radio components in CDFS regardless of how often volunteers
+    agree on the correct cross-identification. The final catalogue will only
+    include cross-identifications for which over 75 per cent of volunteers
+    agree.
 
   \section{Method}\label{sec:method}
     \begin{figure}
       \centering
       \includegraphics[width=\columnwidth]{images/elais_0093C1_with_boxes.pdf}
       \caption{An example of localising the host galaxy of a radio source using
-        our method. This image is from ATLAS and is centred on $\alpha =
-        00^\text{h}33^\text{m}06.36^\text{s}, \delta = -43^\circ{}10'30.1''$.
-        Boxes represent $32 \times 32$ pixel windows centred on various
-        locations in the image. The corresponding image patches from each
-        window are shown beneath. The image patch of each window represents
-        the location the window is centred on. The probabilities of each patch
-        coinciding with the host galaxy would then be estimated by a
-        classification model. The probabilities shown are for illustration
-        only. In this example, the centre window of the image would be chosen
-        as the location of the host galaxy, as the window centred on it has
-        the highest probability.}
+        our method. This image is a radio image from ATLAS and is centred on
+        $\alpha = 00^\text{h}33^\text{m}06.36^\text{s}, \delta =
+        -43^\circ{}10'30.1''$. Boxes represent $32 \times 32$ pixel windows
+        centred on various locations in the image. The corresponding image
+        patches from each window are shown beneath. The image patch of each
+        window represents the location the window is centred on. The
+        probabilities of each patch coinciding with the host galaxy would then
+        be estimated by a classification model. The probabilities shown are
+        for illustration only. In this example, the centre window of the image
+        would be chosen as the location of the host galaxy, as the window
+        centred on it has the highest probability.}
       \label{fig:windows}
     \end{figure}
 
@@ -404,7 +407,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     could use this to isolate relevant components and hence more accurately
     cross-identify sources, but this is beyond the scope of this paper. We
     also note that this assumption will bias our results against radio
-    emission that extends beyond the 1~arcmin cutout size, however, these are
+    emission that extends beyond the 1~arcmin cutout size. However, these are
     uncommon in ATLAS with 9 radio sources identified by \citet{norris06} as
     having components further than 1~arcmin apart (and of these, only 5 are in
     Radio Galaxy Zoo). The radio cross-identification task then amounts to
@@ -511,7 +514,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     The key problem with this approach is our assumption that the radio sky
     within 1~arcmin radius contains only one, complete radio source. The problem
-    is two-fold: This radius may contain multiple sources, or it may not contain
+    is two-fold: this radius may contain multiple sources, or it may not contain
     the entirety of the source. If the radius contains multiple sources then
     there will also be multiple hosts in our input images (which breaks our
     assumption that there is only one); even a perfect classifier can only
@@ -531,7 +534,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     source information, and vice versa.
 
     Our assumptions impose an upper bound on how well we can cross-identify
-    radio sources. We estimate this upper bound in \autoref{sec:relation}
+    radio sources. We estimate this upper bound in \autoref{sec:relation}.
 
     A related issue is that we need to choose a window size for the image
     representations of each SWIRE object. If this image is too small, radio
@@ -590,7 +593,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     network (Section \ref{sec:convolutional-neural-networks}) automatically
     extracting features that are relevant.
     There has been limited research on extracting features from radio images.
-    \citet{proctor06} describe hand-selected features for radio doubles in
+    \citet{proctor06} describes hand-selected features for radio doubles in
     FIRST, and \citet{aniyan17cnn} and \citet{lukic17compact} make use of deep
     convolutional neural networks which automatically extract features as part
     of classification. A more comprehensive search of neural network architectures
@@ -611,13 +614,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \begin{equation}
           f(\vec x) = \sigma(\vec w \cdot \vec x + b) \,\,\,\,,
       \end{equation}
-      where $\vec w \in \mathbb{R}^D$ is a weights vector,
+      where $\vec w \in \mathbb{R}^D$ is a weight vector,
       $b \in \mathbb{R}$ is a bias term, $\vec x \in \mathbb{R}^D$ is the
       feature representation of a candidate host, and $\sigma$ is the
       logistic sigmoid function: \begin{equation}
           \sigma(a) = (1 + \mathrm{exp}(-a))^{-1}\,\,\,\,.
       \end{equation}%
-      The logistic regression model is fully differentiable, and the weights
+      The logistic regression model is fully differentiable, and the weight
       vector $\vec w$ can therefore be learned using gradient methods.
 
     \subsubsection{Convolutional neural networks}
@@ -679,11 +682,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       trees~\citep{breiman01random-forest}. It considers multiple subsamples
       of the training set, where each bootstrap subsample is sampled with
       replacement from the training set. For each subsample a decision tree
-      classifier is constructed. The decision tree is built by repeatedly
-      making axis-parallel splits based on individual features. In a random
-      forest the split decision is taken based on a random subset of features.
-      To classify a new data point, the random forest takes the weighted
-      average of all classifications produced by each decision tree.
+      classifier is constructed by repeatedly making axis-parallel splits
+      based on individual features. In a random forest the split decision is
+      taken based on a random subset of features. To classify a new data
+      point, the random forest takes the weighted average of all
+      classifications produced by each decision tree.
 
   \subsection{Labels}\label{sec:labels}
     \begin{figure}
@@ -877,13 +880,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     assumptions. We estimate the lower limit on performance by taking a random
     classifier, which outputs random probabilities regardless of input galaxy.
     Any useful classifier should produce better results than this, so this
-    represents the least possible cross-identification performance. We report
+    represents the lowest possible cross-identification performance. We report
     the cross-identification accuracies of the perfect and random classifiers
     alongside the performance of other classifiers. These upper and lower
     estimates are shown as horizontal lines in \autoref{fig:cross-id-accuracy}
     for CDFS and \autoref{fig:elais-cross-id-accuracy} for ELAIS-S1.
 
-  \subsection{Application to ATLAS-CDFS}
+  \subsection{Application to ATLAS~CDFS}
 
     \begin{figure}
     \centering
@@ -939,9 +942,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     For the galaxy classification task, we report the balanced accuracy of
     each classification model and training set in \autoref{fig:ba} for SWIRE
     objects within 1~arcmin of (1) resolved radio components, and (2) all
-    radio components. These accuracies averaged across the four quadrants are
-    reported in \autoref{tab:average-accuracies}. We also report the balanced
-    accuracy of Radio Galaxy Zoo for comparison.
+    radio components. These accuracies, averaged across the four quadrants,
+    are reported in \autoref{tab:average-accuracies}. We also report the
+    balanced accuracy of Radio Galaxy Zoo for comparison.
 
     Classifiers trained on expert labels perform comparably to those trained
     on Radio Galaxy Zoo labels. Differences between accuracies across training
@@ -1146,39 +1149,41 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   release of ATLAS \citep{franzen15} and so classifiers trained on the Radio
   Galaxy Zoo labels may be less biased toward brighter sources compared to
   those trained on the expert labels. To test this hypothesis we tested each
-  classifier against test sets with an integrated flux cutoff. A SWIRE object
-  was only included in the test set for a given cutoff if it was located
-  within $1'$ of a radio component with an integrated flux above the cutoff.
-  The balanced accuracies for each classifier at each cutoff are shown in
+  classifier against test sets with a signal-to-noise ratio (SNR) cutoff. A
+  SWIRE object was only included in the test set for a given cutoff if it was
+  located within $1'$ of a radio component with a SNR above the cutoff. The
+  balanced accuracies for each classifier at each cutoff are shown in
   \autoref{fig:accuracies-flux}(a) and (b) and the distribution of test set
-  size for each cutoff is shown in \autoref{fig:accuracies-flux}(c). (c) shows
-  that ELAIS-S1 indeed has more faint objects than CDFS, with the flux cutoff
-  for which the two fields reach the same test set size ($\sim 0.7$~mJy)
-  indicated by the dashed vertical line on each plot. For CDFS, all
-  classifiers perform reasonably well across cutoffs, with performance
-  dropping as the size of the test set becomes small. For ELAIS-S1, logistic
-  regression and convolutional neural networks perform comparably across all
-  flux cutoffs, but random forests do not: while random forests trained on
-  Radio Galaxy Zoo labels perform comparably to other classifiers across all
-  flux cutoffs, random forests trained on expert labels show a considerable
-  drop in performance below the dashed line.
+  size for each cutoff is shown in \autoref{fig:accuracies-flux}(c).
+  \autoref{fig:accuracies-flux}(c) shows that ELAIS-S1 indeed has more faint
+  objects than CDFS, with the SNR for which the two fields reach the same test
+  set size (approximately $0.02$) indicated by the dashed vertical line on
+  each plot. For CDFS, all classifiers perform reasonably well across cutoffs,
+  with performance dropping as the size of the test set becomes small. For
+  ELAIS-S1, logistic regression and convolutional neural networks perform
+  comparably across all SNR cutoffs, but random forests do not: while random
+  forests trained on Radio Galaxy Zoo labels perform comparably to other
+  classifiers across all SNR cutoffs, random forests trained on expert labels
+  show a considerable drop in performance below the dashed line.
 
   \begin{figure}
     \centering
     \includegraphics[width=\columnwidth, clip,
                      trim={0 2cm 0 1cm}]{images/accuracies-flux-snr.pdf}
     \caption{(a) Balanced accuracies of classifiers trained and tested on CDFS
-      with different integrated flux cutoffs for the test set. A SWIRE object
-      is included in the test set if it is within $1'$ of a radio component
-      with greater integrated flux than the cutoff. Different coloured lines
+      with different signal-to-noise ratio (SNR) cutoffs for the test set. A
+      SWIRE object is included in the test set if it is within $1'$ of a radio
+      component with greater SNR than the cutoff. Different coloured lines
       indicate different classifier/training labels combinations, where LR is
       logistic regression, RF is random forests, CNN is convolutional neural
       networks, and Norris and RGZ are the expert and Radio Galaxy Zoo label
       sets respectively. Filled areas represent standard deviations across
       CDFS quadrants. (b) Balanced accuracies of classifiers trained on CDFS
       and tested on ELAIS-S1. (c) A cumulative distribution plot of SWIRE
-      objects associated with a radio object with more integrated flux than
-      the cutoff.}
+      objects associated with a radio object with greater SNR than the cutoff.
+      The grey dashed line shows the SNR level at which the number of SWIRE
+      objects above the cutoff is equal for CDFS and ELAIS-S1. This SNR level
+      is approximately $0.02$.}
     \label{fig:accuracies-flux}
   \end{figure}
 
