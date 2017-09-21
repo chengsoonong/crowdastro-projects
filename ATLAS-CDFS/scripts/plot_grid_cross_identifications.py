@@ -346,7 +346,7 @@ def plot(field='cdfs'):
                 handles[j] = plt.scatter(xs, ys, color=colours[j], marker=markers[j], zorder=2, edgecolor='k', linewidth=1)
             if k == 1:
                 plt.xlabel('Labels')
-            plt.ylabel('{}\nAccuracy (%)'.format(titlemap[set_name]))
+            plt.ylabel('{}\nAccuracy (per cent)'.format(titlemap[set_name]))
 
             ax.title.set_fontsize(16)
             ax.xaxis.label.set_fontsize(12)

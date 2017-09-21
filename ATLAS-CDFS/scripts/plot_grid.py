@@ -108,7 +108,7 @@ def plot_grid(field='cdfs'):
     colours = ['grey', 'magenta', 'blue', 'orange']
     markers = ['o', '^', 'x', 's']
     handles = {}
-    plt.figure(figsize=(5, 8))
+    plt.figure(figsize=(5, 5))
 
     accuracy_map = defaultdict(lambda: defaultdict(dict))  # For table output.
     output_sets = [
@@ -120,8 +120,29 @@ def plot_grid(field='cdfs'):
         output_sets.append(('Labels', [label_norris_accuracies, label_rgz_accuracies]))
     for j, (classifier_name, classifier_set) in enumerate(output_sets):
         for i, set_name in enumerate(norris_labelled_sets):
-            ax = plt.subplot(3, 1, 1 + i)
+            if 'compact' not in set_name:  # Skip compact.
+                ax = plt.subplot(2, 1, {'RGZ & Norris & resolved': 1, 'RGZ & Norris': 2}[set_name])
+                ax.set_ylim((80, 100))
+                ax.set_xlim((-0.5, 1.5))
+                ax.set_xticks([0, 1])#, 2])
+                ax.set_xticklabels(['Norris',
+                                    # 'RGZ N',
+                                    'RGZ',
+                                   ], rotation='horizontal')
+                if i == 2:
+                    plt.xlabel('Labels')
+                plt.ylabel('{}\nBalanced accuracy\n(per cent)'.format(titlemap[set_name]))
+
+                ax.title.set_fontsize(16)
+                ax.xaxis.label.set_fontsize(12)
+                ax.yaxis.label.set_fontsize(9)
+                for tick in ax.get_xticklabels() + ax.get_yticklabels():
+                    tick.set_fontsize(10)
+
+                ax.grid(which='major', axis='y', color='#EEEEEE')
             for k in range(4):
+                if 'compact' in set_name:
+                    continue
                 if j != 3:  # !Labels
                     ax.scatter([0 + (j - 1) / 5], classifier_set[0][set_name][k] * 100,
                                 color=colours[j], marker=markers[j], linewidth=1, edgecolor='k')
@@ -144,24 +165,6 @@ def plot_grid(field='cdfs'):
                     mean = numpy.mean(classifier_set[1][fullmap[set_name]]) * 100
                     stdev = numpy.std(classifier_set[1][fullmap[set_name]]) * 100
                 accuracy_map[labeller][classifier_name][titlemap[set_name]] = '${:.02f} \\pm {:.02f}$'.format(mean, stdev)
-            ax.set_ylim((80, 100))
-            ax.set_xlim((-0.5, 1.5))
-            ax.set_xticks([0, 1])#, 2])
-            ax.set_xticklabels(['Norris',
-                                # 'RGZ N',
-                                'RGZ',
-                               ], rotation='horizontal')
-            if i == 2:
-                plt.xlabel('Labels')
-            plt.ylabel('{}\nBalanced accuracy (%)'.format(titlemap[set_name]))
-
-            ax.title.set_fontsize(16)
-            ax.xaxis.label.set_fontsize(12)
-            ax.yaxis.label.set_fontsize(9)
-            for tick in ax.get_xticklabels() + ax.get_yticklabels():
-                tick.set_fontsize(10)
-
-            ax.grid(which='major', axis='y', color='#EEEEEE')
 
     # Assemble table.
     col_labeller = []
@@ -185,8 +188,8 @@ def plot_grid(field='cdfs'):
                                            "Mean `All' accuracy\\\\(per cent)"])
     out_table.write('../{}_accuracy_table.tex'.format(field), format='latex')
 
-    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + ['Labels'] if field == 'cdfs' else [], 'lower center', ncol=4, fontsize=10)
-    plt.subplots_adjust(bottom=0.15, hspace=0.25)
+    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + (['Labels'] if field == 'cdfs' else []), 'lower center', ncol=4, fontsize=10)
+    plt.subplots_adjust(bottom=0.2, hspace=0.25)
     plt.savefig('../images/{}_ba_grid.pdf'.format(field),
                 bbox_inches='tight', pad_inches=0)
     plt.savefig('../images/{}_ba_grid.png'.format(field),

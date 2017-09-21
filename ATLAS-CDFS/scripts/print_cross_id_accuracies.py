@@ -19,9 +19,9 @@ import pipeline
 
 def main():
     swire_names, swire_coords, _ = pipeline.generate_swire_features(overwrite=False)
-    swire_labels = pipeline.generate_swire_labels(swire_names, overwrite=False)
-    (_, atlas_test_sets), (_, swire_test_sets) = pipeline.generate_data_sets(swire_coords, overwrite=False)
-    cids = list(pipeline.cross_identify_all(swire_names, swire_coords, swire_test_sets, swire_labels[:, 0]))
+    swire_labels = pipeline.generate_swire_labels(swire_names, swire_coords, overwrite=False)
+    (_, atlas_test_sets), (_, swire_test_sets) = pipeline.generate_data_sets(swire_coords, swire_labels, overwrite=False)
+    cids = list(pipeline.cross_identify_all(swire_names, swire_coords, swire_labels, swire_test_sets, swire_labels[:, 0], field='cdfs'))
     table = astropy.io.ascii.read(pipeline.TABLE_PATH)
 
     atlas_to_swire_norris = {}

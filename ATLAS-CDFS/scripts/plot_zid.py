@@ -20,12 +20,12 @@ configure_plotting.configure()
 def plot(path, plot_atlas_hosts=False, v=None):
     fig = aplpy.FITSFigure(path, slices=[0, 1])
     if not v:
-        fig.show_grayscale(stretch='arcsinh')
+        fig.show_grayscale(stretch='arcsinh', invert=True)
     else:
-        fig.show_grayscale(stretch='arcsinh', vmin=v[0], vmax=v[1])
+        fig.show_grayscale(stretch='arcsinh', vmin=v[0], vmax=v[1], invert=True)
     if plot_atlas_hosts:
         table = astropy.io.ascii.read(
-            'J:/repos/crowdastro/data/ATLAS_RGZ_static_rgz_host_full.csv')
+            '/Users/alger/data/RGZ/dr1_weighted_old/static_rgz_host_full.csv')
         ras = table['SWIRE.ra']
         decs = table['SWIRE.dec']
         fig.show_markers(ras, decs, marker='x', s=200, c='red')
@@ -39,9 +39,14 @@ def plot_box_ATLAS():
     plt.gca().add_patch(rect)
 
 if __name__ == '__main__':
-    # plot('J:\\repos\\crowdastro\\data/cdfs/2x2/CI0077C1_radio.fits', plot_atlas_hosts=True)
+    # plot('/Users/alger/data/RGZ/cdfs/2x2/CI0077C1_radio.fits', plot_atlas_hosts=True)
     # plot("J:\\repos\\crowdastro-projects\\ATLAS-CDFS\\images\\FIRSTJ151227.2+454026_3.fits")
-    # plot("J:\\repos\\crowdastro-projects\\ATLAS-CDFS\\images\\FIRSTJ151227.2+454026_8.fits", v=(-5.472e-04, 3.887e-02))
+    # plot("/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/FIRSTJ151227.2+454026_8.fits", v=(-5.472e-04, 3.887e-02))
+    plt.subplots_adjust(left=0.2)
     plot("/Users/alger/data/RGZ/cdfs/2x2/CI2363_radio.fits")
     plot_box_ATLAS()
-    plt.show()
+    plt.savefig('/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/CI2363_fig.pdf')
+    # plot_box_FIRST()
+    # plt.savefig('/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/FIRSTJ151227_fig.pdf')
+    # plt.savefig('/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/CI0077C1_fig.pdf')
+    # plt.show()
