@@ -1101,6 +1101,20 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   sets derived from cross-identification catalogues. Future work could even
   combine multiple catalogues or physical priors to boost performance.
 
+  \autoref{fig:compact-ba} shows that when cross-identifying compact objects,
+  an approach of selecting the nearest SWIRE galaxy to the centre of a radio
+  source outperforms all other approaches, notably including Radio Galaxy Zoo.
+  This is because the host galaxies of compact objects directly coincide with
+  the centre of the radio source. This nearest-neighbours approach also has
+  access to information that the machine learning methods do not for the
+  galaxy classification task: that there is only one host galaxy per radio
+  source. The machine learning methods may identify multiple galaxies near the
+  centre of a radio object as host galaxies, while the nearest-neighbours
+  approach can identify a maximum of one. This result shows that for compact
+  objects, methods that do not use machine learning such as a
+  nearest-neighbours approach or likelihood ratio \citep{weston17} should be
+  preferred to machine learning methods.
+
   The accuracies of our trained cross-identification methods generally fall
   below the best possible accuracy attainable using our approach, indicated
   by the green lines in Figures \ref{fig:cross-id-accuracy} and
