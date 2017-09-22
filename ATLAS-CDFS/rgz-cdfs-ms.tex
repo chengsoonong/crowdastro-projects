@@ -67,7 +67,7 @@ $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
 % Abstract of the paper
 \begin{abstract}
   We consider the problem of determining the infrared host galaxies of radio
-  emissions detected in wide-area radio surveys. We propose a method for
+  sources detected in wide-area radio surveys. We propose a method for
   reducing the cross identification task to binary classification, a standard
   machine learning task. Binary classification is well understood and well
   supported by machine learning software. We test our methods on the radio
@@ -105,25 +105,23 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \citep[ASKAP;][]{johnston07} and Apertif \citep{verheijen08} will conduct
   increasingly wide, deep, and high-resolution radio surveys, producing large
   amounts of data. The Evolutionary Map of the Universe survey
-  \citep[EMU;][]{norris11} using ASKAP and the WODAN survey
-  \citep{rottgering11} using Apertif are expected to detect over 100 million
-  radio components between them, compared to the 2.5 million radio components
-  already known \citep{banfield15}.
+  \citep[EMU;][]{norris11} using ASKAP is expected to detect over 70 million
+  radio components, compared to the 2.5 million radio components already known
+  \citep{banfield15}.
 
   An important part of processing this data is cross-identifying observed
   radio emission regions with observations of their host galaxy in surveys at
   other wavelengths. Radio host cross-identification can be a difficult task.
   \autoref{fig1} illustrates the different radio emission regions that a host
   galaxy may have. Compact components are unresolved or point-like regions of
-  radio emission while compact radio sources are one compact component usually
-  consistent with the host galaxy location. Extended radio sources consist of
-  resolved single components and/or multiple or resolved or unresolved
-  components. Fanaroff \& Riley type I \citep[FRI; ][]{Fanaroff1974} and
-  Fanaroff \& Riley type II (FRII) are examples of resolved radio sources.
-  Radio emissions from radio-loud active galactic nuclei (AGN) may be
-  complicated structures not clearly related to the host galaxy. These are
-  often composed of multiple, separate components. This type of AGN are
-  expected to dominate approximately 30 per cent of sources detected by EMU
+  radio emission separated from the host while compact radio sources have one
+  compact component coincident with the host galaxy location. Extended radio
+  sources consist of resolved single components and/or multiple or resolved or
+  unresolved components. Fanaroff \& Riley type I \citep[FRI;
+  ][]{Fanaroff1974} and Fanaroff \& Riley type II (FRII) radio galaxies are
+  examples of resolved radio sources. These are often composed of multiple,
+  separate components. This type of active galactic nucleus (AGN) is expected
+  to dominate approximately 30 per cent of sources detected by EMU
   \citep{norris11}. Small surveys of a few thousand sources such as the
   Australia Telescope Large Area Survey
   \citep[ATLAS;][]{norris06,middelberg08} can be cross-identified manually,
@@ -165,11 +163,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   with a 69 and 71 per cent success rate in the two ATLAS fields, but does not
   currently handle extended multiple component radio sources
   \citep{norris17unexpected}. A hope is that machine learning techniques can
-  be developed for cross-identification problem. Machine learning describes a
-  class of methods that learn approximations to functions, and so if the
-  cross-identification task can be cast as a machine learning problem, data
-  sets such as that provided by Radio Galaxy Zoo can be generalised to work on
-  data not seen by the original cross-identifiers.
+  be developed for the cross-identification problem. Machine learning
+  describes a class of methods that learn approximations to functions, and so
+  if the cross-identification task can be cast as a machine learning problem,
+  data sets such as that provided by Radio Galaxy Zoo can be generalised to
+  work on data not seen by the original cross-identifiers.
 
   We have developed a machine learning approach for radio host
   cross-identification. This approach casts the cross-identification task as
@@ -368,7 +366,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     locating the host galaxy within the associated radio and infrared images.
     This is formalised as an object localisation problem: given a radio image
     and an infrared image centred on a radio component, locate the host galaxy
-    of the radio component.
+    of the source containing the radio component.
 
     A common approach to object localisation is to estimate the probability
     that each location in the image is coincident with the desired object. In
@@ -408,12 +406,12 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     for modelling $f$. In this paper we apply three different models: logistic
     regression, random forests, and convolutional neural networks.
 
-    We can improve upon this cross-identification method by filtering out
-    compact radio sources, which are much easier to cross-identify --- the
-    nearest SWIRE object may be identified as the host galaxy, or a more
-    complex method such as likelihood ratios may be applied
-    \citep[see][]{weston17}. A full cross-identification pipeline making use
-    of this alongside a binary classifier is shown in \autoref{fig:flowchart}.
+    We can improve upon this method by filtering out compact radio sources,
+    which are much easier to cross-identify --- the nearest SWIRE object may
+    be identified as the host galaxy, or a more complex method such as
+    likelihood ratios may be applied \citep[see][]{weston17}. A full
+    cross-identification pipeline making use of this alongside a binary
+    classifier is shown in \autoref{fig:flowchart}.
 
   \subsection{Limitations of our approach}
     \label{sec:limitations}
@@ -471,7 +469,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     the entirety of the source. If the radius contains multiple sources then
     there will also be multiple hosts in our input images (which breaks our
     assumption that there is only one); even a perfect classifier can only
-    accurately cross-identify \emph{one} host in an image with multiple. An
+    accurately cross-identify \emph{one} host in an image with multiple: an
     example of a radio source that breaks the assumption in this way is shown in
     \autoref{fig:broken-isolation}. If the radius does not contain the whole
     source, then we are missing radio information useful for finding the host
@@ -526,8 +524,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \item the flux of the host in \unit{3.6}{\micro\meter};
       \item the radial distance between the candidate host and the nearest
         radio component in the ATLAS catalogue; and
-      \item a 32 $\times$ 32 pixel image from ATLAS, centred on the candidate
-        host.
+      \item a 32 $\times$ 32 pixel image from ATLAS (approximately $18''
+        \times 18''$), centred on the candidate host.
     \end{itemize}
 
     The infrared fluxes provide insight into the properties of the host galaxy
