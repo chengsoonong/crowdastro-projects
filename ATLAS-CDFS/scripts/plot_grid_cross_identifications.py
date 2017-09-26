@@ -66,6 +66,10 @@ def plot(field='cdfs'):
     (_, atlas_test_sets), (_, swire_test_sets) = pipeline.generate_data_sets(swire_coords, swire_labels, overwrite=False, field=field)
     cids = list(pipeline.cross_identify_all(swire_names, swire_coords, swire_labels, swire_test_sets, swire_labels[:, 0], field=field))
 
+    # Also load the nearest-neighbour cross-identifications.
+    cids += [pipeline.CrossIdentifications.from_hdf5(
+        pipeline.WORKING_DIR + 'NearestNeighbour_{}_cross_ids_{}_RGZ & Norris.h5'.format(field, q)) for q in range(4 if field == 'cdfs' else 1)]
+
     swire_tree = scipy.spatial.KDTree(swire_coords[swire_test_sets[:, 0, 0]])
 
     failed_coords = []
@@ -135,9 +139,9 @@ def plot(field='cdfs'):
                 # Nearest SWIRE...
                 dist, nearest = swire_tree.query(coord)
                 if dist > 5 / 60 / 60:
-                    logging.warning('No SWIRE match found for Middelberg cross-identification {}'.format(line[0]))
-                    logging.warning('Nearest is {} ({:.01f} arcsec)'.format(numpy.array(swire_names)[swire_test_sets[:, 0, 0]][nearest], dist * 60 * 60))
-                    logging.warning('Middelberg: {}'.format(swire_coord_re.group()))
+                    logging.debug('No SWIRE match found for Middelberg cross-identification {}'.format(line[0]))
+                    logging.debug('Nearest is {} ({:.01f} arcsec)'.format(numpy.array(swire_names)[swire_test_sets[:, 0, 0]][nearest], dist * 60 * 60))
+                    logging.debug('Middelberg: {}'.format(swire_coord_re.group()))
                     failed_coords.append(coord)
                     continue
                 name = numpy.array(swire_names)[swire_test_sets[:, 0, 0]][nearest]
@@ -150,7 +154,7 @@ def plot(field='cdfs'):
         if cid.labeller == 'norris' and 'Norris' not in cid.dataset_name:
             continue
 
-        if cid.classifier in {'Groundtruth', 'Random'}:
+        if cid.classifier in {'Groundtruth', 'Random', 'NearestNeighbour'}:
             # Deal with these later as they are special.
             continue
 
@@ -194,7 +198,7 @@ def plot(field='cdfs'):
                 swire_predictor = atlas_to_swire_predictor[atlas_name]
                 n_correct += swire_middelberg == swire_predictor
                 n_total += 1
-            print('Compact: {:.02%}'.format(n_compact / (n_total + n_compact)))
+            # print('Compact: {:.02%}'.format(n_compact / (n_total + n_compact)))
         if 'Norris' in cid.dataset_name and cid.labeller == 'rgz':
             labeller = 'RGZ N'
         elif cid.labeller == 'rgz':
@@ -203,10 +207,10 @@ def plot(field='cdfs'):
             labeller = 'Norris'
         labeller_classifier_to_accuracies[labeller, cid.classifier, titlemap[cid.dataset_name]].append(n_correct / n_total)
 
-    # Groundtruth and random classifiers exist only for the RGZ & Norris set, but we want to test on all subsets.
+    # Groundtruth, random, and NN classifiers exist only for the RGZ & Norris set, but we want to test on all subsets.
     # This section duplicates the classifiers and evaluates them on all subsets.
     for cid in cids:
-        if cid.classifier not in {'Groundtruth', 'Random'}:
+        if cid.classifier not in {'Groundtruth', 'Random', 'NearestNeighbour'}:
             continue
 
         for dataset_name in ['RGZ & Norris', 'RGZ & Norris & resolved', 'RGZ & Norris & compact']:
@@ -254,6 +258,7 @@ def plot(field='cdfs'):
                 labeller = 'RGZ'
             else:
                 labeller = 'Norris'
+            print(labeller, cid.classifier, titlemap[dataset_name], n_correct, n_total, n_correct / n_total)
             labeller_classifier_to_accuracies[labeller, cid.classifier, titlemap[dataset_name]].append(n_correct / n_total)
 
     if field == 'cdfs':
@@ -315,8 +320,8 @@ def plot(field='cdfs'):
     print('Random: {} +- {}'.format(random_acc, random_stdev))
 
     plt.figure(figsize=(5, 6))
-    colours = ['grey', 'magenta', 'blue', 'orange']
-    markers = ['o', '^', 'x', 's']
+    colours = ['grey', 'magenta', 'blue', 'orange', 'grey']
+    markers = ['o', '^', 'x', 's', '*']
     handles = {}
     print('Data set & Labeller & Classifier & Mean accuracy (\\%)\\\\')
     for k, set_name in enumerate(norris_labelled_sets[1:]):
@@ -324,16 +329,27 @@ def plot(field='cdfs'):
         ax = plt.subplot(2, 1, 1 + k)
         print('{} & Norris & Perfect & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, best_acc[titlemap[set_name]], best_stdev[titlemap[set_name]]))
         print('{} & Norris & Random & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, random_acc[titlemap[set_name]], random_stdev[titlemap[set_name]]))
-        plt.hlines(best_acc[titlemap[set_name]], -0.5, 2.5, linestyles='solid', colors='green', linewidth=1, zorder=1, alpha=0.7)
-        plt.hlines(best_acc[titlemap[set_name]] + best_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='green', linewidth=1, zorder=1, alpha=0.7)
-        plt.hlines(best_acc[titlemap[set_name]] - best_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='green', linewidth=1, zorder=1, alpha=0.7)
+        plt.hlines(best_acc[titlemap[set_name]], -0.5, 2.5, linestyles='solid', colors='green', linewidth=1, zorder=1)
+        plt.fill_between([-1, 2],
+            [best_acc[titlemap[set_name]] - best_stdev[titlemap[set_name]]] * 2,
+            [best_acc[titlemap[set_name]] + best_stdev[titlemap[set_name]]] * 2,
+            linestyle='dashed', color='green', alpha=0.2, linewidth=1, zorder=1)
         plt.hlines(random_acc[titlemap[set_name]], -0.5, 2.5, linestyles='solid', colors='blue', linewidth=1, zorder=1, alpha=0.7)
-        plt.hlines(random_acc[titlemap[set_name]] + random_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='blue', linewidth=1, zorder=1, alpha=0.7)
-        plt.hlines(random_acc[titlemap[set_name]] - random_stdev[titlemap[set_name]], -0.5, 2.5, linestyles='dashed', colors='blue', linewidth=1, zorder=1, alpha=0.7)
+        plt.fill_between([-1, 2],
+            [random_acc[titlemap[set_name]] - random_stdev[titlemap[set_name]]] * 2,
+            [random_acc[titlemap[set_name]] + random_stdev[titlemap[set_name]]] * 2,
+            linestyle='dashed', color='blue', alpha=0.2, linewidth=1, zorder=1)
         for i, labeller in enumerate(['Norris', 'RGZ']):
-            for j, classifier in enumerate(['LogisticRegression', 'CNN', 'RandomForestClassifier'] + (['Label'] if field == 'cdfs' else [])):
+            for j, classifier in enumerate(['LogisticRegression', 'CNN', 'RandomForestClassifier'] + (['Label', 'NearestNeighbour'] if field == 'cdfs' else ['NearestNeighbour'])):
                 ys = numpy.array(labeller_classifier_to_accuracies[labeller, classifier, titlemap[set_name]]) * 100
-                x_offset = i + (j - 1) / 5 if labeller == 'Norris' or field == 'elais' else i + (j - 1.5) / 6
+                if classifier != 'NearestNeighbour':
+                    x_offset = i + (j - 1) / 5 if labeller == 'Norris' or field == 'elais' else i + (j - 1.5) / 6
+                else:
+                    # NN
+                    plt.axhline(numpy.mean(ys), color='grey', linestyle='-.', linewidth=1)
+                    if field == 'cdfs':
+                        plt.fill_between([-1, 2], [numpy.mean(ys) - numpy.std(ys)] * 2, [numpy.mean(ys) + numpy.std(ys)] * 2, color='grey', linestyle='-.', alpha=0.2, linewidth=1)
+                    x_offset = 2
                 xs = [x_offset] * len(ys)
                 print('{} & {} & {} & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, labeller, classifier, numpy.mean(ys), numpy.std(ys)))
                 ax.set_xlim((-0.5, 1.5))
