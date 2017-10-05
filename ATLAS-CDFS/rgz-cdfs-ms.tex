@@ -82,13 +82,13 @@ $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
   cross-identifications is comparable to the predictor trained on expert
   cross-identifications, demonstrating the value of crowdsourced training
   data. In addition to cross validation performance on CDFS, we demonstrate
-  that our method also generalizes to ELAIS-S1. Cross-identification
-  performance with our method is limited by a lack of radio morphology
-  information as our method for reducing cross identification to binary
-  classification require that radio sources are isolated from other sources.
-  This assumption breaks down particularly with high surface brightness
-  sensitivity surveys. We suggest that source identifications and radio
-  morphology information would resolve this problem.
+  that our method also works for ELAIS-S1. Cross-identification performance
+  with our method is limited by a lack of radio morphology information as our
+  method for reducing cross identification to binary classification require
+  that radio sources are isolated from other sources. This assumption breaks
+  down particularly with high surface brightness sensitivity surveys. We
+  suggest that source identifications and radio morphology information would
+  resolve this problem.
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -107,24 +107,24 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   increasingly wide, deep, and high-resolution radio surveys, producing large
   amounts of data. The Evolutionary Map of the Universe survey
   \citep[EMU;][]{norris11} using ASKAP is expected to detect over 70 million
-  radio components, compared to the 2.5 million radio components already known
-  \citep{banfield15}.
+  radio components, compared to the 2.5 million radio components currently
+  known \citep{banfield15}.
 
   An important part of processing this data is cross-identifying observed
   radio emission regions with observations of their host galaxy in surveys at
-  other wavelengths. Radio host cross-identification can be a difficult task.
-  \autoref{fig1} illustrates the different radio emission regions that a host
-  galaxy may have. Compact components are unresolved or point-like regions of
-  radio emission separated from the host while compact radio sources have one
-  compact component coincident with the host galaxy location. Extended radio
-  sources consist of resolved single components and/or multiple or resolved or
-  unresolved components. Fanaroff \& Riley type I \citep[FRI;
-  ][]{Fanaroff1974} and Fanaroff \& Riley type II (FRII) radio galaxies are
-  examples of resolved radio sources. These are often composed of multiple,
-  separate components. This type of active galactic nucleus (AGN) is expected
-  to dominate approximately 30 per cent of sources detected by EMU
-  \citep{norris11}. Small surveys of a few thousand sources such as the
-  Australia Telescope Large Area Survey
+  other wavelengths. Cross-identification of the host to an extended radio
+  souce can be a difficult task. \autoref{fig1} illustrates the different
+  radio emission regions that a host galaxy may have. Compact components are
+  unresolved or point-like regions of radio emission separated from the host
+  while compact radio sources have one compact component coincident with the
+  host galaxy location. Extended radio sources consist of resolved single
+  components and/or multiple or resolved or unresolved components. Fanaroff \&
+  Riley type I \citep[FRI; ][]{Fanaroff1974} and Fanaroff \& Riley type II
+  (FRII) radio galaxies are examples of resolved radio sources. These are
+  often composed of multiple, separate components. This type of active
+  galactic nucleus (AGN) is expected to constitute approximately 30 per cent
+  of sources detected by EMU \citep{norris11}. Small surveys of a few thousand
+  sources such as the Australia Telescope Large Area Survey
   \citep[ATLAS;][]{norris06,middelberg08} can be cross-identified manually,
   but this is impractical for larger surveys.
 
@@ -170,20 +170,19 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   data sets such as that provided by Radio Galaxy Zoo can be generalised to
   work on data not seen by the original cross-identifiers.
 
-  We have developed a machine learning approach for radio host
-  cross-identification. This approach casts the cross-identification task as
-  binary classification, which is very well-understood in machine learning
-  literature and can be solved using a variety of standard, well-known
-  techniques. We have trained these methods on expert cross-identifications
-  and cross-identifications from Radio Galaxy Zoo. In \autoref{sec:data} we
-  describe the data we use to train our methods. In \autoref{sec:method} we
-  discuss how we cast the radio host galaxy cross-identification problem as a
-  machine learning problem. In \autoref{sec:results} we present results of
-  applying our method to ATLAS observations of the \emph{Chandra} Deep Field -
-  South (CDFS) and in \autoref{sec:elais} we apply the cross-identifiers
-  trained on CDFS to the ESO Large Area ISO Survey - South 1 (ELAIS-S1) field.
-  Our data and code are available at
-  \url{https://radiogalaxyzoo.github.io/atlas-xid}.
+  Our machine learning approach for the cross-identification of hosts of radio
+  sources casts this task as binary classification, which is very
+  well-understood in machine learning literature and can be solved using a
+  variety of standard, well-known techniques. We have trained these methods on
+  expert cross-identifications and cross-identifications from Radio Galaxy
+  Zoo. In \autoref{sec:data} we describe the data we use to train our methods.
+  In \autoref{sec:method} we discuss how we cast the radio host galaxy
+  cross-identification problem as a machine learning problem. In
+  \autoref{sec:results} we present results of applying our method to ATLAS
+  observations of the \emph{Chandra} Deep Field - South (CDFS) and in
+  \autoref{sec:elais} we apply the cross-identifiers trained on CDFS to the
+  ESO Large Area ISO Survey - South 1 (ELAIS-S1) field. Our data and code are
+  available at \url{https://radiogalaxyzoo.github.io/atlas-xid}.
 
   \begin{figure}
   \begin{center}
@@ -222,16 +221,17 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{table}
 
     ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
-    cover the entire southern sky and is expected to detect approximately 70
-    million new radio sources. EMU will be conducted at the same depth and
-    resolution as ATLAS, so methods developed for processing ATLAS data are
-    expected to work for EMU. ATLAS is a wide-area radio survey of the CDFS
-    and ELAIS-S1 fields at 1.4~GHz with a sensitivity of 14 and
-    \unit{17}{\micro\jansky} on CDFS and ELAIS-S1 respectively. CDFS covers
-    3.6~deg$^2$ and contains 3034 radio components above 5$\sigma$. ELAIS-S1
-    covers 2.7~deg$^2$ and contains 2084 radio components above 5$\sigma$
-    \citep{franzen15}. \autoref{tab:atlas-cids} summarises catalogues that
-    cross-identify radio components in ATLAS with host galaxies in SWIRE.
+    cover the entire southern sky south of $+30$ deg and is expected to
+    detect approximately 70 million new radio sources. EMU will be conducted
+    at the same depth and resolution as ATLAS, so methods developed for
+    processing ATLAS data are expected to work for EMU. ATLAS is a wide-area
+    radio survey of the CDFS and ELAIS-S1 fields at 1.4~GHz with a sensitivity
+    of 14 and \unit{17}{\micro\jansky} on CDFS and ELAIS-S1 respectively. CDFS
+    covers 3.6~deg$^2$ and contains 3034 radio components above 5$\sigma$.
+    ELAIS-S1 covers 2.7~deg$^2$ and contains 2084 radio components above
+    5$\sigma$ \citep{franzen15}. \autoref{tab:atlas-cids} summarises
+    catalogues that cross-identify radio components in ATLAS with host
+    galaxies in SWIRE.
 
   \subsection{SWIRE}\label{sec:swire}
 
@@ -289,7 +289,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     Radio Galaxy Zoo first data release catalogue. This preliminary catalogue
     includes all radio components in CDFS regardless of how often volunteers
     agree on the correct cross-identification. The final catalogue will only
-    include cross-identifications for which over 75 per cent of volunteers
+    include cross-identifications for which over 65 per cent of volunteers
     agree.
 
   \section{Method}\label{sec:method}
