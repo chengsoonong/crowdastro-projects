@@ -198,7 +198,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   We use data from the citizen science project Radio Galaxy Zoo
   \citep{banfield15}, the Australia Telescope Large Area Survey
   \citep[ATLAS;][]{norris06,franzen15}, and the \emph{Spitzer} Wide-area Infrared
-  Extragalactic survey \citep[SWIRE;][]{lonsdale03swire, surace05swire}.
+  Extragalactic survey \citep[SWIRE;][]{lonsdale03swire, surace05swire}. Radio Galaxy Zoo also includes data from the Faint Images of the
+    Radio Sky at Twenty-Centimeters \citep[FIRST;][]{white97first}. However, here we focus only on Radio Galaxy Zoo data from ATLAS and SWIRE.
 
   \subsection{ATLAS}\label{sec:atlas}
     \begin{table}
@@ -231,7 +232,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     ELAIS-S1 covers 2.7~deg$^2$ and contains 2084 radio components above
     5$\sigma$ \citep{franzen15}. \autoref{tab:atlas-cids} summarises
     catalogues that cross-identify radio components in ATLAS with host
-    galaxies in SWIRE.
+    galaxies in SWIRE. In our work, we train our methods on CDFS and test these methods on both CDFS and ELAIS-S1.  This ensures our methods are transferable to different areas of the sky observed by the same telescope as will be the case for EMU.
 
   \subsection{SWIRE}\label{sec:swire}
 
@@ -246,35 +247,16 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \subsection{Radio Galaxy Zoo}\label{sec:rgz}
 
     Radio Galaxy Zoo asks volunteers to cross-identify radio components with
-    their infrared host galaxies. There are a total of 177~461 radio
-    components in Radio Galaxy Zoo, sourced from ATLAS and Faint Images of the
-    Radio Sky at Twenty-Centimeters \citep[FIRST;][]{white97first}. These
-    components are cross-identified to host galaxies detected in SWIRE and by
-    the \emph{Wide-Field Infrared Survey Explorer}
-    \citep[WISE;][]{wright10wise}, respectively. Volunteers are presented with
-    a random radio image centred on a radio component, and a corresponding
-    infrared image centred on the same location. The radio image may contain
-    multiple radio components. For ATLAS the radio and infrared images shown
-    to volunteers are $2 \times 2$~arcmin, and for FIRST the images are $3
-    \times 3$~arcmin. Classification of these images is a two-step process.
-    First, volunteers select which radio components are part of the same radio
-    source. Second, volunteers associate each radio source with a host galaxy
-    visible in the infrared image. A more detailed description can be found in
-    \citet{banfield15} and a full description of how the final catalogue of
-    cross-identifications is generated can be found in \citet{wong17}.
+    their infrared host galaxies. There are a total of 2460 radio
+    components in Radio Galaxy Zoo sourced from ATLAS. These
+    components are cross-identified by Radio Galaxy Zoo participants to host galaxies detected in SWIRE. 
+    A more detailed description can be found in
+    \citet{banfield15} and a full description of how the Radio Galaxy Zoo Data Release 1 catalogue used in this work\footnote{The Radio Galaxy Zoo Data Release 1 catalogue will only
+    include cross-identifications for which over 75 per cent of volunteers
+    agree. However, we use data from all volunteers.} 
+    is generated can be found in \citet{wong17}.
 
-    In this paper we focus on the Radio Galaxy Zoo cross-identifications of
-    the ATLAS~CDFS and SWIRE surveys. The two main reasons are: (1) ATLAS is
-    the pilot study for EMU where automated methods like ours will be used;
-    and (2) ATLAS is composed of two fields, so we can train methods on one
-    field (CDFS) and test these methods on the other field (ELAIS-S1) to
-    ensure that our methods are transferable to different areas of the sky
-    observed by the same telescope.
-
-    The ATLAS~CDFS radio components that appear in Radio Galaxy Zoo are based
-    on the third data release of ATLAS by \citet{franzen15}. This release
-    provides a catalogue of radio components (both resolved and unresolved)
-    for each ATLAS field. Each radio component was fit with a two-dimensional
+     The ATLAS~CDFS radio components that appear in Radio Galaxy Zoo are both unresolved and resolved radio components from the third data release of ATLAS by \citet{franzen15}.  Each radio component was fit with a two-dimensional
     Gaussian. Depending on the residual of the fit, more than one Gaussian may
     be fit to one region of radio emission.  Each of these Gaussian fits is
     listed as a radio component in the ATLAS catalogue. The brightest radio
@@ -350,50 +332,30 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     We focus on the problem of host galaxy cross-identification without
     reference to radio morphology. Given a radio component, we want to find
-    the corresponding host galaxy as a citizen scientist would using Radio
-    Galaxy Zoo. The input is thus a radio image and an infrared image with a
-    given radius. We choose a radius of 1~arcmin to match the size of the
+    the corresponding host galaxy as a human would. The input is a $2' \times 2'$ radio image and an infrared image with a
+    radius of 1~arcmin to match the size of the
     images used by Radio Galaxy Zoo. We make the assumption that each radio
-    image represents a single, complex extended source. This is not the case
-    in general and a radio image may contain many different radio sources with
-    unique host galaxies. If we had access to radio morphology information, we
-    could use this to isolate relevant components and hence more accurately
-    cross-identify sources, but this is beyond the scope of this paper. We
-    also note that this assumption will bias our results against radio
-    emission that extends beyond the 1~arcmin cutout size. However, these are
-    uncommon in ATLAS with 9 radio sources identified by \citet{norris06} as
-    having components further than 1~arcmin apart (and of these, only 5 are in
-    Radio Galaxy Zoo). The radio cross-identification task then amounts to
-    locating the host galaxy within the associated radio and infrared images.
-    This is formalised as an object localisation problem: given a radio image
+    image represents a single, complex extended source. Limitations to our approach are discussed in Section \ref{sec:limitations}.
+    %However, these are
+    %uncommon in ATLAS with 9 radio sources identified by \citet{norris06} as
+    %having components further than 1~arcmin apart (and of these, only 5 are in
+    %Radio Galaxy Zoo). 
+    The radio cross-identification task is then formalised as an object localisation problem: given a radio image
     and an infrared image centred on a radio component, locate the host galaxy
     of the source containing the radio component.
 
     A common approach to object localisation is to estimate the probability
-    that each location in the image is coincident with the desired object. In
-    practice this amounts to taking fixed-size windows of the image centred on
-    each pixel and estimating the probability that each window is centred on
-    the object. The location associated with the highest probability window is
-    then assumed to be the location of the object. Applying this to radio host
-    cross-identification, we consider windows of a radio/infrared image and
-    estimate the probability that each window is centred on the host galaxy.
-    This approach is illustrated in \autoref{fig:windows}. In computer vision
-    a sliding window is commonly used: every possible patch in the image is
-    considered \citep[e.g.][]{rowley1996facedetection}.
-
-    This task can be made more efficient if we have a prior on the location of
-    the object we are localising. For our prior, we assume that the host galaxy
-    is always visible in the infrared and thus we only need consider windows
-    centred on infrared sources. This assumption usually holds, except for a
-    rare class of infrared-faint radio sources. \citet{norris06} found 22 such
-    radio sources in their sample of 784 bright ATLAS components in CDFS. This
-    leads us to a binary classification task: given an infrared source, compute
+    that each location in an image is coincident with the desired object, called a sliding window method \citep[e.g.][]{rowley1996facedetection}. 
+    Fixed-size windows of the image are taken centred on each pixel and we estimate the probability that the pixel is the location of the object. 
+    This task can be made more efficient if we assume that the host galaxy
+    is always detected in the infrared. We then only consider windows
+    centred on infrared sources, which we call `candidate host galaxies'. This assumption usually holds, except for a
+    rare class of infrared-faint radio sources\footnote{\citet{norris06} found 22 such
+    radio sources in their sample of 784 bright ATLAS components in CDFS.}.
+    This is a binary classification task where given a candidate host galaxy we compute
     the probability that it is a host galaxy. To find the host galaxy given a
-    radio source, classify each galaxy within 1~arcmin of the source and select
-    the galaxy with the highest probability of being a host galaxy. This is a
-    good formulation as binary classification is a very common problem in
-    machine learning and there are many different methods readily available to
-    solve it.
+    radio source,  we classify each galaxy within 1~arcmin of the source and select
+    the galaxy with the highest probability of being a host galaxy. Our approach is illustrated in \autoref{fig:windows}.
 
     Solving the radio cross-identification task amounts to modelling a function
     $f$ from infrared sources $\mathcal{X}$ to the probability that an infrared
