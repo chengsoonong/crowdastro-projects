@@ -64,6 +64,7 @@ import matplotlib.pyplot as plt
 import numpy
 from scipy.spatial import KDTree
 import scipy.special
+import scipy.stats
 import seaborn
 from sklearn.base import ClassifierMixin as Classifier
 from sklearn.ensemble import RandomForestClassifier
@@ -80,6 +81,9 @@ SWIRE_ELAIS_PATH = '/Users/alger/data/SWIRE/SWIRE3_ELAIS_cat_IRAC24_21Dec05.tbl'
 TABLE_PATH = '/Users/alger/data/Crowdastro/one-table-to-rule-them-all.tbl'
 WORKING_DIR = '/Users/alger/data/Crowdastro/atlas-ml/'
 IMAGE_SIZE = 1024
+
+# Spread of half-Gaussian prediction falloff (in degrees).
+FALLOFF_SIGMA = 1 / 120
 
 # Sensitivities of Spitzer (in µJy).
 SPITZER_SENSITIVITIES = {
@@ -1392,7 +1396,11 @@ def cross_identify_all(
         all_cids = []
         for q in range(4):
             if field == 'cdfs':
-                probabilities = norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]]
+                probabilities = norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]].astype(float)
+                # Noise the probabilities *ever* so slightly to fix non-determinism.
+                probabilities += numpy.random.normal(
+                    size=probabilities.shape,
+                    scale=0.1) ** 2
                 labeller = 'norris'
             else:
                 probabilities = swire_labels[swire_sets[:, 0, 0], 0].astype(float)
@@ -1546,6 +1554,13 @@ def cross_identify(
                 log.warning('No nearby SWIRE found for {}'.format(radio_name))
                 no_matches.add(radio_name)
                 continue
+            # Multiply predictions by a Gaussian of location distances.
+            scoords = astropy.coordinates.SkyCoord(ra=coords[0], dec=coords[1], unit='deg')
+            nearby_scoords = astropy.coordinates.SkyCoord(ra=swire_coords[swire_set][nearby, 0], dec=swire_coords[swire_set][nearby, 1], unit='deg')
+            separations = numpy.array(scoords.separation(nearby_scoords).deg)
+            gaussians = scipy.stats.norm.pdf(separations, scale=FALLOFF_SIGMA)
+            assert gaussians.shape == nearby_predictions.shape
+            nearby_predictions *= gaussians
             argmax = numpy.argmax(nearby_predictions)  # index of nearby_predictions
             ir_name = swire_names[swire_set[nearby[argmax]]]
         radio_names_.append(radio_name)

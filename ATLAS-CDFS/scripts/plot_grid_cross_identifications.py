@@ -232,6 +232,8 @@ def plot(field='cdfs'):
                     swire_norris = atlas_to_swire_expert[name]
                     swire_predictor = atlas_to_swire_predictor[name]
                     n_correct += swire_norris == swire_predictor
+                    if cid.classifier == 'NearestNeighbour' and swire_norris != swire_predictor:
+                        print('big ol\' failure:', name)
                     n_total += 1
             else:
                 atlas_indices = atlas_test_sets[:, 0, 0].nonzero()[0]
