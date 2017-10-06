@@ -66,29 +66,20 @@ $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
 
 % Abstract of the paper
 \begin{abstract}
-  We consider the problem of determining the infrared host galaxies of radio
-  sources detected in wide-area radio surveys. We propose a method for
-  reducing the cross identification task to binary classification, a standard
-  machine learning task. Binary classification is well understood and well
-  supported by machine learning software. We test our methods on the radio
-  sources detected in the $1.4$~GHz Australian Telescope Large Area Survey
-  (ATLAS) observations of the \emph{Chandra} Deep Field - South (CDFS) and the
-  ESO Large Area ISO Survey - South 1 (ELAIS-S1) fields, and cross identify
-  them with \emph{Spitzer} Wide-area Infrared Extragalactic survey (SWIRE). We
-  compared two sets of training data: expert cross-identifications of CDFS
-  from the initial ATLAS data release and crowdsourced cross-identifications
-  of CDFS from Radio Galaxy Zoo. Our empirical results show that the
-  cross-identification accuracy of the predictor trained on Radio Galaxy Zoo
-  cross-identifications is comparable to the predictor trained on expert
-  cross-identifications, demonstrating the value of crowdsourced training
-  data. In addition to cross validation performance on CDFS, we demonstrate
-  that our method also works for ELAIS-S1. Cross-identification performance
-  with our method is limited by a lack of radio morphology information as our
-  method for reducing cross identification to binary classification require
-  that radio sources are isolated from other sources. This assumption breaks
-  down particularly with high surface brightness sensitivity surveys. We
-  suggest that source identifications and radio morphology information would
-  resolve this problem.
+  Radio source host galaxy cross-identification is the problem of determining
+  the host galaxies of radio sources detected in wide-area radio surveys. We
+  propose a method for reducing the cross identification task to the standard
+  machine learning task of binary classification. We apply our methods to the
+  $1.4$~GHz Australian Telescope Large Area Survey (ATLAS) observations of the
+  \emph{Chandra} Deep Field South (CDFS) and the ESO Large Area ISO Survey
+  South 1 (ELAIS-S1) fields, cross-identifying them with the \emph{Spitzer}
+  Wide-area Infrared Extragalactic survey (SWIRE). We compare two sets of
+  training data: expert cross-identifications of CDFS from the initial ATLAS
+  data release and crowdsourced cross-identifications of CDFS from Radio
+  Galaxy Zoo. Our results show that the cross-identification accuracy of the
+  predictor trained on Radio Galaxy Zoo cross-identifications is comparable to
+  the predictor trained on expert cross-identifications, demonstrating the
+  value of crowdsourced training data.
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -118,13 +109,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   unresolved or point-like regions of radio emission separated from the host
   while compact radio sources have one compact component coincident with the
   host galaxy location. Extended radio sources consist of resolved single
-  components and/or multiple or resolved or unresolved components. Fanaroff \&
-  Riley type I \citep[FRI; ][]{Fanaroff1974} and Fanaroff \& Riley type II
-  (FRII) radio galaxies are examples of resolved radio sources. These are
-  often composed of multiple, separate components. This type of active
-  galactic nucleus (AGN) is expected to constitute approximately 30 per cent
-  of sources detected by EMU \citep{norris11}. Small surveys of a few thousand
-  sources such as the Australia Telescope Large Area Survey
+  components or multiple (resolved or unresolved) components. The two most
+  common classes of radio-loud sources, Fanaroff \& Riley type I and type II
+  \citep{Fanaroff1974}, are examples of resolved radio sources. Small surveys
+  of a few thousand sources such as the Australia Telescope Large Area Survey
   \citep[ATLAS;][]{norris06,middelberg08} can be cross-identified manually,
   but this is impractical for larger surveys.
 
@@ -132,15 +120,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   cross-identify radio components (both resolved and unresolved; see
   \autoref{fig1}) with their host galaxy. This is the premise of Radio Galaxy
   Zoo\footnote{\url{https://radio.galaxyzoo.org}} \citep{banfield15}, a
-  citizen science project hosted on the highly successful Zooniverse platform
-  \citep{lintott08}. Volunteers are shown images of the radio sky, and are
-  asked to identify the radio components in each image that correspond to the
-  same host galaxy. They are then asked to cross-identify the radio source
-  with its host galaxy in a corresponding infrared image. A more thorough
+  citizen science project hosted on the Zooniverse platform \citep{lintott08}.
+  Volunteers are shown radio and infrared images and are asked to
+  cross-identify radio sources with the corresponding infrared host galaxy. An
   explanation of the project can be found in \citet{banfield15}. The first
   data release for Radio Galaxy Zoo will provide a large dataset of over
   75~000 radio host cross-identifications and radio source morphologies
-  \citep{wong17}. While this is a much larger number of visual
+  (Wong et al., in prep). While this is a much larger number of visual
   cross-identifications than have been made by experts \citep[e.g.,
   ][]{Taylor2007,Gendre2008,Grant2010,norris06,middelberg08} it is still far
   short of the millions of radio sources expected to be detected in upcoming
@@ -161,9 +147,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \citet{weston17} developed a modification of the likelihood ratio method of
   cross-identification \citep{richter75likelihood} for application to ATLAS
   and EMU. This method does well on single (resolved or compact) radio sources
-  with a 69 and 71 per cent success rate in the two ATLAS fields, but does not
-  currently handle extended multiple component radio sources
-  \citep{norris17unexpected}. A hope is that machine learning techniques can
+  with approximately 70 per cent success rate in the ATLAS fields, but does
+  not currently handle extended multiple component radio sources
+  \citep{norris17unexpected}. The hope is that machine learning techniques can
   be developed for the cross-identification problem. Machine learning
   describes a class of methods that learn approximations to functions, and so
   if the cross-identification task can be cast as a machine learning problem,
@@ -215,8 +201,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \citet{norris06} & Manual & 784 & 0\\
         \citet{middelberg08} & Manual & 0 & 1366\\
         \citet{fan15} & Bayesian models & 784 & 0\\
-        \citet{wong17} & Crowdsourcing & 2460 & 0 \\
         \citet{weston17} & Likelihood ratio & 3078 & 2113\\
+        Wong et al. (in prep) & Crowdsourcing & 2460 & 0 \\
         \hline
       \end{tabular}
     \end{table}
@@ -254,7 +240,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \citet{banfield15} and a full description of how the Radio Galaxy Zoo Data Release 1 catalogue used in this work\footnote{The Radio Galaxy Zoo Data Release 1 catalogue will only
     include cross-identifications for which over 75 per cent of volunteers
     agree. However, we use data from all volunteers.} 
-    is generated can be found in \citet{wong17}.
+    is generated can be found in Wong et al. (in prep).
 
      The ATLAS~CDFS radio components that appear in Radio Galaxy Zoo are both unresolved and resolved radio components from the third data release of ATLAS by \citet{franzen15}.  Each radio component was fit with a two-dimensional
     Gaussian. Depending on the residual of the fit, more than one Gaussian may
@@ -1357,12 +1343,13 @@ averaged over quadrants.
       is included in the `Expert' column. For CDFS, the cross-identification
       given by the Radio Galaxy Zoo consensus is included in the `RGZ' column,
       along with the corresponding consensus levels for the radio morphology
-      and host cross-identification tasks \citep[see][for details on how
-      consensus is calculated]{wong17}. Low radio consensus indicates that the
-      component has multiple nearby components (and thus is more impacted by
-      our assumption that the source is isolated), and low infrared consensus
-      indicates that the host galaxy is unclear in the SWIRE image (possibly
-      due to multiple nearby candidate host galaxies). Full table electronic.}
+      and host cross-identification tasks (see Wong et al., in prep, for
+      details on how consensus is calculated). Low radio consensus indicates
+      that the component has multiple nearby components (and thus is more
+      impacted by our assumption that the source is isolated), and low
+      infrared consensus indicates that the host galaxy is unclear in the
+      SWIRE image (possibly due to multiple nearby candidate host galaxies).
+      Full table electronic.}
     \begin{tabular}{ccccc}
       \hline
       ATLAS & RA & Dec & Expert & RGZ \\\hline
@@ -1424,12 +1411,11 @@ averaged over quadrants.
     \item {\em Column 5} -- RGZ radio consensus. The percentage agreement on
       the radio source according to Radio Galaxy Zoo. Lower numbers tend to
       indicate more complex sources. For more information on how consensus is
-      generated, see \citet{wong17}.
+      generated, see Wong et al. (in prep).
     \item {\em Column 6} -- RGZ IR consensus. The percentage agreement on
       the host galaxy cross-identification according to Radio Galaxy Zoo.
       Lower numbers tend to indicate sources that are harder to
-      cross-identify. For more information on how consensus is generated, see
-      \citet{wong17}.
+      cross-identify. For more information on how consensus is generated, see Wong et al. (in prep).
     \item {\em Columns 7 -- 25} -- $C(A\ /\ B)$. The predicted
       cross-identification according to classifier $C$ trained on subset $B$
       of label set $A$. `LR' indicates logistic regression, `RF' indicates
