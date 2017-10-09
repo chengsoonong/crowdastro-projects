@@ -27,6 +27,9 @@
 \newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
 
+\let\subsectionautorefname\sectionautorefname
+\let\subsubsectionautorefname\sectionautorefname
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%% TITLE PAGE %%%%%%%%%%%%%%%%%%%
@@ -156,18 +159,17 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   data sets such as that provided by Radio Galaxy Zoo can be generalised to
   work on data not seen by the original cross-identifiers.
 
-  Our machine learning approach for the cross-identification of hosts of radio
-  sources casts this task as binary classification, which is very
-  well-understood in machine learning literature and can be solved using a
-  variety of standard, well-known techniques. We have trained these methods on
-  expert cross-identifications and cross-identifications from Radio Galaxy
-  Zoo. In \autoref{sec:data} we describe the data we use to train our methods.
-  In \autoref{sec:method} we discuss how we cast the radio host galaxy
-  cross-identification problem as a machine learning problem. In
+  We apply an approach from computer vision literature to the
+  cross-identification task. This approach casts cross-identification as the
+  standard machine learning problem of binary classification. We have trained
+  our methods on expert cross-identifications and cross-identifications from
+  Radio Galaxy Zoo. In \autoref{sec:data} we describe the data we use to train
+  our methods. In \autoref{sec:method} we discuss how we cast the radio host
+  galaxy cross-identification problem as a machine learning problem. In
   \autoref{sec:results} we present results of applying our method to ATLAS
-  observations of the \emph{Chandra} Deep Field - South (CDFS) and in
+  observations of the \emph{Chandra} Deep Field South (CDFS) and in
   \autoref{sec:elais} we apply the cross-identifiers trained on CDFS to the
-  ESO Large Area ISO Survey - South 1 (ELAIS-S1) field. Our data and code are
+  ESO Large Area ISO Survey South 1 (ELAIS-S1) field. Our data and code are
   available at \url{https://radiogalaxyzoo.github.io/atlas-xid}.
 
   \begin{figure}
@@ -413,25 +415,25 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     how accurate our binary classification may be.
 
     The key problem with this approach is our assumption that the radio sky
-    within 1~arcmin radius contains only one, complete radio source. The problem
-    is two-fold: this radius may contain multiple sources, or it may not contain
-    the entirety of the source. If the radius contains multiple sources then
-    there will also be multiple hosts in our input images (which breaks our
-    assumption that there is only one); even a perfect classifier can only
-    accurately cross-identify \emph{one} host in an image with multiple: an
-    example of a radio source that breaks the assumption in this way is shown in
-    \autoref{fig:broken-isolation}. If the radius does not contain the whole
-    source, then we are missing radio information useful for finding the host
-    galaxy. This is a difficult problem even for non-automated methods as radio
-    sources can be extremely wide --- for example, Radio Galaxy Zoo found a
-    radio giant that spanned over three different images presented to volunteers
-    and the full source was only cross-identified by the efforts of citizen
-    scientists \citep{banfield15}. An example of a radio image where part of the
-    radio source is outside the search radius is shown in
-    \autoref{fig:broken-contains}. The problems are in opposition to each other:
-    To reduce the number of sources in an input image, we can reduce the image
-    radius, but this increases the chance that we will miss relevant radio
-    source information, and vice versa.
+    within 1~arcmin radius contains only one, complete radio source. The
+    problem is two-fold: this radius may contain multiple sources, or it may
+    not contain the entirety of the source. If the radius contains multiple
+    sources then there will also be multiple hosts in our input images (which
+    breaks our assumption that there is only one); even a perfect classifier
+    can only accurately cross-identify \emph{one} host in an image with
+    multiple hosts: an example of a radio source that breaks the assumption in
+    this way is shown in \autoref{fig:broken-isolation}. If the radius does
+    not contain the whole source, then we are missing radio information useful
+    for finding the host galaxy. This is a difficult problem even for
+    non-automated methods as radio sources can be extremely wide --- for
+    example, Radio Galaxy Zoo found a radio giant that spanned over three
+    different images presented to volunteers and the full source was only
+    cross-identified by the efforts of citizen scientists \citep{banfield15}.
+    An example of a radio image where part of the radio source is outside the
+    search radius is shown in \autoref{fig:broken-contains}. The problems are
+    in opposition to each other: To reduce the number of sources in an input
+    image, we can reduce the image radius, but this increases the chance that
+    we will miss relevant radio source information, and vice versa.
 
     Our assumptions impose an upper bound on how well we can cross-identify
     radio sources. We estimate this upper bound in \autoref{sec:relation}.
@@ -448,9 +450,9 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \subsection{Feature vector representation of infrared sources}
   \label{vector-representation-of-infrared-sources}
 
-    Binary classification methods require that the inputs to be classified are
-    represented by an array of real values called \emph{feature vectors}. We
-    thus need to choose a feature vector representation of our candidate host
+    Classification methods require that the inputs to be classified are
+    represented by an array of real values called feature vectors. We thus
+    need to choose a feature vector representation of our candidate host
     galaxies.
 
     Infrared observations of the CDFS field are taken from SWIRE. We use the
@@ -466,8 +468,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     We represent each candidate host as 1034 real-valued features. For a given
     candidate host, these features are:
     \begin{itemize}
-      \item the logarithm of the ratio of fluxes of the candidate host in the
-        four IRAC wavelengths;
+      \item the 6 logarithms of the ratios of fluxes of the candidate
+        host in the four IRAC wavelengths;
       \item the stellarity index of the host in both 3.6 and
         \unit{4.5}{\micro\meter};
       \item the flux of the host in \unit{3.6}{\micro\meter};
@@ -488,17 +490,17 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     The stellarity index represents how likely the object is to be a star
     rather than a galaxy.
 
-    We use the pixels of each $32 \times 32$ radio image as
-    independent features for all classifiers, with the convolutional neural
-    network (Section \ref{sec:convolutional-neural-networks}) automatically
-    extracting features that are relevant.
-    There has been limited research on extracting features from radio images.
-    \citet{proctor06} describes hand-selected features for radio doubles in
-    FIRST, and \citet{aniyan17cnn} and \citet{lukic17compact} make use of deep
-    convolutional neural networks which automatically extract features as part
-    of classification. A more comprehensive search of neural network architectures
-    for processing radio images is beyond the scope of this initial study,
-    and is a good avenue for potential improvement in our pipeline.
+    We use the pixels of each $32 \times 32$ radio image as independent
+    features for all classifiers, with the convolutional neural network
+    (Section \ref{sec:convolutional-neural-networks}) automatically extracting
+    features that are relevant. There has been limited research on extracting
+    features from radio images. \citet{proctor06} describes hand-selected
+    features for radio doubles in FIRST, and \citet{aniyan17cnn} and
+    Lukic et al. (in prep) make use of deep convolutional neural networks
+    which automatically extract features as part of classification. A more
+    comprehensive investigation of neural network architectures for processing
+    radio images is beyond the scope of this initial study, and is a good
+    avenue for potential improvement in our pipeline.
 
   \subsection{Classifiers}\label{sec:classifiers}
 
@@ -526,16 +528,17 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \subsubsection{Convolutional neural networks}
     \label{sec:convolutional-neural-networks}
 
-      Convolutional neural networks (CNN) are a biologically-inspired prediction
-      model for prediction with image inputs. A number of filters are convolved
-      with an input image to produce output images called \emph{feature maps}.
-      These feature maps can then be convolved again with other filters on
-      subsequent layers, producing a network of convolutions. The whole network
-      is differentiable with respect to the values of the filters and the
-      filters can be learned using gradient methods. The final layer of the
-      network is logistic regression, with the convolved outputs as input
-      features. For more detail, see \citet[subsection II.A][]{lecun98}. We use
-      \textsc{Keras} \citep{chollet15keras} to implement our CNN.
+      Convolutional neural networks (CNN) are a biologically-inspired
+      prediction model for prediction with image inputs. The input image is
+      convolved with a number of filters to produce output images called
+      feature maps. These feature maps can then be convolved again with other
+      filters on subsequent layers, producing a network of convolutions. The
+      whole network is differentiable with respect to the values of the
+      filters and the filters can be learned using gradient methods. The final
+      layer of the network is logistic regression, with the convolved outputs
+      as input features. For more detail, see \citet[subsection
+      II.A][]{lecun98}. We use \textsc{Keras} \citep{chollet15keras} to
+      implement our CNN.
 
       \begin{figure}
         \includegraphics[width=\linewidth]{images/cnn_model_graph}
@@ -548,11 +551,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \label{fig:cnn}
       \end{figure}
 
-      CNNs have recently produced good results on large image-based datasets in
-      astronomy \citep[e.g.][]{dieleman15cnn, lukic17compact}. We employ only a
-      simple CNN model in this paper as a proof of concept that CNNs may be used
-      for class probability prediction on radio images. The model architecture
-      we use is shown in \autoref{fig:cnn}.
+      CNNs have recently produced good results on large image-based datasets
+      in astronomy \citep[e.g.][; Lukic et al. in prep]{dieleman15cnn}. We
+      employ only a simple CNN model in this paper as a proof of concept that
+      CNNs may be used for class probability prediction on radio images. The
+      model architecture we use is shown in \autoref{fig:cnn}.
 
     \subsubsection{Random Forests}
     \label{sec:random-forests}
@@ -576,16 +579,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \delta = -28^\circ{}06'00''$. The quadrants were chosen such that
         there are similar numbers of radio sources in each
         quadrant.\label{fig:quadrants}}
-    \end{figure}
-
-    \begin{figure}
-      \centering
-      \includegraphics[width=\columnwidth]{images/flux_histogram.pdf}
-      \caption{Distribution of integrated flux for radio components
-        cross-identified in ATLAS DR1 (Norris) and by Radio Galaxy Zoo (RGZ).
-        Radio Galaxy Zoo has cross-identified considerably more faint
-        objects.}
-      \label{fig:distribution-fluxes}
     \end{figure}
 
     \begin{figure}
@@ -661,7 +654,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \right)^2}\,\,\,\,,
     \end{equation}%
     where \(S_{\text{int}}\) is the integrated flux density and
-    \(S_{\text{peak}}\) is the peak flux density \citep{franzen15}.
+    \(S_{\text{peak}}\) is the peak flux density
+    \citep[following][]{franzen15}.
 
     Candidate hosts were selected from the SWIRE catalogue. For a given subset
     of radio components, all SWIRE objects within 1~arcmin of all radio
@@ -732,19 +726,20 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     the `cross-identification task'. Results from both tasks are useful, as we
     need good performance on the cross-identification task to make scientific
     use of any cross-identifications, and performance on the galaxy
-    classification task is a robust and easily-compared way to compare
-    different classifiers without the limitations of our reduction. We
-    therefore report two sets of accuracies: balanced accuracy for the galaxy
+    classification task is a robust and simple to compare different
+    classifiers without the limitations of our formulation. We therefore
+    report two sets of accuracies: balanced accuracy for the galaxy
     classification task, and accuracy for the cross-identification task.
     Balanced accuracy is a useful metric for evaluating classifiers on
     classification tasks with highly imbalanced classes like we have here, and
     we find that the balanced accuracy on the galaxy classification task is
     correlated with the accuracy on the cross-identification task. This
-    correlation is shown in \autoref{fig:gct-to-xid}. Fitting a line of best
-    fit with \texttt{scipy} gives $R^2 = 0.85$ for logistic regression and
-    $R^2 = 0.64$ for random forests.
+    correlation is shown in
+    \autoref{fig:gct-to-xid}. Fitting a line of best fit with \texttt{scipy}
+    gives $R^2 = 0.85$ for logistic regression and $R^2 = 0.64$ for random
+    forests.
 
-    The reduction from cross-identification to binary classification also
+    The formulation of cross-identification as binary classification also
     introduces limitations as described in \autoref{sec:limitations}, which
     impose upper limits on performance. Additionally, the classification
     pipeline described in \autoref{fig:flowchart} only uses the binary
@@ -1069,7 +1064,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   neural networks. There is a huge variety of ways to build a convolutional
   neural network, and we have only investigated one architecture. For an
   exploration of different convolutional neural network architectures
-  applied to radio astronomy, see \citet{lukic17compact}. Convolutional
+  applied to radio astronomy, see Lukic et al. (in prep). Convolutional
   neural networks generally require more training data than other machine
   learning models and we have only trained our networks on a few hundred
   sources. We would thus expect performance on the classification task to
