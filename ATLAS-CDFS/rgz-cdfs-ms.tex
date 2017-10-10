@@ -240,11 +240,11 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     Radio Galaxy Zoo asks volunteers to cross-identify radio components with
     their infrared host galaxies. There are a total of 2460 radio
     components in Radio Galaxy Zoo sourced from ATLAS. These
-    components are cross-identified by Radio Galaxy Zoo participants to host galaxies detected in SWIRE. 
+    components are cross-identified by Radio Galaxy Zoo participants to host galaxies detected in SWIRE.
     A more detailed description can be found in
     \citet{banfield15} and a full description of how the Radio Galaxy Zoo Data Release 1 catalogue used in this work\footnote{The Radio Galaxy Zoo Data Release 1 catalogue will only
     include cross-identifications for which over 75 per cent of volunteers
-    agree. However, we use data from all volunteers.} 
+    agree. However, we use data from all volunteers.}
     is generated can be found in Wong et al. (in prep).
 
      The ATLAS~CDFS radio components that appear in Radio Galaxy Zoo are both unresolved and resolved radio components from the third data release of ATLAS by \citet{franzen15}.  Each radio component was fit with a two-dimensional
@@ -534,7 +534,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     We use the pixels of each $32 \times 32$ radio image as independent
     features for all classifiers, with the convolutional neural network
-    (Section \ref{sec:convolutional-neural-networks}) automatically extracting
+    automatically extracting
     features that are relevant. There has been limited research on extracting
     features from radio images. \citet{proctor06} describes hand-selected
     features for radio doubles in FIRST, and \citet{aniyan17cnn} and
@@ -548,69 +548,24 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     We use three different classifiers as our binary classification model:
     logistic regression, convolutional neural networks, and random forests.
+    These classifiers cover three different approaches to machine learning.
+    Logistic regression is a probabilistic binary classification model.
+    It is linear in the
+    feature space and outputs the probability that the input has a positive
+    label~\citep[Chap. 4]{bishop06ml}.
+    Convolutional neural networks (CNN) are a biologically-inspired
+    prediction model for prediction with image inputs.
+    They have recently produced good results on large image-based datasets
+    in astronomy \citep[e.g.][; Lukic et al. in prep]{dieleman15cnn}.
+    Random forests are an ensemble of decision
+    trees~\citep{breiman01random-forest}. It considers multiple subsamples
+    of the training set, where each bootstrap subsample is sampled with
+    replacement from the training set. To classify a new data
+    point, the random forest takes the weighted average of all
+    classifications produced by each decision tree.
 
-    \subsubsection{Logistic Regression}
-    \label{sec:logistic-regression}
-      Logistic regression is a binary classification model. It is linear in the
-      feature space and outputs the probability that the input has a positive
-      label. The model is \citep{bishop06ml}:
-
-      \begin{equation}
-          f(\vec x) = \sigma(\vec w \cdot \vec x + b) \,\,\,\,,
-      \end{equation}
-      where $\vec w \in \mathbb{R}^D$ is a weight vector,
-      $b \in \mathbb{R}$ is a bias term, $\vec x \in \mathbb{R}^D$ is the
-      feature representation of a candidate host, and $\sigma$ is the
-      logistic sigmoid function: \begin{equation}
-          \sigma(a) = (1 + \mathrm{exp}(-a))^{-1}\,\,\,\,.
-      \end{equation}%
-      The logistic regression model is fully differentiable, and the weight
-      vector $\vec w$ can therefore be learned using gradient methods.
-
-    \subsubsection{Convolutional neural networks}
-    \label{sec:convolutional-neural-networks}
-
-      Convolutional neural networks (CNN) are a biologically-inspired
-      prediction model for prediction with image inputs. The input image is
-      convolved with a number of filters to produce output images called
-      feature maps. These feature maps can then be convolved again with other
-      filters on subsequent layers, producing a network of convolutions. The
-      whole network is differentiable with respect to the values of the
-      filters and the filters can be learned using gradient methods. The final
-      layer of the network is logistic regression, with the convolved outputs
-      as input features. For more detail, see \citet[subsection
-      II.A][]{lecun98}. We use \textsc{Keras} \citep{chollet15keras} to
-      implement our CNN.
-
-      \begin{figure}
-        \includegraphics[width=\linewidth]{images/cnn_model_graph}
-        \caption{Architecture of our CNN. The concatenate layer flattens the
-          output of the previous layer and adds the 10 features derived from
-          the candidate host in SWIRE, i.e. the flux ratios, stellarity
-          indices, and distance. The dropout layer randomly sets $25\%$ of its
-          inputs to zero during training to prevent overfitting. Diagram based
-          on \url{ https://github.com/dnouri/nolearn}.}
-        \label{fig:cnn}
-      \end{figure}
-
-      CNNs have recently produced good results on large image-based datasets
-      in astronomy \citep[e.g.][; Lukic et al. in prep]{dieleman15cnn}. We
-      employ only a simple CNN model in this paper as a proof of concept that
-      CNNs may be used for class probability prediction on radio images. The
-      model architecture we use is shown in \autoref{fig:cnn}.
-
-    \subsubsection{Random Forests}
-    \label{sec:random-forests}
-
-      Random forests are an ensemble of decision
-      trees~\citep{breiman01random-forest}. It considers multiple subsamples
-      of the training set, where each bootstrap subsample is sampled with
-      replacement from the training set. For each subsample a decision tree
-      classifier is constructed by repeatedly making axis-parallel splits
-      based on individual features. In a random forest the split decision is
-      taken based on a random subset of features. To classify a new data
-      point, the random forest takes the weighted average of all
-      classifications produced by each decision tree.
+    Further details and background of these models are available in the
+    supplement\footnote{\url{https://radiogalaxyzoo.github.io/atlas-xid/}}.
 
   \subsection{Labels}\label{sec:labels}
     \begin{figure}
@@ -1192,7 +1147,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   incorporated into existing methods.
 
 \section{Acknowledgements}
-  
+
   This publication has been made possible by the participation of more than
   11~000 volunteers in the Radio Galaxy Zoo project. Their contributions are
   individually acknowledged at \url{http://rgzauthors.galaxyzoo.org}. Parts of
