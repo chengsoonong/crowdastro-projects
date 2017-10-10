@@ -1397,17 +1397,19 @@ def cross_identify_all(
         for q in range(4):
             if field == 'cdfs':
                 probabilities = norris_labels[swire_sets[:, SET_NAMES['RGZ'], q]].astype(float)
-                # Noise the probabilities *ever* so slightly to fix non-determinism.
-                probabilities += numpy.random.normal(
-                    size=probabilities.shape,
-                    scale=0.1) ** 2
+                # # Noise the probabilities *ever* so slightly to fix non-determinism.
+                # # This isn't needed with the Gaussian multiplier.
+                # probabilities += numpy.random.normal(
+                #     size=probabilities.shape,
+                #     scale=0.1) ** 2
                 labeller = 'norris'
             else:
                 probabilities = swire_labels[swire_sets[:, 0, 0], 0].astype(float)
-                # Noise the probabilities *ever* so slightly to fix non-determinism.
-                probabilities += numpy.random.normal(
-                    size=probabilities.shape,
-                    scale=0.1) ** 2
+                # # Noise the probabilities *ever* so slightly to fix non-determinism.
+                # # This isn't needed with the Gaussian multiplier.
+                # probabilities += numpy.random.normal(
+                #     size=probabilities.shape,
+                #     scale=0.1) ** 2
                 labeller = 'middelberg'
             labels = probabilities > 0.5
             predictions = Predictions(
