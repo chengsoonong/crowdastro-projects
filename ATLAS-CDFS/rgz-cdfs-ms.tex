@@ -673,7 +673,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       training data to artificially restrict their accuracies. Colour shows
       the density of points on the plot estimated by a Gaussian kernel density
       estimate. The solid lines indicate the best linear fit; these fits have
-      $R^2 = \mathbf{??}$ for logistic regression and $R^2 = \mathbf{??}$ for random
+      $R^2 = 0.92$ for logistic regression and $R^2 = 0.86$ for random
       forests. We did not include convolutional neural networks in this test,
       as training them is very computationally expensive. These results
       exclude classifiers witih balanced accuracies less than 51 per cent, as
@@ -685,7 +685,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     report two sets of accuracies: balanced accuracy for the galaxy
     classification task and accuracy for the cross-identification task. These accuracy measures are correlated and we show this correlation in
     \autoref{fig:gct-to-xid}. Fitting a line of best fit with \texttt{scipy}
-    gives $R^2 = \mathbf{??}$ for logistic regression and $R^2 = \mathbf{??}$ for random
+    gives $R^2 = 0.92$ for logistic regression and $R^2 = 0.86$ for random
     forests.
 
     The formulation of cross-identification as binary classification also
@@ -737,7 +737,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         set $L$, with models and label sets abbreviated as in
         \autoref{fig:ba}. `RGZ' indicates the performance of the Radio Galaxy
         Zoo catalogue against the expert labels, and `NN' indicates the
-        performance of identifying the nearest SWIRE object to an ATLAS object
+        performance of identifying the nearest-neighbour method, where the nearest SWIRE object to an ATLAS object is identified
         as a host galaxy. Radio Galaxy Zoo-trained predictors are coloured
         red, and expert-trained are coloured blue. Shapes of points correspond
         to the classification models in \autoref{fig:ba}. Note that these
@@ -758,8 +758,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         labels. This represents the maximum attainable cross-identification accuracy
         under our assumptions. The lower horizontal line indicates the average
         accuracy of 25 random classifiers, and hence represents the minimum accuracy
-        we would expect to attain. The surrounding dashed lines indicate the
-        standard deviation across CDFS quadrants and classifiers.
+        we would expect to attain. The middle, dashed horizontal line shows the accuracy of nearest neighbours. The shaded areas surrounding the horizontal lines indicate the standard deviation across CDFS quadrants and classifiers.
         \label{fig:cross-id-accuracy}}
     \end{figure}
 
@@ -812,7 +811,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     sets, with very little variation in accuracy between expert-trained and
     Radio Galaxy Zoo-trained logistic regression. Random forests perform well
     when trained on expert labels, but, unlike in the galaxy classification
-    task, perform poorly when trained on Radio Galaxy Zoo labels. The high
+    task, perform comparatively poorly when trained on Radio Galaxy Zoo labels. The high
     spread of accuracies associated with expert-trained random forests in the
     galaxy classification task is not reflected in the accuracies of the
     cross-identification task. All methods trained on Radio Galaxy Zoo labels outperform Radio Galaxy Zoo.
@@ -889,7 +888,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       task on the ELAIS-S1 field. Markers and axes are as in \autoref{fig:ba}.
       The classifiers in \autoref{fig:cross-id-accuracy} were applied to the
       whole ELAIS-S1 field, and performance was measured against ground truth
-      labels from~\citet{middelberg08}.
+      labels from~\citet{middelberg08}. The estimated best possible performance is nearly 100 per cent.
       \label{fig:elais-cross-id-accuracy}}
   \end{figure}
 
@@ -909,7 +908,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   Cross-identification results from ELAIS-S1 are similar to those for CDFS,
   showing that classifiers trained on CDFS perform reasonably well on
-  ELAIS-S1. One interesting exception is that random forests trained on expert
+  ELAIS-S1. However, nearest neighbours outperforms most methods on ELAIS-S1.
+  This is likely because there is a much higher percentage of compact objects in ELAIS-S1 than in CDFS. The maximum achievable accuracy we have estimated for ELAIS-S1 is very close to 100 per cent, so a very accurate binary classifier could outperform nearest neighbours.
+
+  One interesting difference between the ATLAS fields is that random forests trained on expert
   labels perform well on CDFS but poorly on ELAIS-S1. This is not the case for
   logistic regression or convolutional neural networks trained on expert
   labels, nor is it the case for random forests trained on Radio Galaxy Zoo.
