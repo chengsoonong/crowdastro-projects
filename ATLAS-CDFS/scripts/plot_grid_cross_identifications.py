@@ -233,7 +233,7 @@ def plot(field='cdfs'):
                     swire_predictor = atlas_to_swire_predictor[name]
                     n_correct += swire_norris == swire_predictor
                     if cid.classifier == 'NearestNeighbour' and swire_norris != swire_predictor:
-                        print('big ol\' failure:', name)
+                        pass
                     n_total += 1
             else:
                 atlas_indices = atlas_test_sets[:, 0, 0].nonzero()[0]
@@ -373,6 +373,30 @@ def plot(field='cdfs'):
                 tick.set_fontsize(10)
 
             ax.grid(which='major', axis='y', color='#EEEEEE')
+
+    # Print the table.
+    print('\\hline')
+    print('Labeller & Classifier & Mean `Resolved\' & Mean `All\'\\')
+    print('&& accuracy (per cent) & accuracy (per cent)\\')
+    print('\\hline')
+    for labeller in ['Norris', 'RGZ']:
+        for classifier in ['CNN', 'LogisticRegression', 'RandomForestClassifier', 'Groundtruth', 'Random', 'Label', 'NearestNeighbour']:
+            if labeller == 'RGZ' and classifier in {'Groundtruth', 'Random', 'NearestNeighbour'}:
+                continue
+
+            if labeller == 'Norris' and classifier == 'Label':
+                continue
+
+            print('{} & {} & ${:.1f} \\pm {:.1f}$ & ${:.1f} \\pm {:.1f}$'.format(
+                labeller, classifier,
+                numpy.array(
+                    labeller_classifier_to_accuracies[labeller, classifier, 'Resolved']).mean() * 100,
+                numpy.array(
+                    labeller_classifier_to_accuracies[labeller, classifier, 'Resolved']).std() * 100,
+                numpy.array(
+                    labeller_classifier_to_accuracies[labeller, classifier, 'All']).mean() * 100,
+                numpy.array(
+                    labeller_classifier_to_accuracies[labeller, classifier, 'All']).std() * 100))
 
     plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + (['Label'] if field == 'cdfs' else []), 'lower center', ncol=4, fontsize=10)
     plt.subplots_adjust(bottom=0.15, hspace=0.25)

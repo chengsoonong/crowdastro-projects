@@ -268,19 +268,18 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   \section{Method}\label{sec:method}
     \begin{figure}
       \centering
-      \includegraphics[width=\columnwidth]{images/elais_0093C1_with_boxes.pdf}
+      \includegraphics[width=\columnwidth]{images/fig2-jkb.png}
       \caption{An example of localising the host galaxy of a radio source using
         our method. This image is a radio image from ATLAS and is centred on
         $\alpha = 00^\text{h}33^\text{m}06.36^\text{s}, \delta =
         -43^\circ{}10'30.1''$. Boxes represent $32 \times 32$ pixel windows
-        centred on various locations in the image. The corresponding image
-        patches from each window are shown beneath. The image patch of each
-        window represents the location the window is centred on. The
-        probabilities of each patch coinciding with the host galaxy would then
-        be estimated by a classification model. The probabilities shown are
-        for illustration only. In this example, the centre window of the image
-        would be chosen as the location of the host galaxy, as the window
-        centred on it has the highest probability.}
+        centred on various locations in the image. The image contained in each
+        window is used to represent the location that the window is centred
+        on. The probabilities of each patch coinciding with the host galaxy
+        would then be estimated by a classification model. The probabilities
+        shown are for illustration only. In this example, the centre window of
+        the image would be chosen as the location of the host galaxy, as the
+        window centred on it has the highest probability.}
       \label{fig:windows}
     \end{figure}
 
@@ -657,9 +656,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     beam}^{-1}$ for the third data release used by Radio Galaxy Zoo
     \citep{franzen15}. The expert labels may therefore disagree with labels
     from Radio Galaxy Zoo even if they are both plausible. The difference in
-    flux distributions between the expert and Radio Galaxy Zoo
-    cross-identified sources is shown in \autoref{fig:distribution-fluxes} and
-    the difference in training set size at different flux cutoffs is shown in
+    training set size at different flux cutoffs is shown in
     \autoref{fig:distribution-cutoffs}. We train and test our classifiers on
     infrared objects within a 1~arcmin radius of an ATLAS radio object.
 
@@ -1274,21 +1271,21 @@ averaged over quadrants.
     accuracy with our cross-identification method.}
     \label{tab:cross-id-accuracies}
   \begin{tabular}{llcc}
-  \hline
-  Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
-   & & accuracy (per cent) & accuracy (per cent)\\
-  \hline
-  Norris & CNN & $61.1 \pm 15.1$ & $93.0 \pm 1.5$\\
-   & LR & $66.5 \pm 6.9$ & $92.8 \pm 1.5$\\
-   & RF & $67.2 \pm 5.9$ & $92.4 \pm 1.2$\\
-   & Perfect & $92.1 \pm 1.5$ & $96.7 \pm 1.8$\\
-   & Random & $4.7 \pm 3.9$ & $79.7 \pm 5.4$\\
-   \\
-  RGZ & CNN & $41.3 \pm 4.9$ & $86.4 \pm 2.7$\\
-   & LR & $60.0 \pm 11.5$ & $92.6 \pm 1.9$\\
-   & RF & $57.0 \pm 6.1$ & $87.1 \pm 2.6$\\
-   & Labels & $56.7 \pm 5.9$ & $90.5 \pm 2.6$\\
-   \hline
+    \hline
+    Labeller & Classifier & Mean `Resolved' & Mean `All'\\
+    && accuracy (per cent) & accuracy (per cent)\\
+    \hline
+      NN & --- & $75.7 \pm 7.9$ & $93.4 \pm 0.8$\\
+      Random & --- & $22.3 \pm 9.2$ & $83.2 \pm 4.7$\\
+      Norris & CNN & $74.3 \pm 12.3$ & $94.8 \pm 1.1$\\
+       & LR & $76.0 \pm 3.2$ & $94.0 \pm 1.6$\\
+       & RF & $81.3 \pm 3.7$ & $94.4 \pm 2.0$\\
+       & Perfect & $99.0 \pm 1.8$ & $98.1 \pm 1.7$\\
+      RGZ & CNN & $68.1 \pm 9.2$ & $92.2 \pm 0.8$\\
+       & LR & $74.5 \pm 5.1$ & $94.2 \pm 1.3$\\
+       & RF & $69.6 \pm 10.5$ & $94.1 \pm 2.2$\\
+       & Labels & $56.7 \pm 5.9$ & $90.5 \pm 2.6$\\
+    \hline
   \end{tabular}
 \end{table}
 
@@ -1326,20 +1323,19 @@ averaged over quadrants.
     \label{tab:cross-id-accuracies-elais}
   \begin{tabular}{llcc}
     \hline
-    Labeller & Classifier  & Mean `Resolved' & Mean `All' \\
-     & & accuracy (per cent) & accuracy (per cent)\\
+    Labeller & Classifier & Mean `Resolved' & Mean `All'\\
+    && accuracy (per cent) & accuracy (per cent)\\
     \hline
-    Middelberg & Perfect & $85.8 \pm 0.6$ & $92.4 \pm 0.3$\\
-               & Random  & $4.7 \pm 1.0$  & $50.7 \pm 0.5$\\
-     \\
-    Norris & CNN     & $68.1 \pm 2.5$ & $85.6 \pm 0.7$\\
-           & LR      & $79.6 \pm 0.9$ & $90.2 \pm 0.6$\\
-           & RF      & $76.1 \pm 3.4$ & $90.4 \pm 1.5$\\
-     \\
-    RGZ & CNN & $59.1 \pm 3.2$ & $76.5 \pm 0.5$\\
-        & LR  & $75.8 \pm 2.1$ & $88.3 \pm 0.8$\\
-        & RF  & $75.2 \pm 2.9$ & $86.2 \pm 1.3$\\
-     \hline
+    NN & --- & $92.8 \pm 0.0$ & $95.5 \pm 0.0$\\
+    Random & --- & $26.6 \pm 2.1$ & $61.9 \pm 1.1$\\
+    Norris & CNN & $89.4 \pm 1.4$ & $95.1 \pm 0.3$\\
+     & LR & $89.7 \pm 1.8$ & $96.0 \pm 0.3$\\
+     & RF & $81.0 \pm 4.7$ & $94.7 \pm 0.7$\\
+     & Perfect & $99.8 \pm 0.0$ & $99.6 \pm 0.0$\\
+    RGZ & CNN & $84.6 \pm 0.6$ & $90.4 \pm 0.4$\\
+     & LR & $92.7 \pm 0.2$ & $95.8 \pm 0.3$\\
+     & RF & $90.3 \pm 2.4$ & $95.7 \pm 0.9$\\
+    \hline
   \end{tabular}
 \end{table}
 
