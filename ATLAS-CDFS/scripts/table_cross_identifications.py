@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a table of predicted probabilities for SWIRE objects.
+"""Generate a table of cross-identifications for SWIRE objects.
 
 Matthew Alger <matthew.alger@anu.edu.au>
 Research School of Astronomy and Astrophysics
@@ -25,11 +25,17 @@ def print_table(field='cdfs'):
 
     atlas_to_swire = collections.defaultdict(dict)  # ATLAS -> predictor -> SWIRE
 
+    swire_name_to_coord = {}
+    for name, coord in zip(swire_names, swire_coords):
+        swire_name_to_coord[name] = coord
+
     atlas_to_swire_expert = {}
     key_to_atlas = {}
     atlas_to_ras = {}
     atlas_to_decs = {}
     id_to_atlas = {}
+    atlas_to_id = {}
+    atlas_to_zooniverse_id = {}
     if field == 'cdfs':
         table = astropy.io.ascii.read(pipeline.TABLE_PATH)
         for row in table:
@@ -37,6 +43,8 @@ def print_table(field='cdfs'):
             if not name:
                 continue
             id_to_atlas[row['Component ID (Franzen)']] = name
+            atlas_to_id[name] = row['Component ID (Franzen)']
+            atlas_to_zooniverse_id[name] = row['Component Zooniverse ID (RGZ)']
             key_to_atlas[row['Key']] = name
             swire = row['Source SWIRE (Norris)']
             atlas_to_swire_expert[name] = swire
@@ -52,6 +60,8 @@ def print_table(field='cdfs'):
             for i, component in enumerate(elais_components):
                 name = component['ATELAIS']
                 id_to_atlas[component['CID']] = name
+                atlas_to_id[name] = component['CID']
+                atlas_to_zooniverse_id[name] = ''
                 key_to_atlas[i] = name
                 coord = astropy.coordinates.SkyCoord(
                     ra='{} {} {}'.format(component['RAh'], component['RAm'], component['RAs']),
@@ -149,29 +159,54 @@ def print_table(field='cdfs'):
     ras = []
     decs = []
     expert_xids = []
+    expert_xid_ras = []
+    expert_xid_decs = []
     rgzs = []
+    rgz_ras = []
+    rgz_decs = []
     rcs = []
     ircs = []
+    cids = []
+    zids = []
     predictor_columns = collections.defaultdict(list)
+    predictor_ras = collections.defaultdict(list)
+    predictor_decs = collections.defaultdict(list)
     for atlas in atlases:
         for predictor in known_predictors:
             predictor_columns[predictor].append(atlas_to_swire[atlas].get(predictor, ''))
+            predictor_ras[predictor].append(swire_name_to_coord.get(atlas_to_swire[atlas].get(predictor, ''), (None, None))[0])
+            predictor_decs[predictor].append(swire_name_to_coord.get(atlas_to_swire[atlas].get(predictor, ''), (None, None))[1])
         ras.append(atlas_to_ras[atlas])
         decs.append(atlas_to_decs[atlas])
         rgzs.append(atlas_to_rgz.get(atlas, ''))
+        cids.append(atlas_to_id[atlas])
+        zids.append(atlas_to_zooniverse_id[atlas])
+        rgz_ras.append(swire_name_to_coord.get(atlas_to_rgz.get(atlas, ''), (None, None))[0])
+        rgz_decs.append(swire_name_to_coord.get(atlas_to_rgz.get(atlas, ''), (None, None))[1])
         rcs.append(atlas_to_radio_consensus.get(atlas, 0.0))
         ircs.append(atlas_to_ir_consensus.get(atlas, 0.0))
         expert_xids.append(atlas_to_swire_expert.get(atlas, ''))
+        expert_xid_ras.append(swire_name_to_coord.get(atlas_to_swire_expert.get(atlas, ''), (None, None))[0])
+        expert_xid_decs.append(swire_name_to_coord.get(atlas_to_swire_expert.get(atlas, ''), (None, None))[1])
 
+    expert = 'Norris' if field == 'cdfs' else 'Middelberg'
     table = astropy.table.Table(
-        data=[atlases, ras, decs, expert_xids, rgzs, rcs, ircs] + [predictor_columns[p] for p in known_predictors],
-        names=['ATLAS', 'RA', 'Dec', 'Norris' if field == 'cdfs' else 'Middelberg',
-               'RGZ', 'RGZ radio consensus', 'RGZ IR consensus'] + known_predictors)
+        data=[atlases, ras, decs,
+              cids, zids,
+              expert_xids, expert_xid_ras, expert_xid_decs,
+              rgzs, rgz_ras, rgz_decs,
+              rcs, ircs] + [k for p in known_predictors for k in (predictor_columns[p], predictor_ras[p], predictor_decs[p])],
+        names=['ATLAS', 'RA', 'Dec',
+               'CID', 'Zooniverse ID',
+               expert, expert + ' RA', expert + ' Dec',
+               'RGZ', 'RGZ RA', 'RGZ Dec',
+               'RGZ radio consensus', 'RGZ IR consensus'] + [k for p in known_predictors for k in (p, p + ' RA', p + ' Dec')])
     table['RGZ radio consensus'].format = '{:.4f}'
     table['RGZ IR consensus'].format = '{:.4f}'
-    table.write('/Users/alger/data/Crowdastro/predicted_cross_ids_table_09_10_17_{}.csv'.format(field), format='csv')
-    table.write('/Users/alger/data/Crowdastro/predicted_cross_ids_table_09_10_17_{}.tex'.format(field), format='latex')
+    table.write('/Users/alger/data/Crowdastro/predicted_cross_ids_table_12_10_17_{}.csv'.format(field), format='csv')
+    table.write('/Users/alger/data/Crowdastro/predicted_cross_ids_table_12_10_17_{}.tex'.format(field), format='latex')
 
 
 if __name__ == '__main__':
+    print_table(field='cdfs')
     print_table(field='elais')
