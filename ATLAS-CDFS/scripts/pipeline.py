@@ -1140,7 +1140,9 @@ def train_all(
                 labeller,
                 dataset_name,
                 q, **kwargs)
-            for q in range(4)] for dataset_name in sorted(SET_NAMES)}
+            for q in range(4)] for dataset_name in sorted(SET_NAMES)
+                               # We only want resolved/compact-trained classifiers.
+                               if 'resolved' in dataset_name or 'compact' in dataset_name}
 
 
 def predict_all(
@@ -1229,7 +1231,7 @@ def unserialise_cross_identifications(
     if quadrants is None:
         quadrants = [0, 1, 2, 3]
     if dataset_names is None:
-        dataset_names = sorted(SET_NAMES)
+        dataset_names = [n for n in sorted(SET_NAMES) if 'resolved' in n or 'compact' in n]
     for quadrant in quadrants:
         for dataset_name in dataset_names:
             filename = '{}_{}_{}.h5'.format(base_path, quadrant, dataset_name)
@@ -1245,7 +1247,9 @@ def unserialise_predictions(
     if quadrants is None:
         quadrants = [0, 1, 2, 3]
     if dataset_names is None:
-        dataset_names = sorted(SET_NAMES)
+        # Only include predictions that are for resolved or compact subsets.
+        # We don't care about predictions for other sets.
+        dataset_names = [n for n in sorted(SET_NAMES) if 'resolved' in n or 'compact' in n]
     for quadrant in quadrants:
         for dataset_name in dataset_names:
             filename = '{}_{}_{}.h5'.format(base_path, quadrant, dataset_name)

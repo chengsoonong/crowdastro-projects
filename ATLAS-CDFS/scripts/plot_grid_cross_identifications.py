@@ -16,6 +16,7 @@ The Australian National University
 2017
 """
 import collections
+import copy
 import itertools
 import logging
 import re
@@ -29,6 +30,7 @@ import configure_plotting
 import pipeline
 
 configure_plotting.configure()
+log = logging.getLogger(__name__)
 
 titlemap = {
     'RGZ & Norris & compact': 'Compact',
@@ -61,9 +63,11 @@ norris_labelled_sets = [
 ]
 
 def plot(field='cdfs'):
+    log.debug('Getting SWIRE, ATLAS features.')
     swire_names, swire_coords, _ = pipeline.generate_swire_features(overwrite=False, field=field)
     swire_labels = pipeline.generate_swire_labels(swire_names, swire_coords, overwrite=False, field=field)
     (_, atlas_test_sets), (_, swire_test_sets) = pipeline.generate_data_sets(swire_coords, swire_labels, overwrite=False, field=field)
+    log.debug('Calling cross-identify.')
     cids = list(pipeline.cross_identify_all(swire_names, swire_coords, swire_labels, swire_test_sets, swire_labels[:, 0], field=field))
 
     # Also load the nearest-neighbour cross-identifications.
@@ -149,6 +153,12 @@ def plot(field='cdfs'):
                     atlas_to_swire_expert[atlas_cid_to_name[cid]] = name
 
     labeller_classifier_to_accuracies = collections.defaultdict(list)
+
+    # Augment the CIDs by duplicating the "resolved" cross-ids to make the "all" set.
+    resolved_cids_copy = [copy.copy(cid) for cid in cids if 'resolved' in cid.dataset_name]
+    for cid in resolved_cids_copy:
+        cid.dataset_name = cid.dataset_name.replace(' & resolved', '')
+    cids.extend(resolved_cids_copy)
 
     for cid in cids:
         if cid.labeller == 'norris' and 'Norris' not in cid.dataset_name:
@@ -407,5 +417,8 @@ def plot(field='cdfs'):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+    # logging.getLogger('pipeline').setLevel(logging.DEBUG)
+    # log.setLevel(logging.DEBUG)
     plot(field='cdfs')
     plot(field='elais')
