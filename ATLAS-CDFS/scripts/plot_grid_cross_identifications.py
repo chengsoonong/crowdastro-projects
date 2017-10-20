@@ -331,14 +331,20 @@ def plot(field='cdfs'):
     print('Best: {} +- {}'.format(best_acc, best_stdev))
     print('Random: {} +- {}'.format(random_acc, random_stdev))
 
-    plt.figure(figsize=(5, 6))
+    plt.figure(figsize=(5, 4))
     colours = ['grey', 'magenta', 'blue', 'orange', 'grey']
     markers = ['o', '^', 'x', 's', '*']
     handles = {}
     print('Data set & Labeller & Classifier & Mean accuracy (\\%)\\\\')
     for k, set_name in enumerate(norris_labelled_sets[1:]):
+        if 'resolved' in set_name:
+            # https://github.com/MatthewJA/radio/issues/22
+            continue
+
+        k -= 1
+
         print_set_name = titlemap[set_name]
-        ax = plt.subplot(2, 1, 1 + k)
+        ax = plt.subplot(1, 1, 1 + k)  # 22
         print('{} & Norris & Perfect & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, best_acc[titlemap[set_name]], best_stdev[titlemap[set_name]]))
         print('{} & Norris & Random & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, random_acc[titlemap[set_name]], random_stdev[titlemap[set_name]]))
         plt.hlines(best_acc[titlemap[set_name]], -0.5, 2.5, linestyles='solid', colors='green', linewidth=1, zorder=1)
@@ -365,16 +371,13 @@ def plot(field='cdfs'):
                 xs = [x_offset] * len(ys)
                 print('{} & {} & {} & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, labeller, classifier, numpy.mean(ys), numpy.std(ys)))
                 ax.set_xlim((-0.5, 1.5))
-                if k == 0:
-                    ax.set_ylim((0, 100))
-                else:
-                    ax.set_ylim((70, 100))
+                ax.set_ylim((70, 100))
                 ax.set_xticks([0, 1])
                 ax.set_xticklabels(['Norris', 'RGZ'])
                 handles[j] = plt.scatter(xs, ys, color=colours[j], marker=markers[j], zorder=2, edgecolor='k', linewidth=1)
-            if k == 1:
+            if k == 0:  # 22
                 plt.xlabel('Labels')
-            plt.ylabel('{}\nAccuracy (per cent)'.format(titlemap[set_name]))
+            plt.ylabel('Accuracy (per cent)'.format(titlemap[set_name]))
 
             ax.title.set_fontsize(16)
             ax.xaxis.label.set_fontsize(12)
@@ -409,7 +412,7 @@ def plot(field='cdfs'):
                     labeller_classifier_to_accuracies[labeller, classifier, 'All']).std() * 100))
 
     plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + (['Label'] if field == 'cdfs' else []), 'lower center', ncol=4, fontsize=10)
-    plt.subplots_adjust(bottom=0.15, hspace=0.25)
+    plt.subplots_adjust(bottom=0.25, hspace=0.25)
     plt.savefig('../images/{}_cross_identification_grid.pdf'.format(field),
                 bbox_inches='tight', pad_inches=0)
     plt.savefig('../images/{}_cross_identification_grid.png'.format(field),
