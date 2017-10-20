@@ -665,6 +665,16 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     \begin{figure}
       \centering
+      \includegraphics[width=\columnwidth]{images/positives.pdf}
+      \caption{ATLAS3~J032929.61-281938.9. Radio Galaxy Zoo host galaxies are
+      marked by crosses. SWIRE candidate host galaxies are circles, coloured orange
+      circles have been assigned a `positive' label by a logistic regression
+      classifier and white otherwise.
+      \label{fig:positives}}
+    \end{figure}
+
+    \begin{figure}
+      \centering
       \includegraphics[width=\columnwidth]{images/gct-to-xid.pdf}
       \caption{Balanced accuracy on the galaxy classification task (GCT) plotted
       against accuracy on the cross-identification task (X-ID). RF indicates
@@ -706,6 +716,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     the cross-identification accuracies of the perfect and random classifiers
     alongside the performance of other classifiers. We also report the accuracy of a nearest-neighbours approach, where the infrared object nearest to a radio component is chosen as its host galaxy. The upper estimates, lower estimates, and nearest-neighbour accuracy are shown as horizontal lines in \autoref{fig:cross-id-accuracy}
     for CDFS and \autoref{fig:elais-cross-id-accuracy} for ELAIS-S1.
+
+    \todo{Describe fig:positives}
 
   \subsection{Application to ATLAS~CDFS}
 
