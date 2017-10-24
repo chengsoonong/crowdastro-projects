@@ -698,6 +698,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     gives $R^2 = 0.92$ for logistic regression and $R^2 = 0.87$ for random
     forests.
 
+    While performance on the galaxy classification task is correlated with performance on the cross-identification task, balanced accuracy does not completely capture the effectiveness of a binary classifier applied to the cross-identification task. This is because binary classifiers output a predicted label for each object in addition to the class probability, and it is this predicted label that is used to compute balanced accuracy. In the galaxy classification task, the classifier only needs to maximise the rate at which it correctly identifies host galaxies. This means there can be many `false positives' that do not affect cross-identification. An example of this is shown in \autoref{fig:positives}, where the classifier has identified 8 `host galaxies'. However, there are only three true host galaxies in this image --- one per radio component --- and so in the cross-identification task, only three of these galaxies will be identified as hosts.
+
     The formulation of cross-identification as binary classification also
     introduces limitations as described in \autoref{sec:limitations}, which
     impose upper limits on performance. Additionally, the classification
@@ -717,29 +719,23 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     alongside the performance of other classifiers. We also report the accuracy of a nearest-neighbours approach, where the infrared object nearest to a radio component is chosen as its host galaxy. The upper estimates, lower estimates, and nearest-neighbour accuracy are shown as horizontal lines in \autoref{fig:cross-id-accuracy}
     for CDFS and \autoref{fig:elais-cross-id-accuracy} for ELAIS-S1.
 
-    \todo{Describe fig:positives}
-
   \subsection{Application to ATLAS~CDFS}
 
     \begin{figure}
     \centering
     \includegraphics[width=\columnwidth]{images/cdfs-grid-new.pdf}
-    \caption{\todo{write; fix references to this} \label{fig:ba}}
+    \caption{Performance of logistic regression (LR), convolutional neural networks (CNN), and random forest (RF) classifiers. `Norris' indicates classifiers trained on the expert labels and `RGZ' indicates classifiers trained on the Radio Galaxy Zoo labels. Performance on the galaxy classification task is quantified by balanced accuracy (top) and performance on the cross-identification task is quantified by accuracy (bottom). The training and testing sets have been split into compact and resolved objects, with results on compact objects shown on the left and results on resolved objects shown on the right. Shown for comparison is the accuracy of the Radio Galaxy Zoo consensus cross-identifications (Labels). The accuracy attained by a perfect classifier is shown by a solid green line, and the accuracy of a nearest-neighbours approach is shown by a dashed grey line. The standard deviation of these accuracies across the four CDFS quadrants is shown by the shaded area. Note that the pipeline shown in \autoref{fig:flowchart} is not used for these results.
+        \label{fig:ba}}
     \end{figure}
 
     \begin{figure}
       \centering
       \includegraphics[width=0.9\columnwidth]{images/cdfs_cross_identification_grid.pdf}
-      \caption{\todo{write; fix references}
+      \caption{Performance of different classifiers on the cross-identification task. Markers and lines are as in \autoref{fig:ba}. The blue solid line indicates the performance of a random classifier and hence represents the minimum accuracy we expect to obtain. The standard deviation of this accuracy across 25 trials and 4 quadrants is shaded. The Radio Galaxy Zoo accuracies (`Labels') are below the axis and are marked by an arrow with the mean accuracy.
         \label{fig:cross-id-accuracy}}
     \end{figure}
 
-    For the galaxy classification task, we report the balanced accuracy of
-    each classification model and training set in \autoref{fig:ba} for SWIRE
-    objects within 1~arcmin of (1) resolved radio components, and (2) all
-    radio components. These accuracies, averaged across the four quadrants,
-    are reported in the supplement. We also report the
-    balanced accuracy of the Radio Galaxy Zoo labels for comparison. The balanced accuacy of the expert labels is 100 per cent by definition.
+    In \autoref{fig:ba} we plot the performance of logistic regression, random forests, and convolutional neural networks on both the galaxy classification task and the cross-identification task for resolved and compact sources.
 
     Classifiers trained on expert labels perform comparably to those trained
     on Radio Galaxy Zoo labels. Differences between accuracies across training
@@ -752,12 +748,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     forests are trained on the expert-labelled resolved set, where there are
     only 98 host galaxies across all of CDFS compared to 150 host galaxies for
     the Radio Galaxy Zoo-labelled set.
-
-    Random forests attain the highest average balanced accuracy overall.
-    Convolutional neural networks attain the lowest average balanced accuracy.
-    This may be due to the small size of the training data --- convolutional
-    neural networks generally require much more training data than the other models we
-    have used.
 
     We report the probabilities predicted by each classifier for each SWIRE
     object in the supplement. Probabilities reported for a given object

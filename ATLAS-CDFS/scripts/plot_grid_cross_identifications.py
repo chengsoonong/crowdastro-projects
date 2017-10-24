@@ -277,14 +277,15 @@ def plot(field='cdfs'):
         # Compute accuracy for RGZ.
         for dataset_name in pipeline.SET_NAMES:
             for quadrant in range(4):
-                # Compact objects are cross-identified in a separate pipeline, which is slow so I don't want to reproduce it here.
-                # So I'll read the compact object cross-identifications from the LR(RGZ) cross-identification set, since it ought
-                # to be the same.
-                corresponding_set, = [cid for cid in cids if cid.quadrant == quadrant
-                                                             and cid.dataset_name == dataset_name
-                                                             and cid.labeller == 'rgz'
-                                                             and cid.classifier == 'LogisticRegression']
-                atlas_to_swire_lr = dict(zip(corresponding_set.radio_names, corresponding_set.ir_names))
+                # N.B. Disabled using the pipeline for RGZ.
+                # # Compact objects are cross-identified in a separate pipeline, which is slow so I don't want to reproduce it here.
+                # # So I'll read the compact object cross-identifications from the LR(RGZ) cross-identification set, since it ought
+                # # to be the same.
+                # corresponding_set, = [cid for cid in cids if cid.quadrant == quadrant
+                #                                              and cid.dataset_name == dataset_name
+                #                                              and cid.labeller == 'rgz'
+                #                                              and cid.classifier == 'LogisticRegression']
+                # atlas_to_swire_lr = dict(zip(corresponding_set.radio_names, corresponding_set.ir_names))
                 n_total = 0
                 n_correct = 0
                 n_skipped = 0
@@ -296,10 +297,10 @@ def plot(field='cdfs'):
                     if name not in atlas_to_swire_expert:
                         n_skipped += 1
                         continue
-                    if name not in atlas_to_swire_rgz or name not in atlas_to_swire_lr:
+                    if name not in atlas_to_swire_rgz:# or name not in atlas_to_swire_lr:
                         n_skipped += 1
                         continue
-                    if is_compact[name]:
+                    if False and is_compact[name]:
                         swire_predictor = atlas_to_swire_lr[name]
                     else:
                         swire_predictor = atlas_to_swire_rgz[name]
@@ -359,6 +360,7 @@ def plot(field='cdfs'):
             linestyle='dashed', color='blue', alpha=0.2, linewidth=1, zorder=1)
         for i, labeller in enumerate(['Norris', 'RGZ']):
             for j, classifier in enumerate(['LogisticRegression', 'CNN', 'RandomForestClassifier'] + (['Label', 'NearestNeighbour'] if field == 'cdfs' else ['NearestNeighbour'])):
+
                 ys = numpy.array(labeller_classifier_to_accuracies[labeller, classifier, titlemap[set_name]]) * 100
                 if classifier != 'NearestNeighbour':
                     x_offset = i + (j - 1) / 5 if labeller == 'Norris' or field == 'elais' else i + (j - 1.5) / 6
@@ -368,6 +370,11 @@ def plot(field='cdfs'):
                     if field == 'cdfs':
                         plt.fill_between([-1, 2], [numpy.mean(ys) - numpy.std(ys)] * 2, [numpy.mean(ys) + numpy.std(ys)] * 2, color='grey', linestyle='-.', alpha=0.2, linewidth=1)
                     x_offset = 2
+
+                if classifier == 'Label' and labeller == 'RGZ':
+                    plt.annotate('{:.1%}'.format(numpy.mean(ys) / 100), (x_offset, 72.5), ha='center', va='bottom', fontsize='small')
+                    plt.arrow(x_offset, 72.5, 0, -1.5, head_width=0.05, head_length=1, ec='k', fc='k')
+
                 xs = [x_offset] * len(ys)
                 print('{} & {} & {} & ${:.02f} \\pm {:.02f}$\\\\'.format(print_set_name, labeller, classifier, numpy.mean(ys), numpy.std(ys)))
                 ax.set_xlim((-0.5, 1.5))
@@ -411,7 +418,7 @@ def plot(field='cdfs'):
                 numpy.array(
                     labeller_classifier_to_accuracies[labeller, classifier, 'All']).std() * 100))
 
-    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + (['Label'] if field == 'cdfs' else []), 'lower center', ncol=4, fontsize=10)
+    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + (['Labels'] if field == 'cdfs' else []), 'lower center', ncol=4, fontsize=10)
     plt.subplots_adjust(bottom=0.25, hspace=0.25)
     plt.savefig('../images/{}_cross_identification_grid.pdf'.format(field),
                 bbox_inches='tight', pad_inches=0)
