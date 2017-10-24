@@ -814,28 +814,26 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     This has the effect of reducing the accuracy for Radio Galaxy Zoo-trained
     classifiers.
 
-  \begin{figure*}
-  \todo{Update these.}
-  \includegraphics[width=\textwidth]{images/CNN-examples-CDFS.png}
-      \caption{Radio sources in CDFS incorrectly cross-identified by a
-        convolutional neural network trained on expert labels.
-        (a), (e), and (f) have multiple SWIRE host galaxies very close
-        together and the predicted host galaxy is close to the true host galaxy.
-        (b) contains multiple radio sources, and the
-        identified host likely \emph{is} a host galaxy, but not one labelled in
-        the initial ATLAS data release, as it is a low flux source. In
-        (c), the classifier seems to be distracted by the
-        right lobe of the radio source. This may be due to the large number of
-        compact objects in the training set.
-        (d) and (h) show the
-        classifier failing to correct cross-identify a radio double. This may be
-        due to the window size (both lobes would not be visible in the radio image
-        shown to the classifier) or due to the limited number of radio doubles in
-        the training set. Finally,
-       (g) shows the classifier failing to classify a radio
-        triple. This triple extends outside the 1~arcmin radius used to select
-        candidate hosts.}\label{fig:cnnexamples}
-  \end{figure*}
+    \begin{figure*}
+        \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.5cm}, clip, width=0.33\textwidth]{images/example_15_454.pdf}}%
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_14_424.pdf}}%
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_13_415.pdf}}%
+        \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.5cm}, clip, width=0.33\textwidth]{images/example_12_404.pdf}}%
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_11_306.pdf}}%
+        \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.5cm}, clip, width=0.33\textwidth]{images/example_10_298.pdf}}
+
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_9_264.pdf}}%
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_8_239.pdf}}
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_7_207.pdf}}%
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_6_197.pdf}}%
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_5_113.pdf}}%
+        \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.5cm}, clip, width=0.33\textwidth]{images/example_4_106.pdf}}%
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_3_86.pdf}}%
+        \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.5cm}, clip, width=0.33\textwidth]{images/example_2_68.pdf}}%
+        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_1_30.pdf}}%
+        \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.5cm}, clip, width=0.33\textwidth]{images/example_0_0.pdf}}%
+        \caption{\label{fig:examples} \todo{write}}
+    \end{figure*}
 
 \subsection{Application to ATLAS-ELAIS}
   \label{sec:elais}
