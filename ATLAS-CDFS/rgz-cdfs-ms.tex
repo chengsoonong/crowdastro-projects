@@ -723,54 +723,14 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
     \begin{figure}
     \centering
-    \includegraphics[width=\columnwidth]{images/cdfs_ba_grid.pdf}
-    \caption{Balanced accuracies for each quadrant in the galaxy
-      classification task. The accuracies of different classifiers are
-      represented by different shapes. `LR' is logistic regression, `CNN' is
-      convolutional neural networks, and `RF' is random forests. `Labels' is a
-      classifier that simply returns the test labels, and hence represents the
-      accuracy of the Radio Galaxy Zoo citizen scientists. The horizontal axis
-      shows which label set was used to train the classifiers: `Norris'
-      represents the expert labels, `RGZ' represents the Radio Galaxy Zoo
-      labels. The two plots show different sets of training and testing data:
-      the `resolved' only contains SWIRE objects within $1'$ of resolved radio
-      components, and `all' contains SWIRE objects within $1'$ of any radio
-      components.
-      \label{fig:ba}}
+    \includegraphics[width=\columnwidth]{images/cdfs-grid-new.pdf}
+    \caption{\todo{write; fix references to this} \label{fig:ba}}
     \end{figure}
 
     \begin{figure}
       \centering
-      \includegraphics[width=0.8\columnwidth]{images/compact-ba.pdf}
-      \caption{Balanced accuracies for different predictors on SWIRE objects
-        within $1'$ of compact radio sources in CDFS. The horizontal axis
-        shows which predictor was used to make the predictions. $C(L)$
-        indicates a predictor using classification model $C$ trained on label
-        set $L$, with models and label sets abbreviated as in
-        \autoref{fig:ba}. `RGZ' indicates the performance of the Radio Galaxy
-        Zoo catalogue against the expert labels, and `NN' indicates the
-        performance of identifying the nearest-neighbour method, where the nearest SWIRE object to an ATLAS object is identified
-        as a host galaxy. Radio Galaxy Zoo-trained predictors are coloured
-        red, and expert-trained are coloured blue. Shapes of points correspond
-        to the classification models in \autoref{fig:ba}. Note that these
-        accuracies are only for SWIRE objects associated with compact radio
-        objects, so positive examples should directly coincide with the
-        centre of a radio object.
-        \label{fig:compact-ba}}
-    \end{figure}
-
-    \begin{figure}
-      \centering
-      \includegraphics[width=\columnwidth]{images/cdfs_cross_identification_grid.pdf}
-      \caption{Accuracies for each quadrant in the cross-identification
-        task. Markers and axes are as in \autoref{fig:ba}. The upper horizontal line
-        indicates the accuracy of a `perfect' classifier on the cross-identification
-        task, with the surrounding dashed lines indicating the standard deviation
-        across CDFS quadrants. A `perfect' classifier simply reads the expert
-        labels. This represents the maximum attainable cross-identification accuracy
-        under our assumptions. The lower horizontal line indicates the average
-        accuracy of 25 random classifiers, and hence represents the minimum accuracy
-        we would expect to attain. The middle, dashed horizontal line shows the accuracy of nearest neighbours. The shaded areas surrounding the horizontal lines indicate the standard deviation across CDFS quadrants and classifiers.
+      \includegraphics[width=0.9\columnwidth]{images/cdfs_cross_identification_grid.pdf}
+      \caption{\todo{write; fix references}
         \label{fig:cross-id-accuracy}}
     \end{figure}
 
@@ -882,25 +842,15 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
   \begin{figure}
   \centering
-  \includegraphics[width=\columnwidth]{images/elais_ba_grid.pdf}
-  \caption{Balanced accuracies for each quadrant in the galaxy
-    classification task on the ELAIS-S1 field. Markers and axes are as in
-    \autoref{fig:ba}. The classifiers in \autoref{fig:ba} were applied to the
-    whole ELAIS-S1 field, and performance was measured against ground truth
-    labels from~\citet{middelberg08}. Accuracies for random forests trained on
-    the expert-labelled resolved set are not shown as they were considerably
-    lower than all other accuracies.
+  \includegraphics[width=\columnwidth]{images/elais-grid-new.pdf}
+  \caption{\todo{write; fix references}
     \label{fig:elais-ba}}
   \end{figure}
 
   \begin{figure}
     \centering
-    \includegraphics[width=\columnwidth]{images/elais_cross_identification_grid.pdf}
-    \caption{Accuracies for each quadrant in the cross-identification
-      task on the ELAIS-S1 field. Markers and axes are as in \autoref{fig:ba}.
-      The classifiers in \autoref{fig:cross-id-accuracy} were applied to the
-      whole ELAIS-S1 field, and performance was measured against ground truth
-      labels from~\citet{middelberg08}. The estimated best possible performance is nearly 100 per cent.
+    \includegraphics[width=0.9\columnwidth]{images/elais_cross_identification_grid.pdf}
+    \caption{\todo{write; fix references}
       \label{fig:elais-cross-id-accuracy}}
   \end{figure}
 

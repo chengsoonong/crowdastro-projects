@@ -1544,8 +1544,9 @@ def cross_identify(
     for atlas_i in atlas_set:
         coords = atlas_coords[atlas_i]
         radio_name = atlas_names[atlas_i]
-        if compact_split and atlas_name_to_compact[radio_name]:
+        if compact_split and atlas_name_to_compact[radio_name] and 'compact' not in dataset_name:
             # Compact, so find nearest neighbour.
+            # Note that we skip compact pipeline for cross-identifying the compact set.
             distance, nearest = swire_tree.query(coords)
             if distance > 5 / 60 / 60:  # 5 arcsec
                 log.debug('No SWIRE host found for compact {}'.format(radio_name))
