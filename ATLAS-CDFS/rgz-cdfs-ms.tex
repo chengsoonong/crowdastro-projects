@@ -910,6 +910,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   from Radio Galaxy Zoo will indeed provide a valuable source of training
   data for future machine learning methods in radio astronomy.
 
+  Compared to nearest neighbours, cross-identification accuracy on ELAIS-S1 is lower than on CDFS. Particularly notable is that our performance on compact objects is very low for ELAIS-S1, while it was near-optimal for CDFS. These differences may be for a number of reasons. ELAIS-S1 has a different beam size and different noise profile to CDFS (even though both were imaged with the same telescope), so it is possible that our methods over-adapted to the beam and noise of CDFS. Additionally, CDFS contains a very bright source which may have caused artefacts throughout the field that are not present in ELAIS-S1. Further work is required to understand the differences between the fields and their effect on performance.
+
   \autoref{fig:accuracies-flux} reveals interesting behaviour of different
   classifier models at different flux cutoffs. Logistic regression and
   convolutional neural networks seem relatively independent of flux, with
@@ -919,6 +921,8 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   datasets. This shows that not all models behave similarly on radio data,
   and it is therefore important to investigate multiple models when
   developing machine learning methods for radio astronomy.
+
+
 
   Our methods can be easily incorporated into other cross-identification
   methods or used as an extra data source for source identification. This is
