@@ -342,7 +342,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     approach is illustrated in \autoref{fig:windows}.
 
     Solving the galaxy classification task amounts to modelling a function $f$
-    from infrared sources $\mathcal{X}$ to the probability that an infrared
+    from the set of infrared sources $\mathcal{X}$ to the probability that an infrared
     source belongs to a binary class in $\mathcal{Y} = \{0, 1\}$:
     \begin{equation}
         f(x) \coloneqq \text{Pr}\left(\mathcal{Y} = 1 \mid \mathcal X = x\right)\,\,\,\,.
@@ -507,8 +507,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     is dominated by non-equilibrium emission of dust grains (PAH destruction
     by the hard UV spectrum of AGN), while the \unit{8.0}{\micro\meter} flux
     traces strong PAH emission at low redshift \citep{Sajina2005}.
-    The stellarity index represents how likely the object is to be a star
-    rather than a galaxy.
+    The stellarity index represents how likely the object is to be a star rather than a galaxy \citep{surace05swire}.
 
     We use the pixels of each $32 \times 32$ radio image as independent
     features for all classifiers, with the convolutional neural network
@@ -669,8 +668,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     the probability of the object having a positive label was estimated using
     the trained binary classifiers. The SWIRE object with the highest Gaussian-weighted
     probability was chosen as the host galaxy. The accuracy for the cross-identification task was then estimated
-    by counting how many predicted host galaxies matched the \citet{norris06}
-    cross-identifications.
+    as the fraction of the predicted host galaxies that matched the \citet{norris06} cross-identifications.
 
 \section{Results}\label{sec:results}
 
@@ -705,7 +703,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       $R^2 = 0.92$ for logistic regression and $R^2 = 0.87$ for random
       forests. We did not include convolutional neural networks in this test,
       as training them is very computationally expensive. These results
-      exclude classifiers witih balanced accuracies less than 51 per cent, as
+      exclude classifiers with balanced accuracies less than 51 per cent, as
       these are essentially random.
       \label{fig:gct-to-xid}}
     \end{figure}
@@ -922,8 +920,6 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   datasets. This shows that not all models behave similarly on radio data,
   and it is therefore important to investigate multiple models when
   developing machine learning methods for radio astronomy.
-
-
 
   Our methods can be easily incorporated into other cross-identification
   methods or used as an extra data source for source identification. This is
