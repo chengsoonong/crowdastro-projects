@@ -67,7 +67,7 @@ def plot_box_FIRST(fig, path):
 
 if __name__ == '__main__':
     path = "/Users/alger/data/RGZ/cdfs/2x2/CI2363_radio.fits"
-    fig = plot(path, plot_atlas_hosts=False, centrebox=True, centreboxwidth=32)
+    fig = plot(path, plot_atlas_hosts=False, centrebox=True, centreboxwidth=48 / 60 / 60, width_in_px=False)
     plt.subplots_adjust(left=0.2)
     plt.savefig('/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/CI2363_fig.pdf')
 
