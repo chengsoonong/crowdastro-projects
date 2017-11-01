@@ -16,12 +16,12 @@ import numpy
 
 
 def plot(path, plot_atlas_hosts=False, v=None, centrebox=False,
-         centreboxwidth=None, width_in_px=True):
+         centreboxwidth=None, width_in_px=True, stretch='arcsinh'):
     fig = aplpy.FITSFigure(path, slices=[0, 1])
     if not v:
-        fig.show_grayscale(stretch='arcsinh', invert=True)
+        fig.show_grayscale(stretch=stretch, invert=True)
     else:
-        fig.show_grayscale(stretch='arcsinh', vmin=v[0], vmax=v[1], invert=True)
+        fig.show_grayscale(stretch=stretch, vmin=v[0], vmax=v[1], invert=True)
     if plot_atlas_hosts:
         table = astropy.io.ascii.read(
             '/Users/alger/data/RGZ/dr1_weighted_old/static_rgz_host_full.csv')
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     plt.savefig('/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/CI0077C1_fig.pdf')
 
     path = "/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/FIRSTJ151227.2+454026_8.fits"
-    fig = plot(path, plot_atlas_hosts=False, centrebox=True, centreboxwidth=3 / 60, width_in_px=False)
+    fig = plot(path, plot_atlas_hosts=False, centrebox=True, centreboxwidth=3 / 60, width_in_px=False, stretch='linear')
     plt.subplots_adjust(left=0.2)
     plt.savefig('/Users/alger/repos/crowdastro-projects/ATLAS-CDFS/images/FIRSTJ151227_fig.pdf')
 
