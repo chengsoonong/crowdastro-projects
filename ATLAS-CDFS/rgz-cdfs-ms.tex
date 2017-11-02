@@ -39,25 +39,26 @@
 
 \title[Machine learning methods for radio source cross-identification]{Radio Galaxy Zoo: Machine learning methods for radio source host galaxy cross-identification}
 
-\author[Alger et al.]{M.~J.~Alger$^{1, 2}$,
-  J.~K.~Banfield$^{3, 1}$,
-  C.~S.~Ong$^{2, 4}$,
-  O.~I.~Wong$^{5, 3}$,
-  L.~Rudnick$^{6}$,
-  \newauthor
-  R.~P.~Norris$^{7, 8}$,
-  H.~Andernach$^{9}$
+\author[Alger et al.]{M.~J.~Alger$^{1, 2}$ et al.%,
+  % J.~K.~Banfield$^{1, 3}$,
+  % C.~S.~Ong$^{2, 4}$,
+  % C.~Wolf$^{1, 3}$,
+  % O.~I.~Wong$^{5, 3}$,
+  % H.~Andernach$^{6}$,
+  % \newauthor
+  % R.~P.~Norris$^{7, 8}$,
+  % L.~Rudnick$^{9}$
 \\
 % List of institutions
 $^{1}$Research School of Astronomy and Astrophysics, The Australian National University, Canberra, ACT 2611, Australia\\
 $^{2}$Data61, CSIRO, Canberra, ACT 2601, Australia\\
-$^{3}$ARC Centre of Excellence for All-Sky Astrophysics (CAASTRO)\\
-$^{4}$Research School of Computer Science, The Australian National University, Canberra, ACT 2601, Australia\\
-$^{5}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia\\
-$^{6}$Minnesota Institute for Astrophysics, University of Minnesota, 116 Church St. SE, Minneapolis, MN 55455\\
-$^{7}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
-$^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia\\
-$^{9}$Departamento de Astronom\'ia, DCNE, Universidad de Guanajuato, Apdo. Postal 144, CP 36000, Guanajuato, Gto., Mexico
+% $^{3}$ARC Centre of Excellence for All-Sky Astrophysics (CAASTRO)\\
+% $^{4}$Research School of Computer Science, The Australian National University, Canberra, ACT 2601, Australia\\
+% $^{5}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia\\
+% $^{6}$Departamento de Astronom\'ia, DCNE, Universidad de Guanajuato, Apdo. Postal 144, CP 36000, Guanajuato, Gto., Mexico\\
+% $^{7}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
+% $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia\\
+% $^{9}$Minnesota Institute for Astrophysics, University of Minnesota, 116 Church St. SE, Minneapolis, MN 55455
 }
 
 % These dates will be filled out by the publisher
@@ -152,7 +153,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   does not incorporate other information such as the physical properties of
   the potential host galaxy. Additionally, there may be new classes of radio
   sources detected in future surveys like EMU which do not fit the model.
-  Weston et al. (in prep) developed a modification of the likelihood ratio method of
+  Weston et al. (in press) developed a modification of the likelihood ratio method of
   cross-identification \citep{richter75likelihood} for application to ATLAS
   and EMU. This method does well on single (resolved or compact) radio sources
   with approximately 70 per cent success rate in the ATLAS fields, but does
@@ -208,7 +209,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
         \citet{norris06} & Manual & 784 & 0\\
         \citet{middelberg08} & Manual & 0 & 1366\\
         \citet{fan15} & Bayesian models & 784 & 0\\
-        Weston et al. (in prep) & Likelihood ratio & 3078 & 2113\\
+        Weston et al. (in press) & Likelihood ratio & 3078 & 2113\\
         Wong et al. (in prep) & Crowdsourcing & 2460 & 0 \\
         \hline
       \end{tabular}
@@ -311,8 +312,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
       \label{fig:flowchart}
     \end{figure}
 
-    We focus on the problem of host galaxy cross-identification without using
-    radio morphology information. Given a radio component, we want to find the
+    We propose a two-step method for host galaxy cross-identification. Given a radio component, we want to find the
     corresponding host galaxy as a human would. The input is a $2' \times 2'$
     radio image and a corresponding infrared image to match the size of the
     images used by Radio Galaxy Zoo. We make the assumption that each radio
@@ -335,10 +335,10 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     sample of 784 bright ATLAS components in CDFS.}. This defines a binary
     classification task where given a candidate host galaxy we compute the
     probability that it is a host galaxy. We refer to this binary
-    classification task as the `galaxy classification task' (GCT). To find the host
+    classification task as the `galaxy classification task'. To find the host
     galaxy given a radio source, we can classify each galaxy within 1~arcmin
     of the source and select the host galaxy based on the probability output
-    by a classifier. We refer to this as the `cross-identification task' (X-ID). Our
+    by a classifier. We refer to this as the `cross-identification task'. This is a two-step task as we first solve the galaxy classification task without reference to any specific radio object, and then use these results to solve the cross-identification task. Our
     approach is illustrated in \autoref{fig:windows}.
 
     Solving the galaxy classification task amounts to modelling a function $f$
@@ -353,14 +353,13 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     for modelling $f$. In this paper we apply three different models: logistic
     regression, random forests, and convolutional neural networks.
 
-    Going from the galaxy classification task to the cross-identification task
-    requires choosing the host galaxy based on its probability to be a host. One approach would be to select the candidate galaxy with the highest estimated class probability, i.e. the host galaxy is the candidate galaxy $x$ that maximises $f(x)$. This fails if there are multiple host galaxies within the $2' \times
-    2'$ image, as only one host galaxy can have the maximum probability. An example of such
-    an image is shown in \autoref{fig:broken-isolation}. Instead, we weight
-    the estimated class probability of each candidate host galaxy by a Gaussian function of
-    its angular separation from the radio component we want to cross-identify,
-    and then select the candidate host galaxy with the maximum weighted probability.
-    The Gaussian introduces dependence on the radio component we want to cross-identify and hence allows cross-identification of multiple host galaxies in the same image. It also acts as a prior for the host galaxy location. The width of the
+    Note that $f(x)$ is independent of any particular radio object. The galaxy classification task aims to answer the general question of whether a given galaxy is the host galaxy of \emph{any} radio component. The cross-identification task, however, attempts to cross-identify a \emph{specific} radio component. It is unclear how to pass radio component-specific information into the classifiers. Instead, we assume that the probability that a given candidate host $x$ is associated with a given radio component $r$ is the probability that $x$ is a host weighted by some radio-component specific value $g(x, r)$:
+    \[
+      \mbox{Pr}(x \text{ is host of } r) = f(x) g(x, r).
+    \]
+    We then want to maximise $\mbox{Pr}(x \text{ is host of } r)$ to solve the cross-identification task. One approach would be to select the candidate galaxy with the highest estimated class probability, i.e. take $g(x, r) = 1$ and let the host galaxy be the candidate galaxy $x$ that maximises $f(x)$. This fails if there are multiple host galaxies within the $2' \times
+    2'$ image. An example of such an image is shown in \autoref{fig:broken-isolation}. Instead, we take $g$ to be a Gaussian function of
+    the angular separation of the candidate host from the radio component we want to cross-identify. The Gaussian essentially acts as a prior for the host galaxy location. The width of the
     Gaussian, $\sigma$, controls the influence of the Gaussian on the final
     cross-identification. When $\sigma$ is small, our approach is
     equivalent to a nearest-neighbours approach where we select the nearest
@@ -371,7 +370,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     We can improve upon this method by filtering out compact radio sources,
     which are much easier to cross-identify --- the nearest SWIRE object may
     be identified as the host galaxy, or a more complex method such as
-    likelihood ratios may be applied (see Weston et al. in prep). A full
+    likelihood ratios may be applied (see Weston et al. in press). A full
     cross-identification pipeline making use of this alongside a binary
     classifier is shown in \autoref{fig:flowchart}.
 
@@ -552,7 +551,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     \end{figure}
 
     \begin{table}
-      \caption{Number of compact and resolved radio objects in each CDFS quadrant. Radio Galaxy Zoo (RGZ) has more cross-identifications than the expert catalogue provides, and so has more objects in each quadrant for training.}
+      \caption{Number of compact and resolved radio objects in each CDFS quadrant. Radio Galaxy Zoo (RGZ) has more cross-identifications than the expert catalogue provides as it uses a deeper data release of ATLAS, and so has more objects in each quadrant for training.}
       \label{tab:radio-count}
       \begin{tabular}{lcccc}
         \hline
@@ -755,7 +754,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
     accuracies is similar for both sets of training labels, with the exception
     of random forests. The balanced accuracies of random forests trained on expert labels have a considerably higher spread than those trained on Radio Galaxy Zoo labels, likely because of the small size of the expert training set --- there are less than half the number of objects in the expert-labelled training set than the number of objects in the Radio Galaxy Zoo-labelled training set (\autoref{tab:radio-count}).
 
-    Radio Galaxy Zoo-trained classifiers significantly outperform Radio Galaxy Zoo cross-identifications. Additionally, despite poor performance of Radio Galaxy Zoo on the cross-identification task, classifiers trained on these cross-identifications still perform comparably to those trained on expert labels. This shows the usefulness of crowdsourced training data, even when the data is noisy.
+    Radio Galaxy Zoo-trained classifiers significantly outperform Radio Galaxy Zoo cross-identifications. Additionally, despite poor performance of Radio Galaxy Zoo on the cross-identification task, classifiers trained on these cross-identifications still perform comparably to those trained on expert labels. This is because incorrect Radio Galaxy Zoo cross-identifications can be thought of as a source of noise in the labels which is averaged out in training. This shows the usefulness of crowdsourced training data, even when the data is noisy.
 
     Our classifiers perform comparably to a nearest-neighbours approach. For compact objects, this is to be expected --- indeed, nearest neighbours attains nearly 100 per cent accuracy on the compact test set. Our results do not improve on nearest neighbours for resolved objects. However, our method does allow for improvement on nearest neighbours with a sufficiently good binary classifier: a `perfect' classifier attains nearly 100 per cent accuracy on resolved sources. This shows that our method may be useful provided that a good binary classifier can be trained. The most obvious place for improvement is in feature selection; we use pixels of radio images directly and these are likely not conducive to good performance on the galaxy classification task. Convolutional neural networks, which are able to extract features from images, \emph{should} work better, but these require far more training data than the other methods we have applied and the small size of ATLAS thus results in poor performance.
 
@@ -853,10 +852,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
   can be applied. These methods can then be trained with a variety of label
   sets derived from cross-identification catalogues. While we have not outperformed nearest neighbours, we have demonstrated that for a very accurate binary classifier, good cross-identification results can be obtained using our method. Future work could even combine multiple catalogues or physical priors to boost performance.
 
-  Nearest neighbours approachs outperform most methods we investigated, notably including Radio Galaxy Zoo. This is likely due to the large number of compact or partially-resolved objects in ATLAS. This result shows that for compact
-  objects, methods that do not use machine learning such as a
-  nearest-neighbours approach or likelihood ratio (Weston et al. in prep) should be
-  preferred to machine learning methods.
+  Nearest neighbours approaches outperform most methods we investigated, notably including Radio Galaxy Zoo. This is due to the large number of compact or partially-resolved objects in ATLAS. This result shows that for compact and partially-resolved objects methods that do not use machine learning such as a nearest-neighbours approach or likelihood ratio (Weston et al. in press) should be preferred to machine learning methods. It also shows that ATLAS is not an ideal data set for developing machine learning methods like ours. Our use of ATLAS is motivated by its status as a pilot survey for EMU, so methods developed for ATLAS should also work for EMU. New methods developed should work well with extended radio sources, but this goal is almost unsupported by ATLAS as it has very few examples of such sources. This makes both training and testing difficult --- there are too few extended sources to train on and performance on such a small test set may be unreliable. Larger data sets with many extended sources like FIRST exist, but these are considerably less deep than and at a different resolution to EMU, so there is no reason to expect methods trained on such data sets to be applicable to EMU.
 
   The accuracies of our trained cross-identification methods generally fall
   far below the best possible accuracy attainable using our approach, indicated
@@ -947,7 +943,7 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
 \section{Acknowledgements}
 
-  This publication has been made possible by the participation of more than 11~000 volunteers in the Radio Galaxy Zoo project. Their contributions are individually acknowledged at \url{http://rgzauthors.galaxyzoo.org}. Parts of this research were conducted by the Australian Research Council Centre of Excellence for All-sky Astrophysics (CAASTRO), through project number CE110001020. Partial support for LR was provided by U.S. National Science Foundation grants AST1211595 and 1714205 to the University of Minnesota. HA benefitted from grant 980/2016-2017 of Universidad de Guanajuato. Radio Galaxy Zoo makes use of data products from the Wide-field Infrared Survey Explorer and the Very Large Array. The Wide-field Infrared Survey Explorer is a joint project of the University of California, Los Angeles, and the Jet Propulsion Laboratory/California Institute of Technology, funded by the National Aeronautics and Space Administration. The National Radio Astronomy Observatory is a facility of the National Science Foundation operated under cooperative agreement by Associated Universities, Inc. This research has made use of the NASA/IPAC Extragalactic Database (NED) which is operated by the Jet Propulsion Laboratory, California Institute of Technology, under contract with the National Aeronautics and Space Administration. The figures in this work made use of Astropy, a community-developed core Python package for Astronomy \citep{astropy}. The Australia Telescope Compact Array is part of the Australia Telescope, which is funded by the Commonwealth of Australia for operation as a National Facility managed by CSIRO. We thank A.~Tran and C.~Wolf for their comments and discussion of this manuscript.
+  This publication has been made possible by the participation of more than 11~000 volunteers in the Radio Galaxy Zoo project. Their contributions are individually acknowledged at \url{http://rgzauthors.galaxyzoo.org}. Parts of this research were conducted by the Australian Research Council Centre of Excellence for All-sky Astrophysics (CAASTRO), through project number CE110001020. Partial support for LR was provided by U.S. National Science Foundation grants AST1211595 and 1714205 to the University of Minnesota. HA benefitted from grant 980/2016-2017 of Universidad de Guanajuato. Radio Galaxy Zoo makes use of data products from the Wide-field Infrared Survey Explorer and the Very Large Array. The Wide-field Infrared Survey Explorer is a joint project of the University of California, Los Angeles, and the Jet Propulsion Laboratory/California Institute of Technology, funded by the National Aeronautics and Space Administration. The National Radio Astronomy Observatory is a facility of the National Science Foundation operated under cooperative agreement by Associated Universities, Inc. This research has made use of the NASA/IPAC Extragalactic Database (NED) which is operated by the Jet Propulsion Laboratory, California Institute of Technology, under contract with the National Aeronautics and Space Administration. The figures in this work made use of Astropy, a community-developed core Python package for Astronomy \citep{astropy}. The Australia Telescope Compact Array is part of the Australia Telescope, which is funded by the Commonwealth of Australia for operation as a National Facility managed by CSIRO. We thank A.~Tran for his comments on this manuscript.
 
 %
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%

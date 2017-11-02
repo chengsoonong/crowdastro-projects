@@ -89,10 +89,10 @@ def print_table(field='cdfs'):
     table = astropy.table.Table(
         data=[swires, ras, decs] + [predictor_columns[p] for p in known_predictors],
         names=['SWIRE', 'RA', 'Dec'] + known_predictors)
-    table.write('/Users/alger/data/Crowdastro/predicted_swire_table_{}_19_08_17.csv'.format(field), format='csv')
+    table.write('/Users/alger/data/Crowdastro/predicted_swire_table_{}_30_10_17.csv'.format(field), format='csv')
     for p in known_predictors:
         table[p].format = '{:.4f}'
-    table.write('/Users/alger/data/Crowdastro/predicted_swire_table_{}_19_08_17.tex'.format(field), format='latex')
+    table.write('/Users/alger/data/Crowdastro/predicted_swire_table_{}_30_10_17.tex'.format(field), format='latex')
 
 
 if __name__ == '__main__':
