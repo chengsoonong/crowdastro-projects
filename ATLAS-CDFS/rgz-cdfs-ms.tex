@@ -37,28 +37,28 @@
 
 %%%%%%%%%%%%%%%%%%% TITLE PAGE %%%%%%%%%%%%%%%%%%%
 
-\title[Machine learning methods for radio source cross-identification]{Radio Galaxy Zoo: Machine learning methods for radio source host galaxy cross-identification}
+\title[Machine learning for radio cross-identification]{Radio Galaxy Zoo: Machine learning for radio source host galaxy cross-identification}
 
-\author[Alger et al.]{M.~J.~Alger$^{1, 2}$ et al.%,
-  % J.~K.~Banfield$^{1, 3}$,
-  % C.~S.~Ong$^{2, 4}$,
-  % C.~Wolf$^{1, 3}$,
-  % O.~I.~Wong$^{5, 3}$,
-  % H.~Andernach$^{6}$,
-  % \newauthor
-  % R.~P.~Norris$^{7, 8}$,
-  % L.~Rudnick$^{9}$
+\author[Alger et al.]{M.~J.~Alger$^{1, 2}$\thanks{Email: \href{mailto:matthew.alger@anu.edu.au}{matthew.alger@anu.edu.au}},
+  J.~K.~Banfield$^{1, 3}$,
+  C.~S.~Ong$^{2, 4}$,
+  L.~Rudnick$^{5}$,
+  O.~I.~Wong$^{6, 3}$,
+  C.~Wolf$^{1, 3}$,
+  \newauthor
+  H.~Andernach$^{7}$,
+  R.~P.~Norris$^{8, 9}$
 \\
 % List of institutions
 $^{1}$Research School of Astronomy and Astrophysics, The Australian National University, Canberra, ACT 2611, Australia\\
 $^{2}$Data61, CSIRO, Canberra, ACT 2601, Australia\\
-% $^{3}$ARC Centre of Excellence for All-Sky Astrophysics (CAASTRO)\\
-% $^{4}$Research School of Computer Science, The Australian National University, Canberra, ACT 2601, Australia\\
-% $^{5}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia\\
-% $^{6}$Departamento de Astronom\'ia, DCNE, Universidad de Guanajuato, Apdo. Postal 144, CP 36000, Guanajuato, Gto., Mexico\\
-% $^{7}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
-% $^{8}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia\\
-% $^{9}$Minnesota Institute for Astrophysics, University of Minnesota, 116 Church St. SE, Minneapolis, MN 55455
+$^{3}$ARC Centre of Excellence for All-Sky Astrophysics (CAASTRO)\\
+$^{4}$Research School of Computer Science, The Australian National University, Canberra, ACT 2601, Australia\\
+$^{5}$Minnesota Institute for Astrophysics, University of Minnesota, 116 Church St. SE, Minneapolis, MN 55455\\
+$^{6}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia\\
+$^{7}$Departamento de Astronom\'ia, DCNE, Universidad de Guanajuato, Apdo. Postal 144, CP 36000, Guanajuato, Gto., Mexico\\
+$^{8}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
+$^{9}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
 }
 
 % These dates will be filled out by the publisher
@@ -75,26 +75,13 @@ $^{2}$Data61, CSIRO, Canberra, ACT 2601, Australia\\
 
 % Abstract of the paper
 \begin{abstract}
-  Radio source host galaxy cross-identification is the problem of determining
-  the host galaxies of radio sources. While this is possible by hand, manual cross-identification is intractable for wide-area radio surveys. We
-  propose a method for reducing the cross identification task to the standard
-  machine learning task of binary classification. We apply our methods to the
-  $1.4$~GHz Australian Telescope Large Area Survey (ATLAS) observations of the
-  \emph{Chandra} Deep Field South (CDFS) and the ESO Large Area ISO Survey
-  South 1 (ELAIS-S1) fields, cross-identifying them with the \emph{Spitzer}
-  Wide-area Infrared Extragalactic survey (SWIRE). We compare two sets of
-  training data: expert cross-identifications of CDFS from the initial ATLAS
-  data release and crowdsourced cross-identifications of CDFS from Radio
-  Galaxy Zoo. Our results show that the cross-identification accuracy of the
-  predictor trained on Radio Galaxy Zoo cross-identifications is comparable to
-  the predictor trained on expert cross-identifications, demonstrating the
-  value of crowdsourced training data.
+  Radio source host galaxy cross-identification is the problem of determining the host galaxies of radio sources. While this is possible by hand, manual cross-identification is intractable for wide-area radio surveys like the Evolutionary Map of the Universe (EMU). We present a method for reducing the cross identification task to the standard machine learning task of binary classification. We apply our methods to the $1.4$~GHz Australian Telescope Large Area Survey (ATLAS) observations of the \emph{Chandra} Deep Field South (CDFS) and the ESO Large Area ISO Survey South 1 (ELAIS-S1) fields, cross-identifying them with the \emph{Spitzer} Wide-area Infrared Extragalactic survey (SWIRE). We compare two sets of training data: expert cross-identifications of CDFS from the initial ATLAS data release and crowdsourced cross-identifications of CDFS from Radio Galaxy Zoo. We found a nearest neighbour approach outperforms our trained methods, likely resulting from ATLAS containing a low number of extended radio sources. Larger areas of sky containing more extended sources will be required for training methods such as ours to work with EMU. Our results show that the cross-identification accuracy of the predictor trained on Radio Galaxy Zoo cross-identifications is comparable to the predictor trained on expert cross-identifications, demonstrating the value of crowdsourced training data.
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
 % Don't make up new ones.
 \begin{keywords}
-galaxies: active -- galaxies: clusters -- radio continuum: galaxies
+methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio continuum: galaxies -- infrared: galaxies\\
 \end{keywords}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -927,23 +914,26 @@ galaxies: active -- galaxies: clusters -- radio continuum: galaxies
 
 \section{Summary}
 
-  We present a machine learning approach for cross-identification of radio
-  components with their corresponding infrared host galaxy. We trained our
-  methods on expert and crowdsourced cross-identification catalogues, and
-  applied these methods on the CDFS and ELAIS-S1 fields of ATLAS. The Radio
-  Galaxy Zoo-trained models performed comparably to the expert-trained models
-  on the cross-identification task, showing that crowdsourced labels are
-  useful for training machine learning methods for cross-identification. While
-  our cross-identification performance is not as high as desired, we
+  We presented a machine learning approach for cross-identification of radio
+  components with their corresponding infrared host galaxy. Using the CDFS field of ATLAS as a training set we trained our
+  methods on expert and crowdsourced cross-identification catalogues. Applying these methods on both fields of ATLAS, we found that:
+  \begin{itemize}
+    \item Our method trained on ATLAS observations of CDFS generalised to ATLAS observations of ELAIS-S1, demonstrating that training on a single patch of sky is a feasible option for training machine learning methods for wide-area radio surveys;
+    \item Performance was comparable to nearest neighbours even on resolved sources, showing that nearest neighbours is useful for largely unresolved datasets such as ATLAS and EMU;
+    \item Radio Galaxy Zoo-trained models performed comparably to expert-trained models, showing that crowdsourced labels are useful for training machine learning methods for cross-identification even when these labels are noisy;
+    \item ATLAS does not contain sufficient data to train or test machine learning cross-identification methods for extended radio sources. This suggests that if machine learning methods are to be used on EMU, a larger area of sky will be required for training and testing these methods. However, existing surveys like FIRST are too different from EMU to expect good generalisation.
+  \end{itemize}
+
+  While our cross-identification performance is not as high as desired, we
   make no assumptions on the binary classification model used in our methods
   and so we expect the performance to be improved by further experimentation
   and model selection. Our method provides a useful framework for generalising
-  cross-identification catalogues to other areas of the sky and can be
+  cross-identification catalogues to other areas of the sky from the same radio survey and can be
   incorporated into existing methods.
 
 \section{Acknowledgements}
 
-  This publication has been made possible by the participation of more than 11~000 volunteers in the Radio Galaxy Zoo project. Their contributions are individually acknowledged at \url{http://rgzauthors.galaxyzoo.org}. Parts of this research were conducted by the Australian Research Council Centre of Excellence for All-sky Astrophysics (CAASTRO), through project number CE110001020. Partial support for LR was provided by U.S. National Science Foundation grants AST1211595 and 1714205 to the University of Minnesota. HA benefitted from grant 980/2016-2017 of Universidad de Guanajuato. Radio Galaxy Zoo makes use of data products from the Wide-field Infrared Survey Explorer and the Very Large Array. The Wide-field Infrared Survey Explorer is a joint project of the University of California, Los Angeles, and the Jet Propulsion Laboratory/California Institute of Technology, funded by the National Aeronautics and Space Administration. The National Radio Astronomy Observatory is a facility of the National Science Foundation operated under cooperative agreement by Associated Universities, Inc. This research has made use of the NASA/IPAC Extragalactic Database (NED) which is operated by the Jet Propulsion Laboratory, California Institute of Technology, under contract with the National Aeronautics and Space Administration. The figures in this work made use of Astropy, a community-developed core Python package for Astronomy \citep{astropy}. The Australia Telescope Compact Array is part of the Australia Telescope, which is funded by the Commonwealth of Australia for operation as a National Facility managed by CSIRO. We thank A.~Tran for his comments on this manuscript.
+  This publication has been made possible by the participation of more than 11~000 volunteers in the Radio Galaxy Zoo project. Their contributions are individually acknowledged at \url{http://rgzauthors.galaxyzoo.org}. Parts of this research were conducted by the Australian Research Council Centre of Excellence for All-sky Astrophysics (CAASTRO), through project number CE110001020. Partial support for LR was provided by U.S. National Science Foundation grants AST1211595 and 1714205 to the University of Minnesota. HA benefitted from grant 980/2016-2017 of Universidad de Guanajuato. We thank A.~Tran for his comments on this manuscript. Radio Galaxy Zoo makes use of data products from the Wide-field Infrared Survey Explorer and the Very Large Array. The Wide-field Infrared Survey Explorer is a joint project of the University of California, Los Angeles, and the Jet Propulsion Laboratory/California Institute of Technology, funded by the National Aeronautics and Space Administration. The National Radio Astronomy Observatory is a facility of the National Science Foundation operated under cooperative agreement by Associated Universities, Inc. This research has made use of the NASA/IPAC Extragalactic Database (NED) which is operated by the Jet Propulsion Laboratory, California Institute of Technology, under contract with the National Aeronautics and Space Administration. The figures in this work made use of Astropy, a community-developed core Python package for Astronomy \citep{astropy}. The Australia Telescope Compact Array is part of the Australia Telescope, which is funded by the Commonwealth of Australia for operation as a National Facility managed by CSIRO.
 
 %
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
