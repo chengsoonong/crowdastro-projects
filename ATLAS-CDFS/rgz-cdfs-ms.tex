@@ -13,6 +13,7 @@
 \usepackage{natbib}
 \usepackage{aastexmacros}
 \usepackage{tikz}
+\usepackage[algoruled]{algorithm2e}
 \usepackage[caption=false]{subfig}
 \usepackage[mediumspace,mediumqspace,Grey,squaren]{SIunits}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -26,12 +27,17 @@
 \newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng TODO:~{#1}}]} }
 \newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
+\newcommand{\edit}[1]{ {\color{red}[{\bf Edit:~{#1}}]} }
 
 
 \newcommand{\underset}[2]{\mathop{#2}\limits_{#1}}
 
 \let\subsectionautorefname\sectionautorefname
 \let\subsubsectionautorefname\sectionautorefname
+
+\makeatletter
+\newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
+\makeatother
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -299,67 +305,37 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \label{fig:flowchart}
     \end{figure}
 
-    We propose a two-step method for host galaxy cross-identification. Given a radio component, we want to find the
-    corresponding host galaxy as a human would. The input is a $2' \times 2'$
-    radio image and a corresponding infrared image to match the size of the
-    images used by Radio Galaxy Zoo. We make the assumption that each radio
-    image represents a single, complex extended source. This limitation is
-    discussed in \autoref{sec:limitations}. The radio cross-identification
-    task is then formalised as the computer vision problem of object localisation: given a radio
-    image and an infrared image centred on a radio component, locate the host
-    galaxy of the source containing the radio component.
+    \begin{algorithm}
+        \KwData{\\\quad{}A $2 \times 2$ arcmin radio image of a radio component%
+                \\\quad{}A set of infrared candidate host galaxies $\mathcal G$%
+                \\\quad{}A binary classifier $f : \mathbb R^d \to [0, 1]$}
+        \KwResult{A galaxy $g \in \mathcal G$}
 
-    A common approach to object localisation is to estimate the probability
-    that each location in an image is coincident with the desired object,
-    called a sliding window method \citep[e.g.][]{rowley1996facedetection}.
-    Fixed-size windows of the image are taken centred on each pixel and we
-    estimate the probability that the pixel is the location of the object.
-    This task can be made more efficient if we assume that the host galaxy is
-    always detected in the infrared. We then only consider windows centred on
-    infrared sources, which we call `candidate host galaxies'. This assumption
-    usually holds in CDFS, except for a rare class of infrared-faint radio
-    sources\footnote{\citet{norris06} found 22 such radio sources in their
-    sample of 784 bright ATLAS components in CDFS.}. This defines a binary
-    classification task where given a candidate host galaxy we compute the
-    probability that it is a host galaxy. We refer to this binary
-    classification task as the `galaxy classification task'. To find the host
-    galaxy given a radio source, we can classify each galaxy within 1~arcmin
-    of the source and select the host galaxy based on the probability output
-    by a classifier. We refer to this as the `cross-identification task'. This is a two-step task as we first solve the galaxy classification task without reference to any specific radio object, and then use these results to solve the cross-identification task. Our
-    approach is illustrated in \autoref{fig:windows}.
+        $max \leftarrow -\infty$\;
+        $host \leftarrow \emptyset$\;
+        \For{$g \in \mathcal G$}{
+          $x \leftarrow$ a $d$-dimensional vector representation of $g$ (\autoref{vector-representation-of-infrared-sources})\;
+          $score \leftarrow f(x)$\;
+          \If{$score > max$}{
+            $max \leftarrow score$\;
+            $host \leftarrow g$\;
+          }
+        }
 
-    Solving the galaxy classification task amounts to modelling a function $f$
-    from the set of infrared sources $\mathcal{X}$ to the probability that an infrared
-    source belongs to a binary class in $\mathcal{Y} = \{0, 1\}$:
-    \begin{equation}
-        f(x) \coloneqq \text{Pr}\left(\mathcal{Y} = 1 \mid \mathcal X = x\right)\,\,\,\,.
-    \end{equation}
-    The space of infrared sources $\mathcal{X}$ needs to be encoded as a vector
-    for the models we will use. We describe this in
-    \autoref{vector-representation-of-infrared-sources}. There are many options
-    for modelling $f$. In this paper we apply three different models: logistic
-    regression, random forests, and convolutional neural networks.
+        \KwRet{$host$}
+        \caption{\edit{Added this algorithm to clarify the approach.} Cross-identifying a radio component given an image of the component, a catalogue of infrared candidate host galaxies and a binary classifier.}
+        \label{alg:xid}
+    \end{algorithm}
 
-    Note that $f(x)$ is independent of any particular radio object. The galaxy classification task aims to answer the general question of whether a given galaxy is the host galaxy of \emph{any} radio component. The cross-identification task, however, attempts to cross-identify a \emph{specific} radio component. It is unclear how to pass radio component-specific information into the classifiers. Instead, we assume that the probability that a given candidate host $x$ is associated with a given radio component $r$ is the probability that $x$ is a host weighted by some radio-component specific value $g(x, r)$:
-    \[
-      \mbox{Pr}(x \text{ is host of } r) = f(x) g(x, r).
-    \]
-    We then want to maximise $\mbox{Pr}(x \text{ is host of } r)$ to solve the cross-identification task. One approach would be to select the candidate galaxy with the highest estimated class probability, i.e. take $g(x, r) = 1$ and let the host galaxy be the candidate galaxy $x$ that maximises $f(x)$. This fails if there are multiple host galaxies within the $2' \times
-    2'$ image. An example of such an image is shown in \autoref{fig:broken-isolation}. Instead, we take $g$ to be a Gaussian function of
-    the angular separation of the candidate host from the radio component we want to cross-identify. The Gaussian essentially acts as a prior for the host galaxy location. The width of the
-    Gaussian, $\sigma$, controls the influence of the Gaussian on the final
-    cross-identification. When $\sigma$ is small, our approach is
-    equivalent to a nearest-neighbours approach where we select the nearest
-    infrared object to the radio component as the host galaxy. In the limit
-    where $\sigma \to \infty$, we maximise the probability output by the
-    classifier as above. We take $\sigma = 30''$ as this was the best value found by a grid search.
+    We propose a two-step method for host galaxy cross-identification \edit{Clarified what we will do in this section} which we will derive now. Given a radio component, we want to find the corresponding host galaxy as a human would. \edit{Clarified what kind of image we're using and moved IR stuff to a footnote} The input is a $2' \times 2'$ radio\footnote{Other wavelengths --- notably infrared --- might be useful, but we defer this for now as it complicates the task. Infrared information is instead incorporated separately in our method.} image of the sky matching the size of the images used by Radio Galaxy Zoo. \edit{Explained why we make the assumption and added a footnote.} To avoid solving the separate task of identifying which radio components are associated with the same source, we make the assumption that each radio image represents a single, complex extended source\footnote{Limitations of this assumption are discussed in \autoref{sec:limitations}.}. The radio cross-identification task can then be formalised as follows: given a radio image centred on a radio component, locate the host galaxy of the source containing this radio component. This is a standard computer vision problem called \emph{object detection}, and we apply a common technique called a \emph{sliding window} \citep{rowley1996facedetection}.
 
-    We can improve upon this method by filtering out compact radio sources,
-    which are much easier to cross-identify --- the nearest SWIRE object may
-    be identified as the host galaxy, or a more complex method such as
-    likelihood ratios may be applied (see Weston et al. in press). A full
-    cross-identification pipeline making use of this alongside a binary
-    classifier is shown in \autoref{fig:flowchart}.
+    \edit{Cleaned up this paragraph and made definitions clearer; made definition formatting consistent.} In sliding window object detection, the goal is to estimate the probability that each pixel in an image coincides with the desired object. Square cutouts (called \emph{windows}) are taken centred on each pixel and these cutouts are used to represent that pixel. We then estimate the probability that a given cutout is centred on the object that we want to find. To find the object, we then choose the pixel with maximum probability. To improve the efficiency of this process, we only consider cutouts centred on infrared sources --- otherwise we have to estimate probabilities for every pixel in the image\footnote{This approach implicitly assumes that host galaxies are always visible in the infrared, an assumption we discuss in \autoref{sec:limitations}.}. We call these infrared sources \emph{candidate host galaxies}. Using candidate host galaxies instead of pixels also allows us to include ancillary information about the candidate host galaxies, such as their infrared colours and redshifts.
+
+    \edit{Changed wording of `defines a binary classification task' and rewrote the paragraph for clarity. Added a preamble about what binary classification is, which should make it clearer why this is actually a binary classification task. Replaced `task' with `method' to reduce ambiguous wording since machine learning and astrophysics use `task' for different purposes. Clarified the relationship between the GCT and the XID tasks.} A common method in machine learning is \emph{binary classification}, where objects are to be assigned to one of two classes, called the \emph{positive} and \emph{negative} classes. This assignment is represented by the probability that a object is in the positive class. A \emph{binary classifier} is a function mapping from an object to such a probability. Our formulation of cross-identification is equivalent to binary classification of candidate host galaxies: the positive class represents host galaxies, the negative class represents non-host galaxies, and to cross-identify a radio component we find the candidate host galaxy maximising the positive class probability. We therefore split cross-identification into two separate tasks: the \emph{cross-identification task} where, given a radio component, we wish to find its host galaxy; and the \emph{galaxy classification task} where, given a candidate host galaxy, we wish to determine whether it is a host galaxy of \emph{any} radio component. The galaxy classification task is a traditional machine learning problem which results in a binary classifier. The cross-identification task maximises over probabilities output by this classifier. Our approach is illustrated in \autoref{fig:windows} and described in \autoref{alg:xid}. We refer to the binary classifier mapping from a candidate host galaxy to a probability as $f$. \edit{Stopped referring to infrared sources as an abstract set $\mathcal X$ and instead changed this paragraph to be more concrete.} To implement $f$ as a function that accepts candidate host galaxies as input, we need to represent candidate host galaxies by vectors. We describe this in \autoref{vector-representation-of-infrared-sources}. There are many options for modelling $f$. In this paper we apply three different models: logistic regression, random forests and convolutional neural networks.
+
+    Note that we first solve the galaxy classification task without reference to any specific radio object, and then use this result to solve the cross-identification task for a specific radio component. This is necessary to be able to find a binary classifier in the galaxy classification task --- we need multiple positive examples (i.e. host galaxies) to train a model, but for any specific radio component there is only one host galaxy. As a result, the galaxy classification task aims to answer the general question of whether a given galaxy is the host galaxy of \emph{any} radio component, while the cross-identification task attempts to cross-identify a \emph{specific} radio component. Our method therefore gives incorrect results if there are multiple host galaxies within the $2' \times 2'$ image. An example of such an image is shown in \autoref{fig:broken-isolation}. It is unclear how to pass radio component-specific information into the binary classifier. Instead, we weight the estimated probabilities by a Gaussian function of angular separation between the radio component and each candidate host galaxy and maximise this weighted probability. The width of the Gaussian, $\sigma$, controls the influence of the Gaussian on the final cross-identification. When $\sigma$ is small, our approach is equivalent to a nearest-neighbours approach where we select the nearest infrared object to the radio component as the host galaxy. In the limit where $\sigma \to \infty$, we maximise the probability output by the classifier as above. We take $\sigma = 30''$ as this was the best value found by a grid search.
+
+    We can improve upon this method by cross-identifying compact radio sources separately to extended sources, as compact sources are much easier to cross-identify. For a compact source, the nearest SWIRE object may be identified as the host galaxy (a \emph{nearest-neighbours} approach), or a more complex method such as likelihood ratios may be applied (see Weston et al. in press). We cross-identify compact sources separately in our pipeline and this process is shown in \autoref{fig:flowchart}.
 
   \subsection{Limitations of our approach}
     \label{sec:limitations}
@@ -413,35 +389,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     These assumptions limit the effectiveness of our approach, regardless of
     how accurate our binary classification may be.
 
-    The main limitation is in choosing the image width and candidate search
-    radius. If the radio image does not contain the whole source, then we are
-    missing radio information useful for finding the host galaxy. If the radio
-    image contains multiple sources, then we may be giving our classifiers
-    irrelevant information. If the search radius is too small, we may not
-    consider the host galaxy as a candidate. If the search radius is too
-    large, we may consider multiple host galaxies (though this is somewhat
-    mediated by the Gaussian multiplier). These kinds of size problems are
-    difficult even for non-automated methods as radio sources can be extremely
-    wide --- for example, Radio Galaxy Zoo found a radio giant that spanned
-    over three different images presented to volunteers and the full source
-    was only cross-identified by the efforts of citizen scientists
-    \citep{banfield15}. An example of a radio image where part of the radio
-    source is outside the search radius is shown in
-    \autoref{fig:broken-contains}.
+    \edit{Merged this paragraph and the next one, and clarified the relationship between the two limitations i.e. problems of scale.} The main limitations are problems of scale in choosing the candidate search radius and the size of the radio image cutouts representing candidates. If the search radius is too small, we may not consider the host galaxy as a candidate. If the search radius is too large, we may consider multiple host galaxies (though this is somewhat mediated by the Gaussian multiplier). If the cutout is too small, radio emission may extend past the edges of the window and we may miss critical information required to identify the galaxy as a host galaxy. If the cutout is too large, then irrelevant information will be included and it may be difficult or computationally expensive to classify. We chose a window size of $32 \times 32$ pixels, corresponding to approximately $48'' \times 48''$ in ATLAS. This is shown as red rectangles in \autoref{fig:windows} and \autoref{fig:broken-window-size}. These kinds of size problems are difficult even for non-automated methods as radio sources can be extremely wide --- for example, Radio Galaxy Zoo found a radio giant that spanned over three different images presented to volunteers and the full source was only cross-identified by the efforts of citizen scientists \citep{banfield15}. An example of a radio image where part of the radio source is outside the search radius is shown in \autoref{fig:broken-contains}.
 
-    A related issue is that we need to choose a window size for the radio image
-    representations of each infrared object. If this image is too small, radio
-    emission may extend past the edges of the window, and it may be impossible
-    to identify the galaxy as a host galaxy. If the image is too large, then
-    too much information will be included and it will be difficult or
-    computationally expensive to classify. We chose a window size of $32
-    \times 32$ pixels, corresponding to approximately $48'' \times 48''$ in
-    ATLAS. This is shown as red rectangles in \autoref{fig:windows} and
-    \autoref{fig:broken-window-size}.
-
-    The assumption that the host galaxy of a radio component is closer on the
-    sky to the radio component than any other host galaxy is required for the
-    Gaussian distance weighting to correctly break ties.
+    The assumption that the host galaxy of a radio component is closer on the sky to the radio component than any other host galaxy is required for the Gaussian distance weighting to correctly break ties. \matthew{Cheng}{Clarify this assumption.}
 
     We only need the assumption that the host galaxy appears in SWIRE to
     incorporate galaxy-specific features
@@ -456,20 +406,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \subsection{Feature vector representation of infrared sources}
   \label{vector-representation-of-infrared-sources}
 
-    Classification methods require that the inputs to be classified are
-    represented by an array of real values called feature vectors. We thus
-    need to choose a feature vector representation of our candidate host
-    galaxies.
-
-    We use the SWIRE catalogue to find candidate
-    hosts to classify. Candidates are represented by a a 32 $\times$ 32 pixel radio image from
-    ATLAS, centered on the location of the candidate.
-    The candidate host location and infrared colours encode
-    almost all information we could gain from the infrared image, so we
-    do not use the infrared image in this work.
-
-    We represent each candidate host as 1034 real-valued features. For a given
-    candidate host, these features are:
+    \edit{Simplified this paragraph and clarified why we chose these features; added linking to \autoref{cross-identification-as-binary-classification}.} Inputs to classifiers must be represented by an array of real values called feature vectors. We therefore need to choose a feature vector representation of our candidate host galaxies. Candidate hosts are sourced from the SWIRE catalogue (\autoref{sec:swire}). We represent each candidate host as 1034 real-valued features, combining the cutouts described in \autoref{cross-identification-as-binary-classification} and infrared ancillary data from the SWIRE catalogue. For a given candidate host, these features are:
     \begin{itemize}
       \item the 6 logarithms of the ratios of fluxes of the candidate
         host at the four IRAC wavelengths;
@@ -482,26 +419,11 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         \times 48''$), centred on the candidate host.
     \end{itemize}
 
-    The infrared fluxes provide insight into the properties of the host galaxy
-    of the radio emission. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace
-    both galaxies with faint polycyclic aromatic hydrocarbon (PAH) emission and
-    elliptical galaxies dominated by old stellar populations. The
-    \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission
-    is dominated by non-equilibrium emission of dust grains (PAH destruction
-    by the hard UV spectrum of AGN), while the \unit{8.0}{\micro\meter} flux
-    traces strong PAH emission at low redshift \citep{Sajina2005}.
-    The stellarity index represents how likely the object is to be a star rather than a galaxy \citep{surace05swire}.
+    The infrared fluxes provide insight into the properties of the host galaxy of the radio emission. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace both galaxies with faint polycyclic aromatic hydrocarbon (PAH) emission and elliptical galaxies dominated by old stellar populations. The \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission is dominated by non-equilibrium emission of dust grains (PAH destruction
+    by the hard UV spectrum of AGN), while the \unit{8.0}{\micro\meter} flux traces strong PAH emission at low redshift \citep{Sajina2005}. The stellarity index represents how likely the object is to be a star rather than a galaxy \citep{surace05swire}.
 
-    We use the pixels of each $32 \times 32$ radio image as independent
-    features for all classifiers, with the convolutional neural network
-    automatically extracting
-    features that are relevant. Other features of the radio components may be used instead of the pixel values, but there has been limited research on extracting
-    such features. \citet{proctor06} describes hand-selected
-    features for radio doubles in FIRST, and \citet{aniyan17cnn} and
-    Lukic et al. (in prep) make use of deep convolutional neural networks
-    which automatically extract features as part of classification. A more
-    comprehensive investigation of features is beyond the scope of this initial study, and is a good
-    avenue for potential improvement in our pipeline.
+    We use the pixels of each $32 \times 32$ radio image as independent features for all classifiers, with the convolutional neural network
+    automatically extracting features that are relevant. Other features of the radio components may be used instead of the pixel values, but there has been limited research on extracting such features. \citet{proctor06} describes hand-selected features for radio doubles in FIRST, and \citet{aniyan17cnn} and Lukic et al. (in press) make use of deep convolutional neural networks which automatically extract features as part of classification. A more comprehensive investigation of features is beyond the scope of this initial study, and is a good avenue for potential improvement in our pipeline.
 
   \subsection{Classifiers}\label{sec:classifiers}
 
@@ -563,18 +485,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \label{fig:distribution-cutoffs}
     \end{figure}
 
-    Converting the Radio Galaxy Zoo and \citet{norris06} cross-identification
-    catalogues to binary labels for infrared objects is a non-trivial task. One problem is that there is no clear way to capture radio morphology
-    information in binary classification of infrared objects. Another problem is that there is no way to indicate
-    \emph{which} radio object an infrared object is associated with, only that
-    it is associated with \emph{some} radio object. We ignore these problems
-    for this paper and make the na\"ive
-    assumption that any given search radius contains only one host galaxy. This allows us to assume that if a candidate host galaxy in the search radius of a component is not the host galaxy of that component, then it is not a host galaxy at all.
+    \edit{Clarified this paragraph and removed mention of how non-trivial this task is.} The Radio Galaxy Zoo and \citet{norris06} cross-identification catalogues must be converted to binary labels for infrared objects so that they can be used to train classifiers. One problem is that there is no clear way to capture radio morphology information in binary classification of infrared objects. Another problem is that there is no way to indicate \emph{which} radio object an infrared object is associated with, only that it is associated with \emph{some} radio object. We ignore these problems for this paper and make the na\"ive assumption that any given search radius contains only one host galaxy. This allows us to assume that if a candidate host galaxy in the search radius of a component is not the host galaxy of that component, then it is not a host galaxy at all. This is not ideal as it discards information about whether a candidate host is not a host galaxy, or whether it was just not acknowledged as a host galaxy in the catalogue, but this ambiguity can be treated as a source of label noise and will not strongly affect training.
 
     We then generate positive labels from a cross-identification catalogue.
     We decide that if an infrared object is listed in the catalogue, then it
     is assigned a positive label as a host galaxy. We then assign every other galaxy a negative label. This has some problems
-    --- an example is that if the cross-identifier did not observe a radio
+    --- an example is that if the catalogue did not include a radio
     object (e.g.~it was below the signal-to-noise ratio) then the host galaxy
     of that radio object would receive a negative label. This occurs with
     \citet{norris06} cross-identifications, as these are associated with the
@@ -618,9 +534,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
                {S_{\text{peak}}}
         \right)^2}\,\,\,\,,
     \end{equation}%
-    where \(S_{\text{int}}\) is the integrated flux density and
-    \(S_{\text{peak}}\) is the peak flux density
-    \citep[following][]{franzen15}.
+    \edit{Defined $\sigma$.} where \(S_{\text{int}}\) is the integrated flux density, \(S_{\text{peak}}\) is the peak flux density, $\sigma_{S_{\text{int}}}$ is the uncertainty in integrated flux density and $\sigma_{S_{\text{peak}}}$ is the uncertainty in peak flux density \citep[following][]{franzen15}.
 
     Candidate hosts were selected from the SWIRE catalogue. For a given subset
     of radio components, all SWIRE objects within 1~arcmin of all radio
@@ -766,21 +680,11 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     \begin{figure*}
         \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.6cm}, clip, width=0.33\textwidth]{images/example_15_454.pdf}}%
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_14_424.pdf}}%
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_13_415.pdf}}%
         \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.6cm}, clip, width=0.33\textwidth]{images/example_12_404.pdf}}%
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_11_306.pdf}}%
         \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.6cm}, clip, width=0.33\textwidth]{images/example_2_68.pdf}}
 
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_9_264.pdf}}%
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_8_239.pdf}}
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_7_207.pdf}}%
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_6_197.pdf}}%
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_5_113.pdf}}%
         \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.6cm}, clip, width=0.33\textwidth]{images/example_4_106.pdf}}%
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_3_86.pdf}}%
         \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.6cm}, clip, width=0.33\textwidth]{images/example_10_298.pdf}}%
-        % \subfloat[]{\includegraphics[width=0.25\textwidth]{images/example_1_30.pdf}}%
         \subfloat[]{\includegraphics[trim={0cm 1cm 3.5cm 2.6cm}, clip, width=0.33\textwidth]{images/example_0_0.pdf}}%
         \caption{\label{fig:examples} Examples of resolved sources where the incorrect cross-identification was selected by random forests trained on expert labels. Classifier/training set combinations are denoted $C(S)$ where $C$ is the classifier and $S$ is the training set. `LR' is logistic regression, `CNN' is convolutional neural networks, and `RF' is random forests. `Norris' refers to the expert labels and `RGZ' refers to the Radio Galaxy Zoo labels. The cross-identification made by nearest neighbours is shown by `NN'. The background image is the \unit{3.6}{\micro\meter} SWIRE image. The contours show ATLAS radio data and increase geometrically from a signal-to-noise ratio of 4.}
     \end{figure*}
@@ -941,243 +845,6 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 \bibliography{rgz-cdfs-ms}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \clearpage
-% \appendix
-% \section{Tables of accuracies}
-
-% In \autoref{tab:average-accuracies} and \autoref{tab:average-accuracies-elais}
-% we list the balanced accuracies of classifiers on CDFS and ELAIS-S1
-% respectively, averaged over quadrants. In \autoref{tab:cross-id-accuracies}
-% and \autoref{tab:cross-id-accuracies-elais} we list the accuracies of our
-% method on the cross-identification task on CDFS and ELAIS-S1 respectively,
-% averaged over quadrants.
-
-% \begin{table*}
-%   \caption{Average balanced accuracies across quadrants shown in
-%     \autoref{fig:ba} for CDFS. Uncertainties represent standard
-%     deviations. The classifiers were trained and tested on compact
-%     sources, resolved sources, and all sources separately. `Labeller'
-%     indicates what label set the classifiers were trained on. `Norris' is
-%     the expert label set, `RGZ' is the Radio Galaxy Zoo label set.%, and
-%     `LR' refers to logistic regression, `CNN' refers to our convolutional
-%     neural network, and `RF' refers to random forests. `Labels' refers to a
-%     classifier that simply reads the test labels, and hence represents the
-%     balanced accuracy of the Radio Galaxy Zoo citizen scientists.}
-%   \label{tab:average-accuracies}
-%   \begin{tabular}{llccc}
-%     \hline
-%     Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
-%      & & (per cent) & (per cent) & (per cent)\\
-%     \hline
-%     Norris & CNN & $92.6 \pm 0.7$ & $91.2 \pm 0.5$ & $92.1 \pm 0.6$\\
-%      & LR & $91.6 \pm 1.0$ & $93.2 \pm 1.0$ & $93.1 \pm 1.2$\\
-%      & RF & $97.5 \pm 0.6$ & $90.9 \pm 4.8$ & $96.7 \pm 2.3$\\
-%      \\
-%     RGZ & CNN & $87.8 \pm 0.7$ & $89.2 \pm 0.7$ & $87.7 \pm 0.9$\\
-%      & LR & $91.4 \pm 0.8$ & $89.8 \pm 0.8$ & $90.8 \pm 1.4$\\
-%      & RF & $94.0 \pm 0.6$ & $94.7 \pm 0.6$ & $94.1 \pm 0.3$\\
-%      & Labels & $94.5 \pm 0.8$ & $89.0 \pm 2.5$ & $93.1 \pm 0.9$\\
-%     \hline
-%   \end{tabular}
-% \end{table*}
-
-% \begin{table}
-%   \caption{Average cross-identification accuracies across quadrants.
-%     Uncertainties represent standard deviations across quadrants and, for
-%     the `random' classifier, 25 random classifiers. Columns and
-%     classifiers as defined in \autoref{tab:average-accuracies}.  A
-%     `perfect' classifier reads the expert labels directly and hence
-%     represents the maximum attainable accuracy on the test set under our
-%     assumptions. A `random' classifier generates uniform random class
-%     probabilities and hence represents the expected minimum attainable
-%     accuracy with our cross-identification method.}
-%     \label{tab:cross-id-accuracies}
-%   \begin{tabular}{llcc}
-%     \hline
-%     Labeller & Classifier & Mean `Resolved' & Mean `All'\\
-%     && accuracy (per cent) & accuracy (per cent)\\
-%     \hline
-%       NN & --- & $75.7 \pm 7.9$ & $93.4 \pm 0.8$\\
-%       Random & --- & $22.3 \pm 9.2$ & $83.2 \pm 4.7$\\
-%       Norris & CNN & $74.3 \pm 12.3$ & $94.8 \pm 1.1$\\
-%        & LR & $76.0 \pm 3.2$ & $94.0 \pm 1.6$\\
-%        & RF & $81.3 \pm 3.7$ & $94.4 \pm 2.0$\\
-%        & Perfect & $99.0 \pm 1.8$ & $98.1 \pm 1.7$\\
-%       RGZ & CNN & $68.1 \pm 9.2$ & $92.2 \pm 0.8$\\
-%        & LR & $74.5 \pm 5.1$ & $94.2 \pm 1.3$\\
-%        & RF & $69.6 \pm 10.5$ & $94.1 \pm 2.2$\\
-%        & Labels & $56.7 \pm 5.9$ & $90.5 \pm 2.6$\\
-%     \hline
-%   \end{tabular}
-% \end{table}
-
-% \begin{table*}
-%   \caption{Average balanced accuracies across quadrants shown in
-%     \autoref{fig:elais-ba} for ELAIS-S1. Uncertainties represent standard
-%     deviations. The classifiers were applied to compact sources, resolved
-%     sources, and all sources separately.}
-%   \label{tab:average-accuracies-elais}
-%   \begin{tabular}{ccccc}
-%     \hline
-%     Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy \\
-%      & & (per cent) & (per cent) & (per cent)\\
-%     \hline
-%     Norris & CNN & $94.8 \pm 0.2$ & $92.8 \pm 0.5$ & $94.4 \pm 0.2$ \\
-%      & LR & $94.6 \pm 0.4$ & $93.3 \pm 2.0$ & $95.3 \pm 0.1$ \\
-%      & RF & $87.4 \pm 5.6$ & $71.5 \pm 2.3$ & $86.0 \pm 2.6$ \\
-%      \\
-%     RGZ & CNN & $88.8 \pm 0.6$ & $89.9 \pm 0.3$ & $88.5 \pm 0.3$ \\
-%      & LR & $93.2 \pm 0.5$ & $91.4 \pm 0.3$ & $91.6 \pm 0.6$ \\
-%      & RF & $94.9 \pm 0.2$ & $95.2 \pm 0.3$ & $95.1 \pm 0.2$ \\
-%      \hline
-%   \end{tabular}
-% \end{table*}
-
-% \begin{table}
-%   \caption{Average cross-identification accuracies for ELAIS-S1.
-%     Uncertainties represent standard deviations across classifiers trained
-%     on CDFS quadrants. Columns and classifiers as defined in Table
-%     \ref{tab:average-accuracies}.  A `perfect' classifier reads the expert
-%     labels directly and hence represents the maximum attainable accuracy
-%     under our assumptions. A `random' classifier generates uniform random
-%     class probabilities and hence represents the expected minimum attainable
-%     accuracy with our cross-identification method.}
-%     \label{tab:cross-id-accuracies-elais}
-%   \begin{tabular}{llcc}
-%     \hline
-%     Labeller & Classifier & Mean `Resolved' & Mean `All'\\
-%     && accuracy (per cent) & accuracy (per cent)\\
-%     \hline
-%     NN & --- & $92.8 \pm 0.0$ & $95.5 \pm 0.0$\\
-%     Random & --- & $26.6 \pm 2.1$ & $61.9 \pm 1.1$\\
-%     Norris & CNN & $89.4 \pm 1.4$ & $95.1 \pm 0.3$\\
-%      & LR & $89.7 \pm 1.8$ & $96.0 \pm 0.3$\\
-%      & RF & $81.0 \pm 4.7$ & $94.7 \pm 0.7$\\
-%      & Perfect & $99.8 \pm 0.0$ & $99.6 \pm 0.0$\\
-%     RGZ & CNN & $84.6 \pm 0.6$ & $90.4 \pm 0.4$\\
-%      & LR & $92.7 \pm 0.2$ & $95.8 \pm 0.3$\\
-%      & RF & $90.3 \pm 2.4$ & $95.7 \pm 0.9$\\
-%     \hline
-%   \end{tabular}
-% \end{table}
-
-
-% \section{Catalogues}
-
-%   \begin{table*}
-%     \caption{Predicted probabilities that each object in SWIRE is a host
-%       galaxy. Probabilities are reported for each predictor. $C(A\ /\ B)$
-%       indicates the predictor using classifier model $C$, trained on label set
-%       $A$ on data set $B$. Ellipsis indicates columns that have been omitted.
-%       The omitted columns are all other combinations of classifier, label set,
-%       and data set. If a SWIRE object does not appear in the table, then it
-%       was further than 1 arcmin from an ATLAS object and hence has a predicted
-%       probability of zero by our assumptions. Full table electronic.}
-%     \label{tab:probs}
-%     \begin{tabular}{ccccccccccccccccccccc}
-%       \hline
-%       SWIRE & RA & Dec & CNN(Norris / All) & & RF(RGZ / Resolved) \\\hline
-%       SWIRE3\textunderscore{}J032559.15-284724.2 & 51.4965 & -28.7901 & 0.0001 & $\cdots$ & 0.1170 \\
-%       SWIRE3\textunderscore{}J032559.91-284728.9 & 51.4996 & -28.7914 & 0.0004 & $\cdots$ & 0.0000 \\
-%       SWIRE3\textunderscore{}J032600.02-284736.9 & 51.5001 & -28.7936 & 0.0002 & $\cdots$ & 0.0451 \\
-%       SWIRE3\textunderscore{}J032600.13-284637.5 & 51.5005 & -28.7771 & 0.0004 & $\cdots$ & 0.0637 \\
-%       SWIRE3\textunderscore{}J032600.13-284715.7 & 51.5006 & -28.7877 & 0.0014 & $\cdots$ & 0.0153 \\
-%       SWIRE3\textunderscore{}J032600.98-284705.4 & 51.5041 & -28.7848 & 0.0205 & $\cdots$ & 0.0000 \\
-%       SWIRE3\textunderscore{}J032601.03-284711.6 & 51.5043 & -28.7866 & 0.0699 & $\cdots$ & 0.0000 \\
-%       SWIRE3\textunderscore{}J032601.56-284131.0 & 51.5065 & -28.692 & 0.0001 & $\cdots$ & 0.0000 \\
-%       SWIRE3\textunderscore{}J032601.60-284207.5 & 51.5067 & -28.7021 & 0.0000 & $\cdots$ & 0.0000 \\\hline
-%     \end{tabular}
-%   \end{table*}
-
-%  \begin{table*}
-%     \small
-%     \caption{Predicted host galaxy cross-identifications for each object in
-%       ATLAS. Cross-identifications are reported for each predictor, with the
-%       predictor listed as in \autoref{tab:probs}. The cross-identification
-%       given by \citet{norris06} for CDFS or \citet{middelberg08} for ELAIS-S1
-%       is included in the `Expert' column. For CDFS, the cross-identification
-%       given by the Radio Galaxy Zoo consensus is included in the `RGZ' column,
-%       along with the corresponding consensus levels for the radio morphology
-%       and host cross-identification tasks (see Wong et al., in prep, for
-%       details on how consensus is calculated). Low radio consensus indicates
-%       that the component has multiple nearby components (and thus is more
-%       impacted by our assumption that the source is isolated), and low
-%       infrared consensus indicates that the host galaxy is unclear in the
-%       SWIRE image (possibly due to multiple nearby candidate host galaxies).
-%       Full table electronic.}
-%     \begin{tabular}{ccccc}
-%       \hline
-%       ATLAS & RA & Dec & Expert & RGZ \\\hline
-%       ATLAS3\textunderscore{}J032602.82-284708.1C & 51.511734 & -28.785575 & SWIRE3\textunderscore{}J032603.15-284708.5 & -\\
-%       ATLAS3\textunderscore{}J032615.49-284629.4C & 51.564555 & -28.774847 & SWIRE3\textunderscore{}J032615.41-284630.7 & SWIRE3\textunderscore{}J032615.41-284630.7\\
-%       ATLAS3\textunderscore{}J032615.55-280559.8C & 51.564799 & -28.099955 & SWIRE3\textunderscore{}J032615.52-280559.8 & SWIRE3\textunderscore{}J032615.52-280559.8\\
-%       ATLAS3\textunderscore{}J032617.35-280710.2C & 51.572279 & -28.119491 & SWIRE3\textunderscore{}J032617.89-280707.2 & SWIRE3\textunderscore{}J032617.89-280707.2\\
-%       ATLAS3\textunderscore{}J032625.13-280909.8C & 51.604711 & -28.152731 & SWIRE3\textunderscore{}J032625.19-280910.1 & SWIRE3\textunderscore{}J032625.19-280910.1\\
-%       ATLAS3\textunderscore{}J032629.10-280650.1C & 51.621251 & -28.113924 & SWIRE3\textunderscore{}J032629.13-280650.7 & SWIRE3\textunderscore{}J032626.74-280636.7\\
-%       ATLAS3\textunderscore{}J032629.61-284052.7C & 51.623385 & -28.681315 & SWIRE3\textunderscore{}J032629.54-284055.8 & SWIRE3\textunderscore{}J032629.54-284055.8\\
-%       ATLAS3\textunderscore{}J032629.92-284753.5C & 51.624653 & -28.798195 & SWIRE3\textunderscore{}J032629.81-284754.4 & SWIRE3\textunderscore{}J032629.81-284754.4\\
-%       ATLAS3\textunderscore{}J032630.66-283657.3C & 51.62777 & -28.615917 & SWIRE3\textunderscore{}J032630.64-283658.0 & SWIRE3\textunderscore{}J032628.56-283744.8\\
-%       \hline
-%     \end{tabular}
-%     \begin{tabular}{ccccccccccccccccccccccccc}
-%       \hline
-%       RGZ radio consensus & RGZ IR consensus & CNN(Norris / All) & & RF(RGZ / Resolved) \\\hline
-%       0.4516 & 0.3214 & SWIRE3\textunderscore{}J032602.36-284711.5 & $\cdots$ & SWIRE3\textunderscore{}J032603.60-284627.4 \\
-%       0.2941 & 0.8000 & SWIRE3\textunderscore{}J032615.41-284630.7 & $\cdots$ & SWIRE3\textunderscore{}J032615.41-284630.7 \\
-%       0.5625 & 0.8333 & SWIRE3\textunderscore{}J032615.52-280559.8 & $\cdots$ & SWIRE3\textunderscore{}J032615.52-280559.8 \\
-%       0.4146 & 1.0000 & SWIRE3\textunderscore{}J032617.89-280707.2 & $\cdots$ & SWIRE3\textunderscore{}J032617.89-280707.2 \\
-%       0.3158 & 0.6667 & SWIRE3\textunderscore{}J032625.19-280910.1 & $\cdots$ & SWIRE3\textunderscore{}J032625.19-280910.1 \\
-%       0.3333 & 1.0000 & SWIRE3\textunderscore{}J032629.13-280650.7 & $\cdots$ & SWIRE3\textunderscore{}J032629.13-280650.7 \\
-%       0.2676 & 1.0000 & SWIRE3\textunderscore{}J032629.54-284051.9 & $\cdots$ & SWIRE3\textunderscore{}J032629.54-284051.9 \\
-%       1.0000 & 0.8571 & SWIRE3\textunderscore{}J032629.81-284754.4 & $\cdots$ & SWIRE3\textunderscore{}J032629.81-284754.4 \\
-%       0.3611 & 0.7308 & SWIRE3\textunderscore{}J032630.64-283658.0 & $\cdots$ & SWIRE3\textunderscore{}J032628.56-283744.8 \\
-%       \hline
-%     \end{tabular}
-%     \label{tab:cids}
-%   \end{table*}
-
-%   The predicted probabilities for each SWIRE object are listed in \autoref{tab:probs}. A full version of the table is available electronically.  The columns are defined as follows:
-%   \begin{itemize}
-%     \item {\em Column 1}  -- SWIRE. The SWIRE object name given in \citet{surace05swire}.
-%     \item {\em Column 2} -- RA. The right ascension of the SWIRE object in decimal degrees (J2000).
-%     \item {\em Column 3} -- Dec. The declination of the SWIRE object in decimal degrees (J2000).
-%     \item {\em Columns 4 -- 21} -- $C(A\ /\ B)$. The predicted probability
-%       that the SWIRE object is a host galaxy according to classifier $C$ trained
-%       on subset $B$ of label set $A$. `LR' indicates logistic regression, `RF'
-%       indicates random forests, `CNN' indicates convolutional neural networks,
-%       `Norris' indicates the expert labels, and `RGZ' indicates the Radio Galaxy
-%       Zoo labels.
-%   \end{itemize}
-
-%   The predicted cross-identifications for each ATLAS object are listed in
-%   \autoref{tab:cids}. A full version of the table is available electronically.
-%   The columns are defined as follows:
-%   \begin{itemize}
-%     \item {\em Column 1}  -- ATLAS. The ATLAS object name given in \citet{franzen15}.
-%     \item {\em Column 2} -- RA. The right ascension of the ATLAS object in decimal degrees (J2000).
-%     \item {\em Column 3} -- Dec. The declination of the ATLAS object in decimal degrees (J2000).
-%     \item {\em Column 4} -- Expert. The expert SWIRE cross-identification.
-%       This is the SWIRE object associated with the ATLAS object according to
-%       either \citet{norris06} or \citet{middelberg08} for CDFS and ELAIS-S1,
-%       respectively.
-%     \item {\em Column 5} -- RGZ. The Radio Galaxy Zoo cross-identification.
-%       This is the SWIRE object associated with the ATLAS object according to
-%       Radio Galaxy Zoo.
-%     \item {\em Column 5} -- RGZ radio consensus. The percentage agreement on
-%       the radio source according to Radio Galaxy Zoo. Lower numbers tend to
-%       indicate more complex sources. For more information on how consensus is
-%       generated, see Wong et al. (in prep).
-%     \item {\em Column 6} -- RGZ IR consensus. The percentage agreement on
-%       the host galaxy cross-identification according to Radio Galaxy Zoo.
-%       Lower numbers tend to indicate sources that are harder to
-%       cross-identify. For more information on how consensus is generated, see Wong et al. (in prep).
-%     \item {\em Columns 7 -- 25} -- $C(A\ /\ B)$. The predicted
-%       cross-identification according to classifier $C$ trained on subset $B$
-%       of label set $A$. `LR' indicates logistic regression, `RF' indicates
-%       random forests, `CNN' indicates convolutional neural networks, `Norris'
-%       indicates the expert labels, and `RGZ' indicates the Radio Galaxy Zoo
-%       labels.
-%   \end{itemize}
 
 % Don't change these lines
 \bsp	% typesetting comment
