@@ -16,6 +16,7 @@
 \usepackage[algoruled]{algorithm2e}
 \usepackage[caption=false]{subfig}
 \usepackage[mediumspace,mediumqspace,Grey,squaren]{SIunits}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%% AUTHORS - PLACE YOUR OWN COMMANDS HERE %%%%%
@@ -27,9 +28,8 @@
 \newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng TODO:~{#1}}]} }
 \newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
-\newcommand{\edit}[1]{ {\color{red}[{\bf Edit:~{#1}}]} }
-% \newcommand{\edit}[1]{}
-
+\newcommand{\edited}[1]{{\bf {#1}}}
+\newcommand{\edit}[1]{{\bf Edit:~{#1}}}
 
 \newcommand{\underset}[2]{\mathop{#2}\limits_{#1}}
 
@@ -39,6 +39,8 @@
 \makeatletter
 \newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
 \makeatother
+
+\newcommand{\aref}[1]{\hyperref[#1]{appendix~\ref{#1}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -107,14 +109,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   An important part of processing this data is cross-identifying observed
   radio emission regions with observations of their host galaxy in surveys at
   other wavelengths. Cross-identification of the host with an extended radio
-  souce can be a difficult task. \autoref{fig1} illustrates the different
+  source can be a difficult task. \autoref{fig1} illustrates the different
   radio emission regions that a host galaxy may have. Compact components are
   unresolved or point-like regions of radio emission separated from the host
   while compact radio sources have one compact component coincident with the
   host galaxy location. Extended radio sources consist of resolved single
-  components or multiple (resolved or unresolved) components. The two most
-  common classes of radio-loud sources, Fanaroff \& Riley type I and type II
-  \citep{Fanaroff1974}, are examples of resolved radio sources. Small surveys
+  components or multiple (resolved or unresolved) components. Small surveys
   containing a few thousand sources such as the Australia Telescope Large Area Survey
   \citep[ATLAS;][]{norris06,middelberg08} can be cross-identified manually,
   but this is impractical for larger surveys.
@@ -157,7 +157,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   describes a class of methods that learn approximations to functions, and so
   if the cross-identification task can be cast as a machine learning problem,
   data sets such as that provided by Radio Galaxy Zoo can be generalised to
-  work on data not seen by the original cross-identifiers.
+  work on data not seen by the humans originally performing the cross-identifications.
 
   We apply an approach from computer vision literature to the
   cross-identification task. This approach casts cross-identification as the
@@ -302,7 +302,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         resolved, we classify all infrared objects nearby within radius $R$
         and select the highest probability object as the host galaxy. The grey
         box is the classifier, which can be any binary classifier that outputs
-        a probability. \edit{Made the grey and green darker.}}
+        a probability.}
       \label{fig:flowchart}
     \end{figure}
 
@@ -324,11 +324,11 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         }
 
         \KwRet{$host$}
-        \caption{\edit{Added this algorithm to clarify the approach.} Cross-identifying a radio component given an image of the component, a catalogue of infrared candidate host galaxies and a binary classifier.}
+        \caption{Cross-identifying a radio component given an image of the component, a catalogue of infrared candidate host galaxies and a binary classifier.}
         \label{alg:xid}
     \end{algorithm}
 
-    We propose a two-step method for host galaxy cross-identification \edit{Clarified what we will do in this section} which we will derive now. Given a radio component, we want to find the corresponding host galaxy as a human would. \edit{Clarified what kind of image we're using and moved IR stuff to a footnote} The input is a $2' \times 2'$ radio\footnote{Other wavelengths --- notably infrared --- might be useful, but we defer this for now as it complicates the task. Infrared information is instead incorporated separately in our method.} image of the sky matching the size of the images used by Radio Galaxy Zoo. \edit{Explained why we make the assumption and added a footnote.} To avoid solving the separate task of identifying which radio components are associated with the same source, we make the assumption that each radio image represents a single, complex extended source\footnote{Limitations of this assumption are discussed in \autoref{sec:limitations}.}. The radio cross-identification task can then be formalised as follows: given a radio image centred on a radio component, locate the host galaxy of the source containing this radio component. This is a standard computer vision problem called \emph{object detection}, and we apply a common technique called a \emph{sliding window} \citep{rowley1996facedetection}.
+    We propose a two-step method for host galaxy cross-identification \edited{which we will derive now. Given a radio component, we want to find the corresponding host galaxy as a human would. The input is a $2' \times 2'$ radio\footnote{Other wavelengths --- notably infrared --- might be useful, but we defer this for now as it complicates the task. Infrared information is instead incorporated separately in our method.} image of the sky matching the size of the images used by Radio Galaxy Zoo. To avoid solving the separate task of identifying which radio components are associated with the same source, we make the assumption that each radio image represents a single, complex extended source\footnote{Limitations of this assumption are discussed in \autoref{sec:limitations}.}. The radio cross-identification task can then be formalised as follows: given a radio image centred on a radio component, locate the host galaxy of the source containing this radio component. This is a standard computer vision problem called \emph{object detection}, and we apply a common technique called a \emph{sliding window} \citep{rowley1996facedetection}}.
 
     \edit{Cleaned up this paragraph and made definitions clearer; made definition formatting consistent.} In sliding window object detection, the goal is to estimate the probability that each pixel in an image coincides with the desired object. Square cutouts (called \emph{windows}) are taken centred on each pixel and these cutouts are used to represent that pixel. We then estimate the probability that a given cutout is centred on the object that we want to find. To find the object, we then choose the pixel with maximum probability. To improve the efficiency of this process, we only consider cutouts centred on infrared sources --- otherwise we have to estimate probabilities for every pixel in the image\footnote{This approach implicitly assumes that host galaxies are always visible in the infrared, an assumption we discuss in \autoref{sec:limitations}.}. We call these infrared sources \emph{candidate host galaxies}. Using candidate host galaxies instead of pixels also allows us to include ancillary information about the candidate host galaxies, such as their infrared colours and redshifts.
 
@@ -398,8 +398,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     incorporate galaxy-specific features
     (\autoref{vector-representation-of-infrared-sources}) and to improve
     efficiency. Our method is applicable even to infrared-faint radio sources
-    by considering every pixel of the radio image as a candidate location as would be done in the
-    original computer vision approach.
+    by considering every pixel of the radio image as a candidate location as would be done in the original computer vision approach.
 
     Our assumptions impose an upper bound on how well we can cross-identify
     radio sources. We estimate this upper bound in \autoref{sec:relation}.
@@ -411,9 +410,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{itemize}
       \item the 6 logarithms of the ratios of fluxes of the candidate
         host at the four IRAC wavelengths;
+      \item the flux of the host at \unit{3.6}{\micro\meter};
       \item the stellarity index of the host at both 3.6 and
         \unit{4.5}{\micro\meter};
-      \item the flux of the host at \unit{3.6}{\micro\meter};
       \item the radial distance between the candidate host and the nearest
         radio component in the ATLAS catalogue; and
       \item a 32 $\times$ 32 pixel image from ATLAS (approximately $48''
@@ -429,7 +428,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     \edit{Clarified wording around `classifiers'.} We use three different binary classification models: logistic regression, convolutional neural networks, and random forests. These models cover three different approaches to machine learning. Logistic regression is a probabilistic binary classification model. It is linear in the feature space and outputs the probability that the input has a positive label~\citep[Chap. 4]{bishop06ml}. Convolutional neural networks (CNN) are a biologically-inspired prediction model for prediction with image inputs. They have recently produced good results on large image-based datasets in astronomy \citep[e.g.][Lukic et al. in press]{dieleman15cnn}. Random forests are an ensemble of decision trees~\citep{breiman01random-forest}. They consider multiple subsamples of the training set, where each bootstrap subsample is sampled with replacement from the training set. To classify a new data point, the random forest takes the weighted average of all classifications produced by each decision tree.
 
-    Further details and background of these models are in \autoref{app:models}.
+    Further details and background of these models are in \aref{app:models}.
 
   \subsection{Labels}\label{sec:labels}
     \begin{figure}
@@ -605,7 +604,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     classification task and the cross-identification task for resolved and compact sources. For comparison, we also plot the accuracy of Radio Galaxy
     Zoo and a nearest-neighbours approach, as well as estimates for upper and lower limits on the cross-identification accuracy. \edit{Reworded how we estimated upper limit and merged this paragraph with the specific results paragraph.} We estimate the upper limit on performance by assigning all true host galaxies a 100 per cent probability of being host galaxies and assigning all other candidate host galaxies a 0 per cent probability. This is equivalent to `perfectly' solving the galaxy classification task and so represents the best possible cross-identification performance achievable with our method. We estimate the lower limit on performance by taking a random binary classifier, which outputs random probabilities regardless of input galaxy. We expect any useful binary classifier to produce better results than this, so this represents the lowest expected cross-identification performance. The upper estimates, lower estimates, and nearest-neighbour accuracy are shown as horizontal lines in \autoref{fig:ba}. \edit{Deleted description of why the lowest expected performance is related to the pipeline as this is more confusing than not.}
 
-    In \autoref{fig:cross-id-accuracy} we plot the performance of our method with different binary classification models, as well as the performance of Radio Galaxy Zoo, nearest-neighbours, and the perfect and random binary classifiers, on the full set of ATLAS~DR1 radio components using the pipeline in \autoref{fig:flowchart}. The average accuracy associated with each classification model and training label set across all four quadrants is shown in \autoref{app:accuracies}. \edit{Reworded this paragraph to emphasise that the method is being tested on a task rather than the individual classifiers on the binary task.}
+    In \autoref{fig:cross-id-accuracy} we plot the performance of our method with different binary classification models, as well as the performance of Radio Galaxy Zoo, nearest-neighbours, and the perfect and random binary classifiers, on the full set of ATLAS~DR1 radio components using the pipeline in \autoref{fig:flowchart}. The average accuracy associated with each classification model and training label set across all four quadrants is shown in \aref{app:accuracies}. \edit{Reworded this paragraph to emphasise that the method is being tested on a task rather than the individual classifiers on the binary task.}
 
     Differences between accuracies across training labels are well within one standard deviation computed across the four quadrants, with convolutional neural networks on compact objects as the only exception. The spread of accuracies is similar for both sets of training labels, with the exception of random forests. The balanced accuracies of random forests trained on expert labels have a considerably higher spread than those trained on Radio Galaxy Zoo labels, likely because of the small size of the expert training set --- there are less than half the number of objects in the expert-labelled training set than the number of objects in the Radio Galaxy Zoo-labelled training set (\autoref{tab:radio-count}).
 
@@ -615,9 +614,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     We noted in \autoref{sec:labels} that the test set of expert labels, derived from the initial ATLAS data release, was less deep than the third data release used by Radio Galaxy Zoo and this paper, introducing a source of label noise in the testing labels. Specifically, true host galaxies may be misidentified as non-host galaxies if the associated radio source was below the 5 signal-to-noise limit in ATLAS DR1 but not in ATLAS DR3. This has the effect of reducing the accuracy for Radio Galaxy Zoo-trained classifiers.
 
-    \edit{Merged the reporting paragraphs.} We report the probabilities predicted by each classifier for each SWIRE object in \autoref{app:probabilities} and the predicted cross-identification for each ATLAS object in \autoref{app:xids}. Probabilities reported for a given object were predicted by binary classifiers tested on the quadrant containing that object.
+    \edit{Merged the reporting paragraphs.} We report the probabilities predicted by each classifier for each SWIRE object in \aref{app:probabilities} and the predicted cross-identification for each ATLAS object in \aref{app:xids}. Probabilities reported for a given object were predicted by binary classifiers tested on the quadrant containing that object.
 
-    In \autoref{fig:examples} we show 6 of the 16 resolved sources where the incorrect cross-identification was selected by random forests trained on expert labels. The remaining 10 sources are shown in Appendix \autoref{app:examples}. In most cases the incorrect galaxy selected was also selected by nearest-neighbours. We note that on no source do all classifiers agree. This raises the possibility of using the level of disagreement of an ensemble of classifiers as a measure of the complexity of a radio source, analogous to the consensus level for Radio Galaxy Zoo volunteers.
+    In \autoref{fig:examples} we show 6 of the 16 resolved sources where the incorrect cross-identification was selected by random forests trained on expert labels. The remaining 10 sources are shown in Appendix \aref{app:examples}. In most cases the incorrect galaxy selected was also selected by nearest-neighbours. We note that on no source do all classifiers agree. This raises the possibility of using the level of disagreement of an ensemble of classifiers as a measure of the complexity of a radio source, analogous to the consensus level for Radio Galaxy Zoo volunteers.
 
 \subsection{Application to ATLAS-ELAIS-S1}
   \label{sec:elais}
@@ -657,7 +656,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \label{fig:accuracies-flux}
   \end{figure}
 
-  We applied the method trained on CDFS to perform cross-identification on the ELAIS-S1 field. Both CDFS and ELAIS-S1 were imaged by the same radio telescope to similar sensitivities and angular resolution for the ATLAS survey. We can use the SWIRE cross-identifications made by \citet{middelberg08} to derive another set of expert labels \edit{Cleaned up this sentence}, and hence determine how accurate our method is. If our method generalises well across different parts of the sky, then we expect CDFS-trained classifiers to have comparable performance between ELAIS-S1 and CDFS \edit{Made this sentence clearer}. In \autoref{fig:elais-ba} we plot the performance of CDFS-trained logistic regression, random forests, and convolutional neural networks on both the galaxy classification task and the cross-identification task for resolved and compact sources. We also plot the accuracy of a nearest-neighbours approach\footnote{We cannot directly compare our method applied to ELAIS-S1 with Radio Galaxy Zoo, as Radio Galaxy Zoo does not include ELAIS-S1. \edit{Added this footnote to explain why we can't compare to RGZ.}}. In \autoref{fig:elais-cross-id-accuracy} we plot the performance of our method on the full set of ELAIS-S1 ATLAS~DR1 radio components using the pipeline in \autoref{fig:flowchart}. We list the corresponding accuracies in \autoref{app:accuracies}.
+  We applied the method trained on CDFS to perform cross-identification on the ELAIS-S1 field. Both CDFS and ELAIS-S1 were imaged by the same radio telescope to similar sensitivities and angular resolution for the ATLAS survey. We can use the SWIRE cross-identifications made by \citet{middelberg08} to derive another set of expert labels \edit{Cleaned up this sentence}, and hence determine how accurate our method is. If our method generalises well across different parts of the sky, then we expect CDFS-trained classifiers to have comparable performance between ELAIS-S1 and CDFS \edit{Made this sentence clearer}. In \autoref{fig:elais-ba} we plot the performance of CDFS-trained logistic regression, random forests, and convolutional neural networks on both the galaxy classification task and the cross-identification task for resolved and compact sources. We also plot the accuracy of a nearest-neighbours approach\footnote{We cannot directly compare our method applied to ELAIS-S1 with Radio Galaxy Zoo, as Radio Galaxy Zoo does not include ELAIS-S1. \edit{Added this footnote to explain why we can't compare to RGZ.}}. In \autoref{fig:elais-cross-id-accuracy} we plot the performance of our method on the full set of ELAIS-S1 ATLAS~DR1 radio components using the pipeline in \autoref{fig:flowchart}. We list the corresponding accuracies in \aref{app:accuracies}.
 
   Cross-identification results from ELAIS-S1 are similar to those for CDFS, showing that our method trained on CDFS performs comparably well on ELAIS-S1. However, nearest-neighbours outperforms most methods on ELAIS-S1. This is likely because there is a much higher percentage of compact objects in ELAIS-S1 than in CDFS. The maximum achievable accuracy we have estimated for ELAIS-S1 is very close to 100 per cent, so (as for CDFS) a very accurate binary classifier would outperform nearest-neighbours.
 
@@ -764,6 +763,92 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
 \bibliographystyle{mnras}
 \bibliography{rgz-cdfs-ms}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+
+\section{Classification models}\label{app:models}
+
+  We use three different models for binary classification: logistic regression, convolutional neural networks, and random forests. \edit{Removed some overly technical terminology in this section.}
+
+  \subsection{Logistic Regression}
+  \label{sec:logistic-regression}
+    Logistic regression is linear in the feature space and outputs the probability that the input has a positive label. The model is \citep{bishop06ml}:
+
+    \begin{equation}
+        f(\vec x) = \sigma(\vec w \cdot \vec x + b) \,\,\,\,,
+    \end{equation}
+    where $\vec w \in \mathbb{R}^D$ is a vector of parameters, $b \in \mathbb{R}$ is a bias term, $\vec x \in \mathbb{R}^D$ is the feature vector representation of a candidate host, and $\sigma$ is the logistic sigmoid function: \begin{equation}
+        \sigma(a) = (1 + \mathrm{exp}(-a))^{-1}\,\,\,\,.
+    \end{equation}%
+    The logistic regression model is fully differentiable, and the parameters $\vec w$ can therefore be learned using gradient-based optimisation methods.
+
+  \subsection{Convolutional neural networks}
+  \label{sec:convolutional-neural-networks}
+
+    Convolutional neural networks (CNN) are a biologically-inspired prediction model for prediction with image inputs. The input image is convolved with a number of filters to produce output images called feature maps. These feature maps can then be convolved again with other filters on subsequent layers, producing a network of convolutions. The whole network is differentiable with respect to the values of the filters and the filters can be learned using gradient-based optimisation methods. The final layer of the network is logistic regression, with the convolved outputs as input features. For more detail, see \citet[subsection II.A][]{lecun98}. We use \textsc{Keras} \citep{chollet15keras} to implement our CNN.
+
+    \begin{figure}
+      \includegraphics[width=\linewidth]{images/cnn_model_graph}
+      \caption{Architecture of our CNN. The concatenate layer flattens the output of the previous layer and adds the 10 features derived from the candidate host in SWIRE, i.e. the flux ratios, stellarity indices, and distance. The dropout layer randomly sets $25\%$ of its inputs to zero during training to prevent overfitting. Diagram based on \url{ https://github.com/dnouri/nolearn}.}
+      \label{fig:cnn}
+    \end{figure}
+
+    CNNs have recently produced good results on large image-based datasets in astronomy \citep[e.g.][; Lukic et al. in prep]{dieleman15cnn}. We employ only a simple CNN model in this paper as a proof of concept that CNNs may be used for class probability prediction on radio images. The model architecture we use is shown in \autoref{fig:cnn}.
+
+  \subsection{Random Forests}
+  \label{sec:random-forests}
+
+    Random forests are an ensemble of decision trees~\citep{breiman01random-forest}. They consider multiple subsamples of the training set, where each subsample is sampled with replacement from the training set. For each subsample a decision tree classifier is constructed by repeatedly making axis-parallel splits based on individual features. In a random forest the split decision is taken based on a random subset of features. To classify a new data point, the random forest takes the weighted average of all classifications produced by each decision tree. We used the \texttt{scikit-learn} implementation of random forests with 10 trees, the information entropy split criterion and a minimum leaf size of 45 \edit{Added details on our specific random forests}.
+
+\section{Accuracy tables}\label{app:accuracies}
+  
+  This section contains tables of accuracy for our method applied to CDFS and ELAIS-S1. In \autoref{tab:cdfs-ba} and \autoref{tab:elais-ba} we list the balanced accuracies of classifiers on the cross-identification task for CDFS and ELAIS-S1 respectively, averaged over each quadrant. In \autoref{tab:cdfs-acc} and \autoref{tab:elais-acc} we list the balanced accuracies of classifiers on the cross-identification task for CDFS and ELAIS-S1 respectively, averaged over each quadrant.
+
+  \begin{table*}
+    \caption{Cross-identification accuracies for different classification models on CDFS. The `Labeller' column states what set of training labels were used to train the method, and the `Classifier' column states what classification model was used. `CNN' is a convolutional neural network, `LR' is logistic regression, `RF' is random forests, and `Labels' is the accuracy of the label set itself. `Perfect' indicates that the true labels of the test set were used and hence represents an upper bound on cross-identification accuracy with our method. `NN' is a nearest-neighbours approach. Accuracies are evaluated against the expert label set, so `Norris' labels are 100 per cent accurate by definition. The standard deviation of accuracies evaluated across the four quadrants of CDFS (\autoref{fig:quadrants}) is also shown.}
+    \label{tab:cdfs-acc}
+    \begin{tabular}{ccccc}
+      \hline
+      Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
+       &  & (per cent) & (per cent) & (per cent)\\
+      \hline
+      --- & NN & $97.2 \pm 1.7$ & $75.7 \pm 7.9$ & $93.4 \pm 0.8$\\
+      --- & Random & $97.9 \pm 2.2$ & $22.3 \pm 9.2$ & $83.2 \pm 4.7$\\
+      Norris & Labels & $100.0 \pm 0.0$ & $100.0 \pm 0.0$ & $100.0 \pm 0.0$\\
+             & Perfect & $97.9 \pm 2.2$ & $99.0 \pm 1.8$ & $98.1 \pm 1.7$\\
+             & LR & $97.3 \pm 0.5$ & $76.0 \pm 3.2$ & $93.7 \pm 1.8$\\
+             & CNN & $96.6 \pm 0.9$ & $74.3 \pm 12.3$ & $93.5 \pm 0.5$\\
+             & RF & $96.1 \pm 1.4$ & $75.8 \pm 6.7$ & $93.8 \pm 2.0$\\
+      RGZ & Labels & $53.1 \pm 8.5$ & $56.7 \pm 5.9$ & $54.4 \pm 5.9$\\
+          & LR & $97.3 \pm 1.9$ & $74.5 \pm 5.1$ & $93.6 \pm 1.7$\\
+          & CNN & $85.4 \pm 2.6$ & $68.1 \pm 9.2$ & $92.4 \pm 1.1$\\
+          & RF & $97.5 \pm 0.9$ & $74.3 \pm 7.9$ & $93.7 \pm 1.5$\\
+      \hline
+    \end{tabular}
+  \end{table*}
+
+  \begin{table*}
+    \caption{Cross-identification accuracies for different classification models on ELAIS-S1. Columns and abbreviations are as in \autoref{tab:cdfs-acc}. Accuracies are evaluated against the expert label set derived from \citet{middelberg08} cross-identifications. The standard deviation of accuracies evaluated across models trained on the four quadrants of CDFS (\autoref{fig:quadrants}) is also shown.}
+    \label{tab:elais-acc}
+    \begin{tabular}{ccccc}
+      \hline
+      Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
+       &  & (per cent) & (per cent) & (per cent)\\
+      \hline
+      --- & NN & $95.5 \pm 0.0$ & $92.8 \pm 0.0$ & $95.5 \pm 0.0$\\
+      --- & Random & $61.9 \pm 1.1$ & $26.6 \pm 2.1$ & $61.9 \pm 1.1$\\
+      Middelberg & Perfect & $99.6 \pm 0.0$ & $99.8 \pm 0.0$ & $99.6 \pm 0.0$\\
+      Norris & LR & $89.0 \pm 1.1$ & $89.7 \pm 1.8$ & $94.4 \pm 0.9$\\
+             & CNN & $89.7 \pm 0.3$ & $89.4 \pm 1.4$ & $94.3 \pm 0.7$\\
+             & RF & $83.8 \pm 5.6$ & $82.3 \pm 4.1$ & $90.6 \pm 2.1$\\
+      RGZ & LR & $90.5 \pm 1.0$ & $92.7 \pm 0.2$ & $95.9 \pm 0.1$\\
+          & CNN & $84.6 \pm 0.6$ & $84.6 \pm 0.6$ & $91.8 \pm 0.3$\\
+          & RF & $91.3 \pm 1.0$ & $90.3 \pm 2.4$ & $94.7 \pm 1.2$\\
+      \hline
+    \end{tabular}
+  \end{table*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
