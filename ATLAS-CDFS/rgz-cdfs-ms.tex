@@ -92,7 +92,26 @@ $^{10}$School of Physical Sciences, University of Tasmania, Private Bag 37, Hoba
 
 % Abstract of the paper
 \begin{abstract}
-  Radio source host galaxy cross-identification is the problem of determining the host galaxies of radio sources. While this is possible by hand, manual cross-identification is intractable for wide-area radio surveys like the Evolutionary Map of the Universe (EMU). We present a method for reducing the cross identification task to the standard machine learning task of binary classification. We apply our methods to the $1.4$~GHz Australian Telescope Large Area Survey (ATLAS) observations of the \emph{Chandra} Deep Field South (CDFS) and the ESO Large Area ISO Survey South 1 (ELAIS-S1) fields, cross-identifying them with the \emph{Spitzer} Wide-area Infrared Extragalactic (SWIRE) survey. We compare two sets of training data: expert cross-identifications of CDFS from the initial ATLAS data release and crowdsourced cross-identifications of CDFS from Radio Galaxy Zoo. We found a that nearest-neighbour approach outperforms our trained methods, likely resulting from ATLAS containing a low number of extended radio sources. Larger areas of sky containing more extended sources will be required for training methods such as ours to work with EMU. Our results show that the cross-identification accuracy of the predictor trained on Radio Galaxy Zoo cross-identifications is comparable to the predictor trained on expert cross-identifications, demonstrating the value of crowdsourced training data.
+  Radio source host galaxy cross-identification is the problem of determining
+  the host galaxies of radio sources. While this is possible by hand, manual
+  cross-identification is intractable for wide-area radio surveys like the
+  Evolutionary Map of the Universe (EMU). We present a method for reducing the
+  cross identification task to the standard machine learning task of binary
+  classification. We apply our methods to the $1.4$~GHz Australian Telescope
+  Large Area Survey (ATLAS) observations of the \emph{Chandra} Deep Field
+  South (CDFS) and the ESO Large Area ISO Survey South 1 (ELAIS-S1) fields,
+  cross-identifying them with the \emph{Spitzer} Wide-area Infrared
+  Extragalactic (SWIRE) survey. We compare two sets of training data: expert
+  cross-identifications of CDFS from the initial ATLAS data release and
+  crowdsourced cross-identifications of CDFS from Radio Galaxy Zoo. We found a
+  that nearest-neighbour approach outperforms our trained methods, likely
+  resulting from ATLAS containing a low number of extended radio sources.
+  Larger areas of sky containing more extended sources will be required for
+  training methods such as ours to work with EMU. Our results show that the
+  cross-identification accuracy of the predictor trained on Radio Galaxy Zoo
+  cross-identifications is comparable to the predictor trained on expert
+  cross-identifications, demonstrating the value of crowdsourced training
+  data.
 \end{abstract}
 
 % Select between one and six entries from the list of approved keywords.
@@ -169,7 +188,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
   We apply an approach from computer vision literature to the
   cross-identification task. This approach casts cross-identification as the
-  standard machine learning problem of binary classification \edited{by asking whether a given infrared source is the host galaxy or not}. We train our
+  standard machine learning problem of binary classification \edited{by asking
+  whether a given infrared source is the host galaxy or not}. We train our
   methods on expert cross-identifications and cross-identifications from Radio
   Galaxy Zoo. In \autoref{sec:data} we describe the data we use to train our
   methods. In \autoref{sec:method} we discuss how we cast the radio host
@@ -193,9 +213,11 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
   We use data from the citizen science project Radio Galaxy Zoo
   \citep{banfield15}, the Australia Telescope Large Area Survey
-  \citep[ATLAS;][]{norris06,franzen15}, and the \emph{Spitzer} Wide-area Infrared
-  Extragalactic survey \citep[SWIRE;][]{lonsdale03swire, surace05swire}. Radio Galaxy Zoo also includes data from the Faint Images of the
-    Radio Sky at Twenty-Centimeters \citep[FIRST;][]{white97first}. However, here we focus only on Radio Galaxy Zoo data from ATLAS and SWIRE.
+  \citep[ATLAS;][]{norris06,franzen15}, and the \emph{Spitzer} Wide-area
+  Infrared Extragalactic survey \citep[SWIRE;][]{lonsdale03swire,
+  surace05swire}. Radio Galaxy Zoo also includes data from the Faint Images of
+  the Radio Sky at Twenty-Centimeters \citep[FIRST;][]{white97first}. However,
+  here we focus only on Radio Galaxy Zoo data from ATLAS and SWIRE.
 
   \subsection{ATLAS}\label{sec:atlas}
     \begin{table}
@@ -218,16 +240,23 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \end{table}
 
     ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
-    cover the entire sky south of $+30$ deg and is expected to
-    detect approximately 70 million new radio sources. EMU will be conducted
-    at the same depth and resolution as ATLAS, so methods developed for
-    processing ATLAS data are expected to work for EMU. ATLAS is a wide-area
-    radio survey of the CDFS and ELAIS-S1 fields at 1.4~GHz with a sensitivity
-    of 14 and \unit{17}{\micro\jansky}~beam$^{-1}$ on CDFS and ELAIS-S1 respectively. CDFS
-    covers 3.6~deg$^2$ and contains 3034 radio components above a signal-to-noise ratio of 5.
-    ELAIS-S1 covers 2.7~deg$^2$ and contains 2084 radio components above a signal-to-noise ratio of 5 \citep{franzen15}. The images of CDFS and ELAIS-S1 have angular resolutions of 16 by 7 and 12 by 8 arcsec respectively, with pixel sizes of 1.5 arcsec px$^{-1}$. \autoref{tab:atlas-cids} summarises
-    catalogues that contain cross-identifications of radio components in ATLAS with host
-    galaxies in SWIRE. In the present work, we train methods on CDFS and test these methods on both CDFS and ELAIS-S1.  This ensures our methods are transferable to different areas of the sky observed by the same telescope as will be the case for EMU.
+    cover the entire sky south of $+30$ deg and is expected to detect
+    approximately 70 million new radio sources. EMU will be conducted at the
+    same depth and resolution as ATLAS, so methods developed for processing
+    ATLAS data are expected to work for EMU. ATLAS is a wide-area radio survey
+    of the CDFS and ELAIS-S1 fields at 1.4~GHz with a sensitivity of 14 and
+    \unit{17}{\micro\jansky}~beam$^{-1}$ on CDFS and ELAIS-S1 respectively.
+    CDFS covers 3.6~deg$^2$ and contains 3034 radio components above a
+    signal-to-noise ratio of 5. ELAIS-S1 covers 2.7~deg$^2$ and contains 2084
+    radio components above a signal-to-noise ratio of 5 \citep{franzen15}. The
+    images of CDFS and ELAIS-S1 have angular resolutions of 16 by 7 and 12 by
+    8 arcsec respectively, with pixel sizes of 1.5 arcsec px$^{-1}$.
+    \autoref{tab:atlas-cids} summarises catalogues that contain
+    cross-identifications of radio components in ATLAS with host galaxies in
+    SWIRE. In the present work, we train methods on CDFS and test these
+    methods on both CDFS and ELAIS-S1.  This ensures our methods are
+    transferable to different areas of the sky observed by the same telescope
+    as will be the case for EMU.
 
   \subsection{SWIRE}\label{sec:swire}
 
@@ -240,23 +269,28 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \subsection{Radio Galaxy Zoo}\label{sec:rgz}
 
     Radio Galaxy Zoo asks volunteers to cross-identify radio components with
-    their infrared host galaxies. There are a total of 2460 radio
-    components in Radio Galaxy Zoo sourced from ATLAS. These
-    components are cross-identified by Radio Galaxy Zoo participants with host galaxies detected in SWIRE.
-    A more detailed description can be found in
-    \citet{banfield15} and a full description of how the Radio Galaxy Zoo Data Release 1 catalogue used in this work\footnote{The Radio Galaxy Zoo Data Release 1 catalogue will only include cross-identifications for which over 65 per cent of volunteers
-    agree. However, we use all volunteer cross-identifications for all sources.}
-    is generated can be found in Wong et al. (in prep).
+    their infrared host galaxies. There are a total of 2460 radio components
+    in Radio Galaxy Zoo sourced from ATLAS. These components are
+    cross-identified by Radio Galaxy Zoo participants with host galaxies
+    detected in SWIRE. A more detailed description can be found in
+    \citet{banfield15} and a full description of how the Radio Galaxy Zoo Data
+    Release 1 catalogue used in this work\footnote{The Radio Galaxy Zoo Data
+    Release 1 catalogue will only include cross-identifications for which over
+    65 per cent of volunteers agree. However, we use all volunteer
+    cross-identifications for all sources.} is generated can be found in Wong
+    et al. (in prep).
 
-     The ATLAS~CDFS radio components that appear in Radio Galaxy Zoo include both unresolved and resolved radio components from the third data release of ATLAS by \citet{franzen15}.  Each radio component was fit with a two-dimensional
-    Gaussian. Depending on the residual of the fit, more than one Gaussian may
-    be fit to one region of radio emission.  Each of these Gaussian fits is
-    listed as a radio component in the ATLAS catalogue. The brightest radio
-    component from the multiple Gaussian fit is called the `primary
-    component'. Each primary component found in the ATLAS DR3 component
-    catalogue appears in Radio Galaxy Zoo. Non-primary components may appear
-    within the image of a primary component, but do not have their own entry
-    in Radio Galaxy Zoo. We will henceforth only discuss the primary
+    The ATLAS~CDFS radio components that appear in Radio Galaxy Zoo include
+    both unresolved and resolved radio components from the third data release
+    of ATLAS by \citet{franzen15}.  Each radio component was fit with a
+    two-dimensional Gaussian. Depending on the residual of the fit, more than
+    one Gaussian may be fit to one region of radio emission.  Each of these
+    Gaussian fits is listed as a radio component in the ATLAS catalogue. The
+    brightest radio component from the multiple Gaussian fit is called the
+    `primary component'. Each primary component found in the ATLAS DR3
+    component catalogue appears in Radio Galaxy Zoo. Non-primary components
+    may appear within the image of a primary component, but do not have their
+    own entry in Radio Galaxy Zoo. We will henceforth only discuss the primary
     components.
 
   \section{Method}\label{sec:method}
@@ -337,15 +371,98 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         \label{alg:xid}
     \end{algorithm}
 
-    We propose a two-step method for host galaxy cross-identification \edited{which we will derive now. Given a radio component, we want to find the corresponding host galaxy as a human would. The input is a $2' \times 2'$ radio\footnote{Other wavelengths --- notably infrared --- might be useful, but we defer this for now as it complicates the task. Infrared information is instead incorporated separately in our method.} image of the sky centred on a radio component, matching the size of the images used by Radio Galaxy Zoo. To avoid solving the separate task of identifying which radio components are associated with the same source, we make the assumption that each radio image represents a single, complex extended source\footnote{Limitations of this assumption are discussed in \autoref{sec:limitations}.}. The radio cross-identification task can then be formalised as follows: given a radio image centred on a radio component, locate the host galaxy of the source containing this radio component. This is a standard computer vision problem called \emph{object detection}, and we apply a common technique called a \emph{sliding window} \citep{rowley1996facedetection}}.
+    We propose a two-step method for host galaxy cross-identification
+    \edited{which we will derive now. Given a radio component, we want to find
+    the corresponding host galaxy as a human would. The input is a $2' \times
+    2'$ radio\footnote{Other wavelengths --- notably infrared --- might be
+    useful, but we defer this for now as it complicates the task. Infrared
+    information is instead incorporated separately in our method.} image of
+    the sky centred on a radio component, matching the size of the images used
+    by Radio Galaxy Zoo. To avoid solving the separate task of identifying
+    which radio components are associated with the same source, we make the
+    assumption that each radio image represents a single, complex extended
+    source\footnote{Limitations of this assumption are discussed in
+    \autoref{sec:limitations}.}. The radio cross-identification task can then
+    be formalised as follows: given a radio image centred on a radio
+    component, locate the host galaxy of the source containing this radio
+    component. This is a standard computer vision problem called \emph{object
+    detection}, and we apply a common technique called a \emph{sliding window}
+    \citep{rowley1996facedetection}}.
 
-    \edit{Cleaned up this paragraph and made definitions clearer; made definition formatting consistent.} In sliding window object detection, the goal is to estimate the probability that each pixel in an image coincides with the desired object. Square cutouts (called \emph{windows}) are taken centred on each pixel and these cutouts are used to represent that pixel. We then estimate the probability that a given cutout is centred on the object that we want to find. To find the object, we then choose the pixel with maximum probability. To improve the efficiency of this process, we only consider cutouts centred on infrared sources --- otherwise we have to estimate probabilities for every pixel in the image\footnote{This approach implicitly assumes that host galaxies are always visible in the infrared, an assumption we discuss in \autoref{sec:limitations}.}. We call these infrared sources \emph{candidate host galaxies}. Using candidate host galaxies instead of pixels also allows us to include ancillary information about the candidate host galaxies, such as their infrared colours and redshifts.
+    \edited{In sliding window object detection, the
+    goal is to estimate the probability that each pixel in an image coincides
+    with the desired object. Square cutouts (called \emph{windows}) are taken
+    centred on each pixel and these cutouts are used to represent that pixel.
+    We then estimate the probability that a given cutout is centred on the
+    object that we want to find. To find the object, we then choose the pixel
+    with maximum probability. To improve the efficiency of this process, we
+    only consider cutouts centred on infrared sources --- otherwise we have to
+    estimate probabilities for every pixel in the image\footnote{This approach
+    implicitly assumes that host galaxies are always visible in the infrared,
+    an assumption we discuss in \autoref{sec:limitations}.}. We call these
+    infrared sources \emph{candidate host galaxies}. Using candidate host
+    galaxies instead of pixels also allows us to include ancillary information
+    about the candidate host galaxies, such as their infrared colours and
+    redshifts.}
 
-    \edit{Changed wording of `defines a binary classification task' and rewrote the paragraph for clarity. Added a preamble about what binary classification is, which should make it clearer why this is actually a binary classification task. Replaced `task' with `method' to reduce ambiguous wording since machine learning and astrophysics use `task' for different purposes. Clarified the relationship between the GCT and the XID tasks.} A common method in machine learning is \emph{binary classification}, where objects are to be assigned to one of two classes, called the \emph{positive} and \emph{negative} classes. This assignment is represented by the probability that an object is in the positive class. A \emph{binary classifier} is a function mapping from an object to such a probability. Our formulation of cross-identification is equivalent to binary classification of candidate host galaxies: the positive class represents host galaxies, the negative class represents non-host galaxies, and to cross-identify a radio component we find the candidate host galaxy maximising the positive class probability. We therefore split cross-identification into two separate tasks: the \emph{galaxy classification task} where, given a candidate host galaxy, we wish to determine whether it is a host galaxy of \emph{any} radio component; and the \emph{cross-identification task} where, given a specific radio component, we wish to find its host galaxy. The galaxy classification task is a traditional machine learning problem which results in a binary classifier. The cross-identification task maximises over probabilities output by this classifier. Our approach is illustrated in \autoref{fig:windows} and described in \autoref{alg:xid}. We refer to the binary classifier mapping from a candidate host galaxy to a probability as $f$. \edit{Stopped referring to infrared sources as an abstract set $\mathcal X$ and instead changed this paragraph to be more concrete.} To implement $f$ as a function that accepts candidate host galaxies as input, we need to represent candidate host galaxies by vectors. We describe this in \autoref{vector-representation-of-infrared-sources}. There are many options for modelling $f$. In this paper we apply three different models: logistic regression, random forests and convolutional neural networks.
+    \edited{A common method in machine learning is \emph{binary
+    classification}, where objects are to be assigned to one of two classes,
+    called the \emph{positive} and \emph{negative} classes. This assignment is
+    represented by the probability that an object is in the positive class. A
+    \emph{binary classifier} is a function mapping from an object to such a
+    probability. Our formulation of cross-identification is equivalent to
+    binary classification of candidate host galaxies: the positive class
+    represents host galaxies, the negative class represents non-host galaxies,
+    and to cross-identify a radio component we find the candidate host galaxy
+    maximising the positive class probability. We therefore split
+    cross-identification into two separate tasks: the \emph{galaxy
+    classification task} where, given a candidate host galaxy, we wish to
+    determine whether it is a host galaxy of \emph{any} radio component; and
+    the \emph{cross-identification task} where, given a specific radio
+    component, we wish to find its host galaxy. The galaxy classification task
+    is a traditional machine learning problem which results in a binary
+    classifier. The cross-identification task maximises over probabilities
+    output by this classifier. Our approach is illustrated in
+    \autoref{fig:windows} and described in \autoref{alg:xid}. We refer to the
+    binary classifier mapping from a candidate host galaxy to a probability as
+    $f$. To implement $f$ as a function that accepts candidate host galaxies
+    as input, we need to represent candidate host galaxies by vectors. We
+    describe this in \autoref{vector-representation-of-infrared-sources}.
+    There are many options for modelling $f$. In this paper we apply three
+    different models: logistic regression, random forests and convolutional
+    neural networks.}
 
-    \edit{Made clear that assumption-breaking gives incorrect results rather than the method failing in some other way. Clarified wording around binary classifiers.} Note that we first solve the galaxy classification task without reference to any specific radio object, and then use this result to solve the cross-identification task for a specific radio component. This is necessary to be able to find a binary classifier in the galaxy classification task --- we need multiple positive examples (i.e. host galaxies) to train a model, but for any specific radio component there is only one host galaxy. As a result, the galaxy classification task aims to answer the general question of whether a given galaxy is the host galaxy of \emph{any} radio component, while the cross-identification task attempts to cross-identify a \emph{specific} radio component. Our method therefore gives incorrect results if there are multiple host galaxies within the $2' \times 2'$ image. An example of such an image is shown in \autoref{fig:broken-isolation}. It is unclear how to pass radio component-specific information into the binary classifier. Instead, we weight the estimated probabilities by a Gaussian function of angular separation between the radio component and each candidate host galaxy and maximise this weighted probability. The width of the Gaussian, $\sigma$, controls the influence of the Gaussian on the final cross-identification. When $\sigma$ is small, our approach is equivalent to a nearest-neighbours approach where we select the nearest infrared object to the radio component as the host galaxy. In the limit where $\sigma \to \infty$, we maximise the probability output by the classifier as above. We take $\sigma = 30''$ as this was the best value found by a grid search.
+    \edited{We cross-identify each radio component in turn. The classifier $f$
+    provides a score for each candidate host galaxy. This score indicates how
+    much the candidate looks like a host galaxy, irrespective of which radio
+    component we are cross-identifying. If there are other nearby host
+    galaxies, then multiple candidate hosts may have high scores (e.g.
+    \autoref{fig:broken-isolation}). The classifier is totally independent of
+    which radio component we are cross-identifying. This is necessary to be
+    able to find a binary classifier in the galaxy classification task --- we
+    need multiple positive examples (i.e. host galaxies) to train a model, but
+    for any specific radio component there is only one host galaxy. As a
+    result, the galaxy classification task aims to answer the general question
+    of whether a given galaxy is the host galaxy of \emph{any} radio
+    component, while the cross-identification task attempts to cross-identify
+    a \emph{specific} radio component. To distinguish between candidate host
+    galaxies with high scores, we weight the scores by a Gaussian function of
+    angular separation between the candidates and the radio component.} The
+    width of the Gaussian, $\sigma$, controls the influence of the Gaussian on
+    the final cross-identification. When $\sigma$ is small, our approach is
+    equivalent to a nearest-neighbours approach where we select the nearest
+    infrared object to the radio component as the host galaxy. In the limit
+    where $\sigma \to \infty$, we maximise the probability output by the
+    classifier as above. We take $\sigma = 30''$ as this was the best value
+    found by a grid search.
 
-    \edit{Clarified what we mean by filtering compact radio sources.} We can improve upon this method by cross-identifying compact radio sources separately to extended sources, as compact sources are much easier to cross-identify. For a compact source, the nearest SWIRE object may be identified as the host galaxy (a \emph{nearest-neighbours} approach), or a more complex method such as likelihood ratios may be applied \citep[see][]{weston18lrpy}. We cross-identify compact sources separately in our pipeline and this process is shown in \autoref{fig:flowchart}.
+    \edited{We can improve upon this method by cross-identifying compact radio sources
+    separately to extended sources, as compact sources are much easier to
+    cross-identify. For a compact source, the nearest SWIRE object may be
+    identified as the host galaxy (a \emph{nearest-neighbours} approach), or a
+    more complex method such as likelihood ratios may be applied
+    \citep[see][]{weston18lrpy}. We cross-identify compact sources separately
+    in our pipeline and this process is shown in \autoref{fig:flowchart}.}
 
   \subsection{Limitations of our approach}
     \label{sec:limitations}
@@ -399,21 +516,39 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     These assumptions limit the effectiveness of our approach, regardless of
     how accurate our binary classification may be.
 
-    \edit{Merged this paragraph and the next one, and clarified the relationship between the two limitations i.e. problems of scale.} The main limitations are problems of scale in choosing the candidate search radius and the size of the radio image cutouts representing candidates. If the search radius is too small, we may not consider the host galaxy as a candidate. If the search radius is too large, we may consider multiple host galaxies (though this is somewhat mediated by the Gaussian multiplier). If the cutout is too small, radio emission may extend past the edges of the window and we may miss critical information required to identify the galaxy as a host galaxy. If the cutout is too large, then irrelevant information will be included and it may be difficult or computationally expensive to classify. We chose a window size of $32 \times 32$ pixels, corresponding to approximately $48'' \times 48''$ in ATLAS. This is shown as red rectangles in \autoref{fig:windows} and \autoref{fig:broken-window-size}. These kinds of size problems are difficult even for non-automated methods as radio sources can be extremely wide --- for example, Radio Galaxy Zoo found a radio giant that spanned over three different images presented to volunteers and the full source was only cross-identified by the efforts of citizen scientists \citep{banfield15}. An example of a radio image where part of the radio source is outside the search radius is shown in \autoref{fig:broken-contains}.
+    \edited{The main limitations are problems of scale in choosing the
+    candidate search radius and the size of the radio image cutouts
+    representing candidates. If the search radius is too small, we may not
+    consider the host galaxy as a candidate. If the search radius is too
+    large, we may consider multiple host galaxies (though this is somewhat
+    mediated by the Gaussian multiplier). If the cutout is too small, radio
+    emission may extend past the edges of the window and we may miss critical
+    information required to identify the galaxy as a host galaxy. If the
+    cutout is too large, then irrelevant information will be included and it
+    may be difficult or computationally expensive to classify. We chose a
+    window size of $32 \times 32$ pixels, corresponding to approximately $48'' \times 48''$ in
+    ATLAS. This is shown as red rectangles in \autoref{fig:windows} and
+    \autoref{fig:broken-window-size}. These kinds of size problems are
+    difficult even for non-automated methods as radio sources can be extremely
+    wide --- for example, Radio Galaxy Zoo found a radio giant that spanned
+    over three different images presented to volunteers and the full source
+    was only cross-identified by the efforts of citizen scientists
+    \citep{banfield15}. An example of a radio image where part of the radio
+    source is outside the search radius is shown in
+    \autoref{fig:broken-contains}.}
 
-    The ``classifier'' provides a score for each host galaxy within a window from the radio
-    component under consideration. This score indicates how AGN looking a particular host
-    galaxy is. However, it does not answer the question which host galaxy it is. To distinguish
-    between host galaxies within the window that all look very AGN like, we use a Gaussian distance
-    weighting. \cheng{Needs editing}
-
-    %The assumption that the host galaxy of a radio component is closer on the sky to the radio component than any other host galaxy is required for the Gaussian distance weighting to correctly break ties. \matthew{Cheng}{Clarify this assumption.}
+    In weighting the classification scores by a Gaussian function of angular
+    separation, we implicitly assume that the host galaxy of a radio component
+    is closer to that radio component than any other host galaxy. If this
+    assumption fails then the incorrect host galaxy may be identified, though
+    this is fairly rare.
 
     We only need the assumption that the host galaxy appears in SWIRE to
     incorporate galaxy-specific features
     (\autoref{vector-representation-of-infrared-sources}) and to improve
-    efficiency. Our method is applicable even to radio sources not detected in the infrared
-    by considering every pixel of the radio image as a candidate location as would be done in the original computer vision approach.
+    efficiency. Our method is applicable even to radio sources not detected in
+    the infrared by considering every pixel of the radio image as a candidate
+    location as would be done in the original computer vision approach.
 
     Our assumptions impose an upper bound on how well we can cross-identify
     radio sources. We estimate this upper bound in \autoref{sec:cdfs-results}.
@@ -421,7 +556,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \subsection{Feature vector representation of infrared sources}
   \label{vector-representation-of-infrared-sources}
 
-    \edit{Simplified this paragraph and clarified why we chose these features; added linking to \autoref{cross-identification-as-binary-classification}.} Inputs to binary classifiers must be represented by an array of real values called feature vectors. We therefore need to choose a feature vector representation of our candidate host galaxies. Candidate hosts are sourced from the SWIRE catalogue (\autoref{sec:swire}). We represent each candidate host with 1034 real-valued features, combining the cutouts described in \autoref{cross-identification-as-binary-classification} and infrared ancillary data from the SWIRE catalogue. For a given candidate host, these features are:
+    \edited{Inputs to binary classifiers must be represented by an array of real values called feature vectors.} We therefore need to choose a feature vector representation of our candidate host galaxies. Candidate hosts are sourced from the SWIRE catalogue (\autoref{sec:swire}). We represent each candidate host with 1034 real-valued features, \edited{combining the cutouts described in \autoref{cross-identification-as-binary-classification} and infrared ancillary data from the SWIRE catalogue}. For a given candidate host, these features are:
     \begin{itemize}
       \item the 6 logarithms of the ratios of fluxes of the candidate
         host at the four IRAC wavelengths;
@@ -434,14 +569,45 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         \times 48''$), centred on the candidate host.
     \end{itemize}
 
-    The infrared fluxes provide insight into the properties of the host galaxy of the radio component. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace both galaxies with faint polycyclic aromatic hydrocarbon (PAH) emission and elliptical galaxies dominated by old stellar populations. The \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission is dominated by non-equilibrium emission of dust grains (PAH destruction
-    by the hard UV spectrum of AGN), while the \unit{8.0}{\micro\meter} flux traces strong PAH emission at low redshift \citep{Sajina2005}. The stellarity index represents how likely the object is to be a star rather than a galaxy \citep{surace05swire}.
+    The infrared fluxes provide insight into the properties of the host galaxy
+    of the radio component. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace
+    both galaxies with faint polycyclic aromatic hydrocarbon (PAH) emission
+    and elliptical galaxies dominated by old stellar populations. The
+    \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission
+    is dominated by non-equilibrium emission of dust grains (PAH destruction
+    by the hard UV spectrum of AGN), while the \unit{8.0}{\micro\meter} flux
+    traces strong PAH emission at low redshift \citep{Sajina2005}. The
+    stellarity index represents how likely the object is to be a star rather
+    than a galaxy \citep{surace05swire}.
 
-    We use the pixels of each $32 \times 32$ radio image as independent features for all binary classifier models, with the convolutional neural network automatically extracting features that are relevant. Other features of the radio components may be used instead of the pixel values, but there has been limited research on extracting such features. \citet{proctor06} describes hand-selected features for radio doubles in FIRST, and \citet{aniyan17cnn} and Lukic et al. (in press) make use of deep convolutional neural networks which automatically extract features as part of classification. A more comprehensive investigation of features is a good avenue for potential improvement in our pipeline but this is beyond the scope of this initial study.
+    We use the pixels of each $32 \times 32$ radio image as independent
+    features for all binary classifier models, with the convolutional neural
+    network automatically extracting features that are relevant. Other
+    features of the radio components may be used instead of the pixel values,
+    but there has been limited research on extracting such features.
+    \citet{proctor06} describes hand-selected features for radio doubles in
+    FIRST, and \citet{aniyan17cnn} and Lukic et al. (in press) make use of
+    deep convolutional neural networks which automatically extract features as
+    part of classification. A more comprehensive investigation of features is
+    a good avenue for potential improvement in our pipeline but this is beyond
+    the scope of this initial study.
 
   \subsection{Binary Classifiers}\label{sec:classifiers}
 
-    \edit{Clarified wording around `classifiers'.} We use three different binary classification models: logistic regression, convolutional neural networks, and random forests. These models cover three different approaches to machine learning. Logistic regression is a probabilistic binary classification model. It is linear in the feature space and outputs the probability that the input has a positive label~\citep[Chap. 4]{bishop06ml}. Convolutional neural networks (CNN) are a biologically-inspired prediction model for prediction with image inputs. They have recently produced good results on large image-based datasets in astronomy \citep[e.g.][Lukic et al. in press]{dieleman15cnn}. Random forests are an ensemble of decision trees~\citep{breiman01random-forest}. They consider multiple subsamples of the training set, where each bootstrap subsample is sampled with replacement from the training set. To classify a new data point, the random forest takes the weighted average of all classifications produced by each decision tree.
+    We use three different binary classification models: logistic regression,
+    convolutional neural networks, and random forests. These models cover
+    three different approaches to machine learning. Logistic regression is a
+    probabilistic binary classification model. It is linear in the feature
+    space and outputs the probability that the input has a positive
+    label~\citep[Chap. 4]{bishop06ml}. Convolutional neural networks (CNN) are
+    a biologically-inspired prediction model for prediction with image inputs.
+    They have recently produced good results on large image-based datasets in
+    astronomy \citep[e.g.][Lukic et al. in press]{dieleman15cnn}. Random
+    forests are an ensemble of decision trees~\citep{breiman01random-forest}.
+    They consider multiple subsamples of the training set, where each
+    bootstrap subsample is sampled with replacement from the training set. To
+    classify a new data point, the random forest takes the weighted average of
+    all classifications produced by each decision tree.
 
     Further details and background of these models are in \aref{app:models}.
 
@@ -457,7 +623,10 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \end{figure}
 
     \begin{table}
-      \caption{Number of compact and resolved radio objects in each CDFS quadrant. Radio Galaxy Zoo (RGZ) has more cross-identifications than the expert catalogue provides as it uses a deeper data release of ATLAS, and so has more objects in each quadrant for training.}
+      \caption{Number of compact and resolved radio objects in each CDFS
+      quadrant. Radio Galaxy Zoo (RGZ) has more cross-identifications than the
+      expert catalogue provides as it uses a deeper data release of ATLAS, and
+      so has more objects in each quadrant for training.}
       \label{tab:radio-count}
       \begin{tabular}{lcccc}
         \hline
@@ -482,7 +651,21 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \label{fig:distribution-cutoffs}
     \end{figure}
 
-    \edit{Clarified this paragraph and removed mention of how non-trivial this task is.} The Radio Galaxy Zoo and \citet{norris06} cross-identification catalogues must be converted to binary labels for infrared objects so that they can be used to train binary classifiers. One problem is that there is no clear way to capture radio morphology information in binary classification of infrared objects. Another problem is that there is no way to indicate \emph{which} radio object an infrared object is associated with, only that it is associated with \emph{some} radio object. We ignore these problems for this paper and make the na\"ive assumption that any given search radius contains only one host galaxy. This allows us to assume that if a candidate host galaxy in the search radius of a component is not the host galaxy of that component, then it is not a host galaxy at all. This is not ideal as it discards information about whether a candidate host is not a host galaxy, or whether it was just not acknowledged as a host galaxy in the catalogue, but this ambiguity can be treated as a source of label noise and will not strongly affect training.
+    \edited{The Radio Galaxy Zoo and \citet{norris06} cross-identification
+    catalogues must be converted to binary labels for infrared objects so that
+    they can be used to train binary classifiers.} One problem is that there is
+    no clear way to capture radio morphology information in binary
+    classification of infrared objects. Another problem is that there is no
+    way to indicate \emph{which} radio object an infrared object is associated
+    with, only that it is associated with \emph{some} radio object. We ignore
+    these problems for this paper and make the na\"ive assumption that any
+    given search radius contains only one host galaxy. This allows us to
+    assume that if a candidate host galaxy in the search radius of a component
+    is not the host galaxy of that component, then it is not a host galaxy at
+    all. This is not ideal as it discards information about whether a
+    candidate host is not a host galaxy, or whether it was just not
+    acknowledged as a host galaxy in the catalogue, but this ambiguity can be
+    treated as a source of label noise and will not strongly affect training.
 
     We then generate positive labels from a cross-identification catalogue.
     We decide that if an infrared object is listed in the catalogue, then it
@@ -498,20 +681,23 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \citep{franzen15}. The labels from \citet{norris06} may therefore disagree with labels
     from Radio Galaxy Zoo even if they are both plausible. The difference in
     training set size at different flux cutoffs is shown in
-    \autoref{fig:distribution-cutoffs}. We train and test our binary classifiers on infrared objects within a 1~arcmin radius of an ATLAS radio object.
+    \autoref{fig:distribution-cutoffs}. We train and test our binary
+    classifiers on infrared objects within a 1~arcmin radius of an ATLAS radio
+    object.
 
   \subsection{Experimental Setup}
   \label{sec:experimental-setup}
 
-    We trained binary classifiers on infrared objects in the CDFS field using two sets of labels. One label set was derived from
-    Radio Galaxy Zoo cross-identifications and the other was derived from the
-    \citet{norris06} cross-identification catalogue. We refer to these as the
-    `Radio Galaxy Zoo labels' and the `expert labels' respectively. We divided the
-    CDFS field into four quadrants for training and testing. The quadrants
-    were divided with a common corner at $\alpha = 03^\text{h}31^\text{m}12^\text{s},
+    We trained binary classifiers on infrared objects in the CDFS field using
+    two sets of labels. One label set was derived from Radio Galaxy Zoo
+    cross-identifications and the other was derived from the \citet{norris06}
+    cross-identification catalogue. We refer to these as the `Radio Galaxy Zoo
+    labels' and the `expert labels' respectively. We divided the CDFS field
+    into four quadrants for training and testing. The quadrants were divided
+    with a common corner at $\alpha = 03^\text{h}31^\text{m}12^\text{s},
     \delta = -28^\circ{}06'00''$ as shown in \autoref{fig:quadrants}. For
-    each trial, one quadrant was used to draw test examples and the other three
-    quadrants were used for training examples.
+    each trial, one quadrant was used to draw test examples and the other
+    three quadrants were used for training examples.
 
     We further divided the radio components into compact and resolved. Compact
     components are cross-identified by fitting a 2D Gaussian \citep[as
@@ -530,7 +716,10 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
                {S_{\text{peak}}}
         \right)^2}\,\,\,\,,
     \end{equation}%
-    \edit{Defined $\sigma$.} where \(S_{\text{int}}\) is the integrated flux density, \(S_{\text{peak}}\) is the peak flux density, $\sigma_{S_{\text{int}}}$ is the uncertainty in integrated flux density and $\sigma_{S_{\text{peak}}}$ is the uncertainty in peak flux density \citep[following][]{franzen15}.
+    where \(S_{\text{int}}\) is the integrated flux density,
+    \(S_{\text{peak}}\) is the peak flux density, \edited{$\sigma_{S_{\text{int}}}$ is
+    the uncertainty in integrated flux density and $\sigma_{S_{\text{peak}}}$
+    is the uncertainty in peak flux density} \citep[following][]{franzen15}.
 
     Candidate hosts were selected from the SWIRE catalogue. For a given subset
     of radio components, all SWIRE objects within 1~arcmin of all radio
@@ -540,31 +729,42 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     and SWIRE objects within 1~arcmin of a resolved radio component as part of
     the `resolved set'.
 
-    To reduce
-    bias in the testing data due to the expert labels being generated from a
-    shallower data release of ATLAS, a SWIRE object was only included in the test
-    set if it was within 1~arcmin of a radio object with a cross-identification
-    in both the \citet{norris06} catalogue and the Radio Galaxy Zoo catalogue.
+    To reduce bias in the testing data due to the expert labels being
+    generated from a shallower data release of ATLAS, a SWIRE object was only
+    included in the test set if it was within 1~arcmin of a radio object with
+    a cross-identification in both the \citet{norris06} catalogue and the
+    Radio Galaxy Zoo catalogue.
 
-    Each binary classifier was trained on the training examples and used to predict labels for the test examples. The predicted labels were compared to the expert labels and the balanced accuracy was computed. Balanced accuracy is the average of the accuracy on the positive class and the accuracy on the negative class, and is not sensitive to class imbalance. The galaxy classification task has highly imbalanced classes --- in our total set of SWIRE objects within 1~arcmin of an ATLAS object, only 4~per cent have positive labels. Only examples within 1~arcmin of ATLAS objects in the first ATLAS data release \citep{norris06} were used to compute accuracy, as these were the only ATLAS objects with expert labels.
+    Each binary classifier was trained on the training examples and used to
+    predict labels for the test examples. The predicted labels were compared
+    to the expert labels and the balanced accuracy was computed. Balanced
+    accuracy is the average of the accuracy on the positive class and the
+    accuracy on the negative class, and is not sensitive to class imbalance.
+    The galaxy classification task has highly imbalanced classes --- in our
+    total set of SWIRE objects within 1~arcmin of an ATLAS object, only 4~per
+    cent have positive labels. Only examples within 1~arcmin of ATLAS objects
+    in the first ATLAS data release \citep{norris06} were used to compute
+    accuracy, as these were the only ATLAS objects with expert labels.
 
-    We then used the estimated class probabilities to predict the host galaxy for
-    each radio component cross-identified by both \citet{norris06} and Radio
-    Galaxy Zoo. For each SWIRE object within 1~arcmin of the radio component,
-    the probability of the object having a positive label was estimated using
-    the trained binary classifiers. The SWIRE object with the highest Gaussian-weighted
-    probability was chosen as the host galaxy. The accuracy for the cross-identification task was then estimated
-    as the fraction of the predicted host galaxies that matched the \citet{norris06} cross-identifications.
+    We then used the estimated class probabilities to predict the host galaxy
+    for each radio component cross-identified by both \citet{norris06} and
+    Radio Galaxy Zoo. For each SWIRE object within 1~arcmin of the radio
+    component, the probability of the object having a positive label was
+    estimated using the trained binary classifiers. The SWIRE object with the
+    highest Gaussian-weighted probability was chosen as the host galaxy. The
+    accuracy for the cross-identification task was then estimated as the
+    fraction of the predicted host galaxies that matched the \citet{norris06}
+    cross-identifications.
 
 \section{Results}\label{sec:results}
 
-  In this section we present accuracies of our method trained on CDFS and applied to CDFS and ELAIS-S1, as well as results motivating our accuracy
-  measures and estimates of upper and lower bounds for cross-identification accuracy using our method.
+  In this section we present accuracies of our method trained on CDFS and
+  applied to CDFS and ELAIS-S1, as well as results motivating our accuracy
+  measures and estimates of upper and lower bounds for cross-identification
+  accuracy using our method.
 
   \subsection{Application to ATLAS-CDFS}
   \label{sec:cdfs-results}
-
-    \edit{Merged these sections.}
 
     \begin{figure}
       \centering
@@ -594,13 +794,13 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{figure}
     \centering
     \includegraphics[width=\columnwidth]{images/cdfs-grid-new.pdf}
-    \caption{\edit{Clarified `classifier' and `Labels'.} Performance of our method with logistic regression (LR), convolutional neural networks (CNN) and random forest (RF) binary classifiers. `Norris' indicates the performance of binary classifiers trained on the expert labels and `RGZ' indicates the performance of binary classifiers trained on the Radio Galaxy Zoo labels. One point is shown per binary classifier per testing quadrant. The training and testing sets have been split into compact and resolved objects, with results on compact objects shown on the left and results on resolved objects shown on the right. Shown for comparison is the accuracy of the Radio Galaxy Zoo consensus cross-identifications on the cross-identification task, shown as `Labels'. The cross-identification accuracy attained by a perfect binary classifier is shown by a solid green line, and the cross-identification accuracy of a nearest-neighbours approach is shown by a dashed grey line. The standard deviation of these accuracies across the four CDFS quadrants is shown by the shaded area. Note that the pipeline shown in \autoref{fig:flowchart} is not used for these results. \label{fig:ba}}
+    \caption{Performance of our method with logistic regression (LR), convolutional neural networks (CNN) and random forest (RF) binary classifiers. `Norris' indicates the performance of binary classifiers trained on the expert labels and `RGZ' indicates the performance of binary classifiers trained on the Radio Galaxy Zoo labels. One point is shown per binary classifier per testing quadrant. The training and testing sets have been split into compact and resolved objects, with results on compact objects shown on the left and results on resolved objects shown on the right. \edited{Shown for comparison is the accuracy of the Radio Galaxy Zoo consensus cross-identifications on the cross-identification task, shown as `Labels'.} The cross-identification accuracy attained by a perfect binary classifier is shown by a solid green line, and the cross-identification accuracy of a nearest-neighbours approach is shown by a dashed grey line. The standard deviation of these accuracies across the four CDFS quadrants is shown by the shaded area. Note that the pipeline shown in \autoref{fig:flowchart} is not used for these results. \label{fig:ba}}
     \end{figure}
 
     \begin{figure}
       \centering
       \includegraphics[width=0.9\columnwidth]{images/cdfs_cross_identification_grid.pdf}
-      \caption{Performance of our approach using different binary classifiers on the cross-identification task. Markers and lines are as in \autoref{fig:ba}. The blue solid line indicates the performance of a random binary classifier and represents the minimum accuracy we expect to obtain. The standard deviation of this accuracy across 25 trials and 4 quadrants is shaded. The accuracy of Radio Galaxy Zoo on the cross-identification task is below the axis and is instead marked by an arrow with the mean accuracy. Note that the pipeline shown in \autoref{fig:flowchart} is used here, so compact objects are cross-identified in the same way regardless of binary classifier model. \edit{Clarified what the pipeline comment implies.} \label{fig:cross-id-accuracy}}
+      \caption{Performance of our approach using different binary classifiers on the cross-identification task. Markers and lines are as in \autoref{fig:ba}. The blue solid line indicates the performance of a random binary classifier and represents the minimum accuracy we expect to obtain. The standard deviation of this accuracy across 25 trials and 4 quadrants is shaded. The accuracy of Radio Galaxy Zoo on the cross-identification task is below the axis and is instead marked by an arrow with the mean accuracy. Note that the pipeline shown in \autoref{fig:flowchart} is used here, \edited{so compact objects are cross-identified in the same way regardless of binary classifier model}. \label{fig:cross-id-accuracy}}
     \end{figure}
 
     \begin{figure*}
@@ -614,25 +814,118 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         \caption{\label{fig:examples} Examples of resolved sources where the incorrect cross-identification was selected by random forests trained on expert labels. Binary classifier model/training set combinations are denoted $C(S)$ where $C$ is the binary classifier model and $S$ is the training set. `LR' is logistic regression, `CNN' is convolutional neural networks, and `RF' is random forests. `Norris' refers to the expert labels and `RGZ' refers to the Radio Galaxy Zoo labels. The cross-identification made by nearest-neighbours is shown by `NN'. The background image is the \unit{3.6}{\micro\meter} SWIRE image. The contours show ATLAS radio data and increase geometrically from a signal-to-noise ratio of 4.}
     \end{figure*}
 
-    We can assess trained binary classifiers either by their performance on the galaxy classification task or by their performance on the cross-identification task when used in our method. Both performances are useful: performance on the galaxy classification task provides a robust and simple way to compare binary classifiers without the limitations of our specific formulation, and performance on the cross-identification task can be compared with other cross-identification methods. We therefore report two sets of accuracies: balanced accuracy for the galaxy classification task and accuracy for the cross-identification task. These accuracy measures are correlated and we show this correlation in \autoref{fig:gct-to-xid}. Fitting a line of best fit with \texttt{scipy} gives $R^2 = 0.92$ for logistic regression and $R^2 = 0.87$ for random forests. \edit{Merged these paragraphs.} While performance on the galaxy classification task is correlated with performance on the cross-identification task, balanced accuracy does not completely capture the effectiveness of a binary classifier applied to the cross-identification task. This is because while our binary classifiers output probabilities, these probabilities are thresholded to compute the balanced accuracy \edit{reworded this sentence to make it clearer why the threshold doesn't matter}. In the galaxy classification task, the binary classifier only needs to ensure that host galaxies are given higher probabilities than non-host galaxies. This means there can be many `false positives' that do not affect cross-identification. An example of this is shown in \autoref{fig:positives}, where the classifier has identified 8 `host galaxies'. However, there are only three true host galaxies in this image --- one per radio component --- and so in the cross-identification task, only three of these galaxies will be identified as hosts.
+    \edited{We can assess trained binary classifiers either by their performance on
+    the galaxy classification task or by their performance on the
+    cross-identification task when used in our method. Both performances are
+    useful: performance on the galaxy classification task provides a robust
+    and simple way to compare binary classifiers without the limitations of
+    our specific formulation, and performance on the cross-identification task
+    can be compared with other cross-identification methods. We therefore
+    report two sets of accuracies: balanced accuracy for the galaxy
+    classification task and accuracy for the cross-identification task. These
+    accuracy measures are correlated and we show this correlation in
+    \autoref{fig:gct-to-xid}. Fitting a line of best fit with \texttt{scipy}
+    gives $R^2 = 0.92$ for logistic regression and $R^2 = 0.87$ for random
+    forests. While performance on the galaxy classification task is correlated
+    with performance on the cross-identification task, balanced accuracy does
+    not completely capture the effectiveness of a binary classifier applied to
+    the cross-identification task. \edited{This is because while our binary
+    classifiers output probabilities, these probabilities are thresholded to
+    compute the balanced accuracy}. In the galaxy classification
+    task, the binary classifier only needs to ensure that host galaxies are
+    given higher probabilities than non-host galaxies. This means there can be
+    many `false positives' that do not affect cross-identification. An example
+    of this is shown in \autoref{fig:positives}, where the classifier has
+    identified 8 `host galaxies'. However, there are only three true host
+    galaxies in this image --- one per radio component --- and so in the
+    cross-identification task, only three of these galaxies will be identified
+    as hosts.}
 
-    In \autoref{fig:ba} we plot the performance of logistic regression, random forests, and a convolutional neural network on both the galaxy
-    classification task and the cross-identification task for resolved and compact sources. For comparison, we also plot the accuracy of Radio Galaxy
-    Zoo and a nearest-neighbours approach, as well as estimates for upper and lower limits on the cross-identification accuracy. \edit{Reworded how we estimated upper limit and merged this paragraph with the specific results paragraph.} We estimate the upper limit on performance by assigning all true host galaxies a 100 per cent probability of being host galaxies and assigning all other candidate host galaxies a 0 per cent probability. This is equivalent to `perfectly' solving the galaxy classification task and so represents the best possible cross-identification performance achievable with our method. We estimate the lower limit on performance by taking a random binary classifier, which outputs random probabilities regardless of input galaxy. We expect any useful binary classifier to produce better results than this, so this represents the lowest expected cross-identification performance. The upper estimates, lower estimates, and nearest-neighbour accuracy are shown as horizontal lines in \autoref{fig:ba}. \edit{Deleted description of why the lowest expected performance is related to the pipeline as this is more confusing than not.}
+    In \autoref{fig:ba} we plot the performance of logistic regression, random
+    forests, and a convolutional neural network on both the galaxy
+    classification task and the cross-identification task for resolved and
+    compact sources. For comparison, we also plot the accuracy of Radio Galaxy
+    Zoo and a nearest-neighbours approach, as well as estimates for upper and
+    lower limits on the cross-identification accuracy. \edited{We estimate the upper limit on performance by assigning all
+    true host galaxies a 100 per cent probability of being host galaxies and
+    assigning all other candidate host galaxies a 0 per cent probability. This
+    is equivalent to `perfectly' solving the galaxy classification task and so
+    represents the best possible cross-identification performance achievable
+    with our method. We estimate the lower limit on performance by taking a
+    random binary classifier, which outputs random probabilities regardless of
+    input galaxy. We expect any useful binary classifier to produce better
+    results than this, so this represents the lowest expected
+    cross-identification performance.} The upper estimates, lower estimates,
+    and nearest-neighbour accuracy are shown as horizontal lines in
+    \autoref{fig:ba}.
 
-    In \autoref{fig:cross-id-accuracy} we plot the performance of our method with different binary classification models, as well as the performance of Radio Galaxy Zoo, nearest-neighbours, and the perfect and random binary classifiers, on the full set of ATLAS~DR1 radio components using the pipeline in \autoref{fig:flowchart}. The average accuracy associated with each classification model and training label set across all four quadrants is shown in \aref{app:accuracies}. \edit{Reworded this paragraph to emphasise that the method is being tested on a task rather than the individual classifiers on the binary task.}
+    In \autoref{fig:cross-id-accuracy} we plot the performance \edited{of our
+    method with different binary classification models}, as well as the
+    performance of Radio Galaxy Zoo, nearest-neighbours, and the perfect and
+    random binary classifiers, on the full set of ATLAS~DR1 radio components
+    using the pipeline in \autoref{fig:flowchart}. The average accuracy
+    \edited{associated with each classification model} and training label set
+    across all four quadrants is shown in \aref{app:accuracies}.
 
-    Differences between accuracies across training labels are well within one standard deviation computed across the four quadrants, with convolutional neural networks on compact objects as the only exception. The spread of accuracies is similar for both sets of training labels, with the exception of random forests. The balanced accuracies of random forests trained on expert labels have a considerably higher spread than those trained on Radio Galaxy Zoo labels, likely because of the small size of the expert training set --- there are less than half the number of objects in the expert-labelled training set than the number of objects in the Radio Galaxy Zoo-labelled training set (\autoref{tab:radio-count}).
+    Differences between accuracies across training labels are well within one
+    standard deviation computed across the four quadrants, with convolutional
+    neural networks on compact objects as the only exception. The spread of
+    accuracies is similar for both sets of training labels, with the exception
+    of random forests. The balanced accuracies of random forests trained on
+    expert labels have a considerably higher spread than those trained on
+    Radio Galaxy Zoo labels, likely because of the small size of the expert
+    training set --- there are less than half the number of objects in the
+    expert-labelled training set than the number of objects in the Radio
+    Galaxy Zoo-labelled training set (\autoref{tab:radio-count}).
 
-    Radio Galaxy Zoo-trained methods significantly outperform Radio Galaxy Zoo cross-identifications. Additionally, despite poor performance of Radio Galaxy Zoo on the cross-identification task, methods trained on these cross-identifications still perform comparably to those trained on expert labels. This is because incorrect Radio Galaxy Zoo cross-identifications can be thought of as a source of noise in the labels which is averaged out in training. This shows the usefulness of crowdsourced training data, even when the data is noisy.
+    Radio Galaxy Zoo-trained methods significantly outperform Radio Galaxy Zoo
+    cross-identifications. Additionally, despite poor performance of Radio
+    Galaxy Zoo on the cross-identification task, methods trained on these
+    cross-identifications still perform comparably to those trained on expert
+    labels. This is because incorrect Radio Galaxy Zoo cross-identifications
+    can be thought of as a source of noise in the labels which is averaged out
+    in training. This shows the usefulness of crowdsourced training data, even
+    when the data is noisy.
 
-    Our method performs comparably to a nearest-neighbours approach. For compact objects, this is to be expected --- indeed, nearest-neighbours attains nearly 100 per cent accuracy on the compact test set. Our results do not improve on nearest-neighbours for resolved objects. However, our method does allow for improvement on nearest-neighbours with a sufficiently good binary classifier: a `perfect' binary classifier attains nearly 100 per cent accuracy on resolved sources. This shows that our method may be useful provided that a good binary classifier can be trained. The most obvious place for improvement is in feature selection: we use pixels of radio images directly and these are likely not conducive to good performance on the galaxy classification task. Convolutional neural networks, which are able to extract features from images, \emph{should} work better, but these require far more training data than the other methods we have applied and the small size of ATLAS thus results in poor performance.
+    Our method performs comparably to a nearest-neighbours approach. For
+    compact objects, this is to be expected --- indeed, nearest-neighbours
+    attains nearly 100 per cent accuracy on the compact test set. Our results
+    do not improve on nearest-neighbours for resolved objects. However, our
+    method does allow for improvement on nearest-neighbours with a
+    sufficiently good binary classifier: a `perfect' binary classifier attains
+    nearly 100 per cent accuracy on resolved sources. This shows that our
+    method may be useful provided that a good binary classifier can be
+    trained. The most obvious place for improvement is in feature selection:
+    we use pixels of radio images directly and these are likely not conducive
+    to good performance on the galaxy classification task. Convolutional
+    neural networks, which are able to extract features from images,
+    \emph{should} work better, but these require far more training data than
+    the other methods we have applied and the small size of ATLAS thus results
+    in poor performance.
 
-    We noted in \autoref{sec:labels} that the test set of expert labels, derived from the initial ATLAS data release, was less deep than the third data release used by Radio Galaxy Zoo and this paper, introducing a source of label noise in the testing labels. Specifically, true host galaxies may be misidentified as non-host galaxies if the associated radio source was below the 5 signal-to-noise limit in ATLAS DR1 but not in ATLAS DR3. This has the effect of reducing the accuracy for Radio Galaxy Zoo-trained classifiers.
+    We noted in \autoref{sec:labels} that the test set of expert labels,
+    derived from the initial ATLAS data release, was less deep than the third
+    data release used by Radio Galaxy Zoo and this paper, introducing a source
+    of label noise in the testing labels. Specifically, true host galaxies may
+    be misidentified as non-host galaxies if the associated radio source was
+    below the 5 signal-to-noise limit in ATLAS DR1 but not in ATLAS DR3. This
+    has the effect of reducing the accuracy for Radio Galaxy Zoo-trained
+    classifiers.
 
-    \edit{Merged the reporting paragraphs.} We report the probabilities predicted by each classifier for each SWIRE object in \aref{app:probabilities} and the predicted cross-identification for each ATLAS object in \aref{app:xids}. Probabilities reported for a given object were predicted by binary classifiers tested on the quadrant containing that object.
+    \edited{We report the probabilities predicted by each classifier for each
+    SWIRE object in \aref{app:probabilities} and the predicted
+    cross-identification for each ATLAS object in \aref{app:xids}.
+    Probabilities reported for a given object were predicted by binary
+    classifiers tested on the quadrant containing that object.}
 
-    In \autoref{fig:examples} we show 6 of the 16 resolved sources where the incorrect cross-identification was selected by random forests trained on expert labels. The remaining 10 sources are shown in \aref{app:examples}. In most cases the incorrect galaxy selected was also selected by nearest-neighbours. We note that on no source do all classifiers agree. This raises the possibility of using the level of disagreement of an ensemble of classifiers as a measure of the complexity of a radio source, analogous to the consensus level for Radio Galaxy Zoo volunteers.
+    In \autoref{fig:examples} we show 6 of the 16 resolved sources where the
+    incorrect cross-identification was selected by random forests trained on
+    expert labels. The remaining 10 sources are shown in \aref{app:examples}.
+    In most cases the incorrect galaxy selected was also selected by
+    nearest-neighbours. We note that on no source do all classifiers agree.
+    This raises the possibility of using the level of disagreement of an
+    ensemble of classifiers as a measure of the complexity of a radio source,
+    analogous to the consensus level for Radio Galaxy Zoo volunteers.
 
 \subsection{Application to ATLAS-ELAIS-S1}
   \label{sec:elais}
@@ -640,14 +933,27 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{images/elais-grid-new.pdf}
-  \caption{Performance of different classifiers trained on CDFS and tested on resolved and compact sources in ELAIS-S1. Points represent classifiers trained on different quadrants of CDFS, with markers and axes as in \autoref{fig:ba}. The balanced acccuracy of expert-trained random forest classifiers falls below the axis and the corresponding mean accuracy is shown by an arrow. The solid green line indicates the cross-identification accuracy of a `perfect' classifier; this is almost 100 per cent. The grey dashed line indicates the cross-identification accuracy of nearest-neighbours.
+  \caption{Performance of different classifiers trained on CDFS and tested on
+  resolved and compact sources in ELAIS-S1. Points represent classifiers
+  trained on different quadrants of CDFS, with markers and axes as in
+  \autoref{fig:ba}. The balanced acccuracy of expert-trained random forest
+  classifiers falls below the axis and the corresponding mean accuracy is
+  shown by an arrow. The solid green line indicates the cross-identification
+  accuracy of a `perfect' classifier; this is almost 100 per cent. The grey
+  dashed line indicates the cross-identification accuracy of
+  nearest-neighbours.
     \label{fig:elais-ba}}
   \end{figure}
 
   \begin{figure}
     \centering
     \includegraphics[width=0.9\columnwidth]{images/elais_cross_identification_grid.pdf}
-    \caption{Performance of different classifiers trained on CDFS and tested on ELAIS-S1. Markers are as in \autoref{fig:cross-id-accuracy} and horizontal lines are as in \autoref{fig:elais-ba}. Note that the pipeline shown in \autoref{fig:flowchart} is used here, so compact objects are cross-identified in the same way regardless of binary classifier model. \edit{Clarified what the pipeline comment implies.}
+    \caption{Performance of different classifiers trained on CDFS and tested
+    on ELAIS-S1. Markers are as in \autoref{fig:cross-id-accuracy} and
+    horizontal lines are as in \autoref{fig:elais-ba}. Note that the pipeline
+    shown in \autoref{fig:flowchart} is used here, \edited{so compact objects
+    are cross-identified in the same way regardless of binary classifier
+    model}.
       \label{fig:elais-cross-id-accuracy}}
   \end{figure}
 
@@ -672,30 +978,108 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \label{fig:accuracies-flux}
   \end{figure}
 
-  We applied the method trained on CDFS to perform cross-identification on the ELAIS-S1 field. Both CDFS and ELAIS-S1 were imaged by the same radio telescope to similar sensitivities and angular resolution for the ATLAS survey. We can use the SWIRE cross-identifications made by \citet{middelberg08} to derive another set of expert labels \edit{Cleaned up this sentence}, and hence determine how accurate our method is. If our method generalises well across different parts of the sky, then we expect CDFS-trained classifiers to have comparable performance between ELAIS-S1 and CDFS \edit{Made this sentence clearer}. In \autoref{fig:elais-ba} we plot the performance of CDFS-trained logistic regression, random forests, and convolutional neural networks on both the galaxy classification task and the cross-identification task for resolved and compact sources. We also plot the accuracy of a nearest-neighbours approach\footnote{We cannot directly compare our method applied to ELAIS-S1 with Radio Galaxy Zoo, as Radio Galaxy Zoo does not include ELAIS-S1. \edit{Added this footnote to explain why we can't compare to RGZ.}}. In \autoref{fig:elais-cross-id-accuracy} we plot the performance of our method on the full set of ELAIS-S1 ATLAS~DR1 radio components using the pipeline in \autoref{fig:flowchart}. We list the corresponding accuracies in \aref{app:accuracies}.
+  We applied the method trained on CDFS to perform cross-identification on the
+  ELAIS-S1 field. Both CDFS and ELAIS-S1 were imaged by the same radio
+  telescope to similar sensitivities and angular resolution for the ATLAS
+  survey. \edited{We can use the SWIRE cross-identifications made by
+  \citet{middelberg08} to derive another set of expert labels, and hence
+  determine how accurate our method is. If our method generalises well across
+  different parts of the sky, then we expect CDFS-trained classifiers to have
+  comparable performance between ELAIS-S1 and CDFS}. In \autoref{fig:elais-ba}
+  we plot the performance of CDFS-trained logistic regression, random forests,
+  and convolutional neural networks on both the galaxy classification task and
+  the cross-identification task for resolved and compact sources. We also plot
+  the accuracy of a nearest-neighbours approach\footnote{\edited{We cannot
+  directly compare our method applied to ELAIS-S1 with Radio Galaxy Zoo, as
+  Radio Galaxy Zoo does not include ELAIS-S1.}}. In
+  \autoref{fig:elais-cross-id-accuracy} we plot the performance of our method
+  on the full set of ELAIS-S1 ATLAS~DR1 radio components using the pipeline in
+  \autoref{fig:flowchart}. We list the corresponding accuracies in
+  \aref{app:accuracies}.
 
-  Cross-identification results from ELAIS-S1 are similar to those for CDFS, showing that our method trained on CDFS performs comparably well on ELAIS-S1. However, nearest-neighbours outperforms most methods on ELAIS-S1. This is likely because there is a much higher percentage of compact objects in ELAIS-S1 than in CDFS. The maximum achievable accuracy we have estimated for ELAIS-S1 is very close to 100 per cent, so (as for CDFS) a very accurate binary classifier would outperform nearest-neighbours.
+  Cross-identification results from ELAIS-S1 are similar to those for CDFS,
+  showing that our method trained on CDFS performs comparably well on
+  ELAIS-S1. However, nearest-neighbours outperforms most methods on ELAIS-S1.
+  This is likely because there is a much higher percentage of compact objects
+  in ELAIS-S1 than in CDFS. The maximum achievable accuracy we have estimated
+  for ELAIS-S1 is very close to 100 per cent, so (as for CDFS) a very accurate
+  binary classifier would outperform nearest-neighbours.
 
-  One interesting difference between the ATLAS fields is that random forests trained on expert labels perform well on CDFS but poorly on ELAIS-S1. This is not the case for logistic regression or convolutional neural networks trained on expert labels, nor is it the case for random forests trained on Radio Galaxy Zoo. We hypothesise that this is because the ELAIS-S1 cross-identification catalogue \citep{middelberg08} labelled fainter radio components than the CDFS cross-identification catalogue \citep{norris06} due to noise from the very bright source ATCDFS\textunderscore{}J032836.53-284156.0 in CDFS. Classifiers trained on CDFS expert labels may thus be biased toward brighter radio components compared to ELAIS-S1. Radio Galaxy Zoo uses the third data release of ATLAS \citep{franzen15} and so classifiers trained on the Radio Galaxy Zoo labels may be less biased toward brighter sources compared to those trained on the expert labels. To test this hypothesis we tested each classifier against test sets with a signal-to-noise ratio (SNR) cutoff. A SWIRE object was only included in the test set for a given cutoff if it was located within $1'$ of a radio component with a SNR above the cutoff. The balanced accuracies for each classifier at each cutoff are shown in \autoref{fig:accuracies-flux}(a) and (b) and the distribution of test set size for each cutoff is shown in \autoref{fig:accuracies-flux}(c). \autoref{fig:accuracies-flux}(c) shows that ELAIS-S1 indeed has more faint objects than CDFS, with the SNR for which the two fields reach the same test set size (approximately $34$) indicated by the dashed vertical line on each plot. For CDFS, all classifiers perform reasonably well across cutoffs, with performance dropping as the size of the test set becomes small. For ELAIS-S1, logistic regression and convolutional neural networks perform comparably across all SNR cutoffs, but random forests do not. While random forests trained on Radio Galaxy Zoo labels perform comparably to other classifiers across all SNR cutoffs, random forests trained on expert labels show a considerable drop in performance below the dashed line.
+  One interesting difference between the ATLAS fields is that random forests
+  trained on expert labels perform well on CDFS but poorly on ELAIS-S1. This
+  is not the case for logistic regression or convolutional neural networks
+  trained on expert labels, nor is it the case for random forests trained on
+  Radio Galaxy Zoo. We hypothesise that this is because the ELAIS-S1
+  cross-identification catalogue \citep{middelberg08} labelled fainter radio
+  components than the CDFS cross-identification catalogue \citep{norris06} due
+  to noise from the very bright source
+  ATCDFS\textunderscore{}J032836.53-284156.0 in CDFS. Classifiers trained on
+  CDFS expert labels may thus be biased toward brighter radio components
+  compared to ELAIS-S1. Radio Galaxy Zoo uses the third data release of ATLAS
+  \citep{franzen15} and so classifiers trained on the Radio Galaxy Zoo labels
+  may be less biased toward brighter sources compared to those trained on the
+  expert labels. To test this hypothesis we tested each classifier against
+  test sets with a signal-to-noise ratio (SNR) cutoff. A SWIRE object was only
+  included in the test set for a given cutoff if it was located within $1'$ of
+  a radio component with a SNR above the cutoff. The balanced accuracies for
+  each classifier at each cutoff are shown in \autoref{fig:accuracies-flux}(a)
+  and (b) and the distribution of test set size for each cutoff is shown in
+  \autoref{fig:accuracies-flux}(c). \autoref{fig:accuracies-flux}(c) shows
+  that ELAIS-S1 indeed has more faint objects than CDFS, with the SNR for
+  which the two fields reach the same test set size (approximately $34$)
+  indicated by the dashed vertical line on each plot. For CDFS, all
+  classifiers perform reasonably well across cutoffs, with performance
+  dropping as the size of the test set becomes small. For ELAIS-S1, logistic
+  regression and convolutional neural networks perform comparably across all
+  SNR cutoffs, but random forests do not. While random forests trained on
+  Radio Galaxy Zoo labels perform comparably to other classifiers across all
+  SNR cutoffs, random forests trained on expert labels show a considerable
+  drop in performance below the dashed line.
 
 \section{Discussion}
 
-  Our main result is that it is possible to cast radio host galaxy cross-identification as a machine learning task for which standard methods can be applied. These methods can then be trained with a variety of label sets derived from cross-identification catalogues. While we have not outperformed nearest-neighbours, we have demonstrated that for a very accurate binary classifier, good cross-identification results can be obtained using our method. Future work could combine multiple catalogues or physical priors to boost performance.
+  Our main result is that it is possible to cast radio host galaxy
+  cross-identification as a machine learning task for which standard methods
+  can be applied. These methods can then be trained with a variety of label
+  sets derived from cross-identification catalogues. While we have not
+  outperformed nearest-neighbours, we have demonstrated that for a very
+  accurate binary classifier, good cross-identification results can be
+  obtained using our method. Future work could combine multiple catalogues or
+  physical priors to boost performance.
 
-  Nearest-neighbours approaches outperform most methods we investigated, notably including Radio Galaxy Zoo. This is due to the large number of compact or partially-resolved objects in ATLAS. This result shows that for compact and partially-resolved objects methods that do not use machine learning such as a nearest-neighbours approach or likelihood ratio \citep{weston18lrpy} should be preferred to machine learning methods. It also shows that ATLAS is not an ideal data set for developing machine learning methods like ours. Our use of ATLAS is motivated by its status as a pilot survey for EMU, so methods developed for ATLAS should also work for EMU. New methods developed should work well with extended radio sources, but this goal is almost unsupported by ATLAS as it has very few examples of such sources. This makes both training and testing difficult --- there are too few extended sources to train on and performance on such a small test set may be unreliable. Larger data sets with many extended sources like FIRST exist, but these are considerably less deep than and at a different resolution to EMU, so there is no reason to expect methods trained on such data sets to be applicable to EMU.
+  Nearest-neighbours approaches outperform most methods we investigated,
+  notably including Radio Galaxy Zoo. This is due to the large number of
+  compact or partially-resolved objects in ATLAS. This result shows that for
+  compact and partially-resolved objects methods that do not use machine
+  learning such as a nearest-neighbours approach or likelihood ratio
+  \citep{weston18lrpy} should be preferred to machine learning methods. It
+  also shows that ATLAS is not an ideal data set for developing machine
+  learning methods like ours. Our use of ATLAS is motivated by its status as a
+  pilot survey for EMU, so methods developed for ATLAS should also work for
+  EMU. New methods developed should work well with extended radio sources, but
+  this goal is almost unsupported by ATLAS as it has very few examples of such
+  sources. This makes both training and testing difficult --- there are too
+  few extended sources to train on and performance on such a small test set
+  may be unreliable. Larger data sets with many extended sources like FIRST
+  exist, but these are considerably less deep than and at a different
+  resolution to EMU, so there is no reason to expect methods trained on such
+  data sets to be applicable to EMU.
 
-  The accuracies of our trained cross-identification methods generally fall far below the best possible accuracy attainable using our approach, indicated by the green lines in Figures \ref{fig:cross-id-accuracy} and \ref{fig:elais-cross-id-accuracy}. The balanced accuracies attained by our
+  The accuracies of our trained cross-identification methods generally fall
+  far below the best possible accuracy attainable using our approach,
+  indicated by the green lines in Figures \ref{fig:cross-id-accuracy} and
+  \ref{fig:elais-cross-id-accuracy}. The balanced accuracies attained by our
   binary classifiers indicate that there is significant room for improvement
   in classification. The classification accuracy can be improved by better
   model selection and more training data, particularly for convolutional
   neural networks. There is a huge variety of ways to build a convolutional
   neural network, and we have only investigated one architecture. For an
-  exploration of different convolutional neural network architectures
-  applied to radio astronomy, see Lukic et al. (in prep). Convolutional
-  neural networks generally require more training data than other machine
-  learning models and we have only trained our networks on a few hundred
-  sources. We would thus expect performance on the classification task to
-  greatly increase with larger training sets.
+  exploration of different convolutional neural network architectures applied
+  to radio astronomy, see Lukic et al. (in prep). Convolutional neural
+  networks generally require more training data than other machine learning
+  models and we have only trained our networks on a few hundred sources. We
+  would thus expect performance on the classification task to greatly increase
+  with larger training sets.
 
   Another problem is that of the window size used to select radio features.
   Increasing window size would increase computational expense, but provide
@@ -707,29 +1091,41 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   likely represent a galaxy using radio images taken at multiple window
   sizes, but this is considerably more expensive.
 
-  Larger training sets, better model selection, and larger window sizes
-  would improve performance, but only so far: we would still be bounded
-  above by the estimated ``perfect'' classifier accuracy. From this point,
-  the performance can only be improved by improving upon our broken
-  assumptions. We detailed these assumptions in \autoref{sec:limitations},
-  and we will discuss here how these could be resolved. Our assumption that the host galaxy is contained within the search radius could be improved by
-  dynamically choosing the search radius, perhaps based on the angular
-  extent of the galaxy, or the redshift of candidate hosts. Radio morphology information may allow us to select relevant radio data and hence relax the assumption that a $1'$-wide radio image represents just one, whole radio source. Finally, our
-  assumption that the host galaxy is visible in infrared is technically not
-  needed, as the sliding window approach we have employed will still work
-  even if there are no visible host galaxies --- instead of classifying
-  candidate hosts, simply classify each pixel in the radio image. The
-  downside of removing candidate hosts is that we are no longer able to
-  reliably incorporate host galaxy information such as colour and redshift,
-  though this could be resolved by treating pixels as potentially invisible
-  candidate hosts with noisy features.
+  Larger training sets, better model selection, and larger window sizes would
+  improve performance, but only so far: we would still be bounded above by the
+  estimated ``perfect'' classifier accuracy. From this point, the performance
+  can only be improved by improving upon our broken assumptions. We detailed
+  these assumptions in \autoref{sec:limitations}, and we will discuss here how
+  these could be resolved. Our assumption that the host galaxy is contained
+  within the search radius could be improved by dynamically choosing the
+  search radius, perhaps based on the angular extent of the galaxy, or the
+  redshift of candidate hosts. Radio morphology information may allow us to
+  select relevant radio data and hence relax the assumption that a $1'$-wide
+  radio image represents just one, whole radio source. Finally, our assumption
+  that the host galaxy is visible in infrared is technically not needed, as
+  the sliding window approach we have employed will still work even if there
+  are no visible host galaxies --- instead of classifying candidate hosts,
+  simply classify each pixel in the radio image. The downside of removing
+  candidate hosts is that we are no longer able to reliably incorporate host
+  galaxy information such as colour and redshift, though this could be
+  resolved by treating pixels as potentially invisible candidate hosts with
+  noisy features.
 
   We observe that Radio Galaxy Zoo-trained methods perform comparably to
   methods trained on expert labels. This shows that the crowdsourced labels
   from Radio Galaxy Zoo will indeed provide a valuable source of training
   data for future machine learning methods in radio astronomy.
 
-  Compared to nearest-neighbours, cross-identification accuracy on ELAIS-S1 is lower than on CDFS. Particularly notable is that our performance on compact objects is very low for ELAIS-S1, while it was near-optimal for CDFS. These differences may be for a number of reasons. ELAIS-S1 has beam size and noise profile different from CDFS (even though both were imaged with the same telescope), so it is possible that our methods over-adapted to the beam and noise of CDFS. Additionally, CDFS contains a very bright source which may have caused artefacts throughout the field that are not present in ELAIS-S1. Further work is required to understand the differences between the fields and their effect on performance.
+  Compared to nearest-neighbours, cross-identification accuracy on ELAIS-S1 is
+  lower than on CDFS. Particularly notable is that our performance on compact
+  objects is very low for ELAIS-S1, while it was near-optimal for CDFS. These
+  differences may be for a number of reasons. ELAIS-S1 has beam size and noise
+  profile different from CDFS (even though both were imaged with the same
+  telescope), so it is possible that our methods over-adapted to the beam and
+  noise of CDFS. Additionally, CDFS contains a very bright source which may
+  have caused artefacts throughout the field that are not present in ELAIS-S1.
+  Further work is required to understand the differences between the fields
+  and their effect on performance.
 
   \autoref{fig:accuracies-flux} reveals interesting behaviour of different
   classifier models at different flux cutoffs. Logistic regression and
@@ -758,22 +1154,57 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   components with their corresponding infrared host galaxy. Using the CDFS field of ATLAS as a training set we trained our
   methods on expert and crowdsourced cross-identification catalogues. Applying these methods on both fields of ATLAS, we found that:
   \begin{itemize}
-    \item Our method trained on ATLAS observations of CDFS generalised to ATLAS observations of ELAIS-S1, demonstrating that training on a single patch of sky is a feasible option for training machine learning methods for wide-area radio surveys;
-    \item Performance was comparable to nearest-neighbours even on resolved sources, showing that nearest-neighbours is useful for largely unresolved datasets such as ATLAS and EMU;
-    \item Radio Galaxy Zoo-trained models performed comparably to expert-trained models and outperformed Radio Galaxy Zoo, showing that crowdsourced labels are useful for training machine learning methods for cross-identification even when these labels are noisy;
-    \item ATLAS does not contain sufficient data to train or test machine learning cross-identification methods for extended radio sources. This suggests that if machine learning methods are to be used on EMU, a larger area of sky will be required for training and testing these methods. However, existing surveys like FIRST are too different from EMU to expect good generalisation.
+    \item Our method trained on ATLAS observations of CDFS generalised to
+    ATLAS observations of ELAIS-S1, demonstrating that training on a single
+    patch of sky is a feasible option for training machine learning methods
+    for wide-area radio surveys;
+    \item Performance was comparable to nearest-neighbours even on resolved
+    sources, showing that nearest-neighbours is useful for largely unresolved
+    datasets such as ATLAS and EMU;
+    \item Radio Galaxy Zoo-trained models performed comparably to
+    expert-trained models and outperformed Radio Galaxy Zoo, showing that
+    crowdsourced labels are useful for training machine learning methods for
+    cross-identification even when these labels are noisy;
+    \item ATLAS does not contain sufficient data to train or test machine
+    learning cross-identification methods for extended radio sources. This
+    suggests that if machine learning methods are to be used on EMU, a larger
+    area of sky will be required for training and testing these methods.
+    However, existing surveys like FIRST are too different from EMU to expect
+    good generalisation.
   \end{itemize}
 
   While our cross-identification performance is not as high as desired, we
   make no assumptions on the binary classification model used in our methods
   and so we expect the performance to be improved by further experimentation
   and model selection. Our method provides a useful framework for generalising
-  cross-identification catalogues to other areas of the sky from the same radio survey and can be
-  incorporated into existing methods.
+  cross-identification catalogues to other areas of the sky from the same
+  radio survey and can be incorporated into existing methods.
 
 \section{Acknowledgements}
 
-  This publication has been made possible by the participation of more than 11~000 volunteers in the Radio Galaxy Zoo project. Their contributions are individually acknowledged at \url{http://rgzauthors.galaxyzoo.org}. Parts of this research were conducted by the Australian Research Council Centre of Excellence for All-sky Astrophysics (CAASTRO), through project number CE110001020. Partial support for LR was provided by U.S. National Science Foundation grants AST1211595 and 1714205 to the University of Minnesota. HA benefitted from grant 980/2016-2017 of Universidad de Guanajuato. We thank A.~Tran for his comments on this manuscript. Radio Galaxy Zoo makes use of data products from the Wide-field Infrared Survey Explorer and the Very Large Array. The Wide-field Infrared Survey Explorer is a joint project of the University of California, Los Angeles, and the Jet Propulsion Laboratory/California Institute of Technology, funded by the National Aeronautics and Space Administration. The National Radio Astronomy Observatory is a facility of the National Science Foundation operated under cooperative agreement by Associated Universities, Inc. This research has made use of the NASA/IPAC Extragalactic Database (NED) which is operated by the Jet Propulsion Laboratory, California Institute of Technology, under contract with the National Aeronautics and Space Administration. The figures in this work made use of Astropy, a community-developed core Python package for Astronomy \citep{astropy}. The Australia Telescope Compact Array is part of the Australia Telescope, which is funded by the Commonwealth of Australia for operation as a National Facility managed by CSIRO.
+  This publication has been made possible by the participation of more than
+  11~000 volunteers in the Radio Galaxy Zoo project. Their contributions are
+  individually acknowledged at \url{http://rgzauthors.galaxyzoo.org}. Parts of
+  this research were conducted by the Australian Research Council Centre of
+  Excellence for All-sky Astrophysics (CAASTRO), through project number
+  CE110001020. Partial support for LR was provided by U.S. National Science
+  Foundation grants AST1211595 and 1714205 to the University of Minnesota. HA
+  benefitted from grant 980/2016-2017 of Universidad de Guanajuato. We thank
+  A.~Tran for his comments on this manuscript. Radio Galaxy Zoo makes use of
+  data products from the Wide-field Infrared Survey Explorer and the Very
+  Large Array. The Wide-field Infrared Survey Explorer is a joint project of
+  the University of California, Los Angeles, and the Jet Propulsion
+  Laboratory/California Institute of Technology, funded by the National
+  Aeronautics and Space Administration. The National Radio Astronomy
+  Observatory is a facility of the National Science Foundation operated under
+  cooperative agreement by Associated Universities, Inc. This research has
+  made use of the NASA/IPAC Extragalactic Database (NED) which is operated by
+  the Jet Propulsion Laboratory, California Institute of Technology, under
+  contract with the National Aeronautics and Space Administration. The figures
+  in this work made use of Astropy, a community-developed core Python package
+  for Astronomy \citep{astropy}. The Australia Telescope Compact Array is part
+  of the Australia Telescope, which is funded by the Commonwealth of Australia
+  for operation as a National Facility managed by CSIRO.
 
 %
 %%%%%%%%%%%%%%%%%%%% REFERENCES %%%%%%%%%%%%%%%%%%
@@ -786,11 +1217,14 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
 \section{Classification models}\label{app:models}
 
-  We use three different models for binary classification: logistic regression, convolutional neural networks, and random forests. \edit{Removed some overly technical terminology in this section.}
+  We use three different models for binary classification: logistic
+  regression, convolutional neural networks, and random forests.
 
   \subsection{Logistic Regression}
   \label{sec:logistic-regression}
-    Logistic regression is linear in the feature space and outputs the probability that the input has a positive label. The model is \citep{bishop06ml}:
+    Logistic regression is linear in the feature space and outputs the
+    probability that the input has a positive label. The model is
+    \citep{bishop06ml}:
 
     \begin{equation}
         f(\vec x) = \sigma(\vec w^T \vec x + b) \,\,\,\,,
@@ -798,32 +1232,80 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     where $\vec w \in \mathbb{R}^D$ is a vector of parameters, $b \in \mathbb{R}$ is a bias term, $\vec x \in \mathbb{R}^D$ is the feature vector representation of a candidate host, and $\sigma : \mathbb{R} \to \mathbb{R}$ is the logistic sigmoid function: \begin{equation}
         \sigma(a) = (1 + \mathrm{exp}(-a))^{-1}\,\,\,\,.
     \end{equation}%
-    The logistic regression model is fully differentiable, and the parameters $\vec w$ can therefore be learned using gradient-based optimisation methods. We used the \texttt{scikit-learn} \citep{pedregosa11sklearn} implementation of logistic regression.
+    The logistic regression model is fully differentiable, and the parameters
+    $\vec w$ can therefore be learned using gradient-based optimisation
+    methods. \edited{We used the \texttt{scikit-learn} \citep{pedregosa11sklearn}
+    implementation of logistic regression}.
 
   \subsection{Convolutional neural networks}
   \label{sec:convolutional-neural-networks}
 
-    Convolutional neural networks (CNN) are a biologically-inspired prediction model for prediction with image inputs. The input image is convolved with a number of filters to produce output images called feature maps. These feature maps can then be convolved again with other filters on subsequent layers, producing a network of convolutions. The whole network is differentiable with respect to the values of the filters and the filters can be learned using gradient-based optimisation methods. The final layer of the network is logistic regression, with the convolved outputs as input features. For more detail, see \citet[subsection II.A][]{lecun98}. We use \textsc{Keras} \citep{chollet15keras} to implement our CNN.
+    Convolutional neural networks (CNN) are a biologically-inspired prediction
+    model for prediction with image inputs. The input image is convolved with
+    a number of filters to produce output images called feature maps. These
+    feature maps can then be convolved again with other filters on subsequent
+    layers, producing a network of convolutions. The whole network is
+    differentiable with respect to the values of the filters and the filters
+    can be learned using gradient-based optimisation methods. The final layer
+    of the network is logistic regression, with the convolved outputs as input
+    features. For more detail, see \citet[subsection II.A][]{lecun98}. We use
+    \textsc{Keras} \citep{chollet15keras} to implement our CNN.
 
     \begin{figure}
       \includegraphics[width=\linewidth]{images/cnn_model_graph}
-      \caption{Architecture of our CNN. The concatenate layer flattens the output of the previous layer and adds the 10 features derived from the candidate host in SWIRE, i.e. the flux ratios, stellarity indices, and distance. The dropout layer randomly sets $25\%$ of its inputs to zero during training to prevent overfitting. Diagram based on \url{ https://github.com/dnouri/nolearn}.}
+      \caption{Architecture of our CNN. The concatenate layer flattens the
+      output of the previous layer and adds the 10 features derived from the
+      candidate host in SWIRE, i.e. the flux ratios, stellarity indices, and
+      distance. The dropout layer randomly sets $25\%$ of its inputs to zero
+      during training to prevent overfitting. Diagram based on \url{
+      https://github.com/dnouri/nolearn}.}
       \label{fig:cnn}
     \end{figure}
 
-    CNNs have recently produced good results on large image-based datasets in astronomy \citep[e.g.][; Lukic et al. in prep]{dieleman15cnn}. We employ only a simple CNN model in this paper as a proof of concept that CNNs may be used for class probability prediction on radio images. The model architecture we use is shown in \autoref{fig:cnn}.
+    CNNs have recently produced good results on large image-based datasets in
+    astronomy \citep[e.g.][; Lukic et al. in prep]{dieleman15cnn}. We employ
+    only a simple CNN model in this paper as a proof of concept that CNNs may
+    be used for class probability prediction on radio images. The model
+    architecture we use is shown in \autoref{fig:cnn}.
 
   \subsection{Random Forests}
   \label{sec:random-forests}
 
-    Random forests are an ensemble of decision trees~\citep{breiman01random-forest}. They consider multiple subsamples of the training set, where each subsample is sampled with replacement from the training set. For each subsample a decision tree classifier is constructed by repeatedly making axis-parallel splits based on individual features. In a random forest the split decision is taken based on a random subset of features. To classify a new data point, the random forest takes the weighted average of all classifications produced by each decision tree. We used the \texttt{scikit-learn} \citep{pedregosa11sklearn} implementation of random forests with 10 trees, the information entropy split criterion and a minimum leaf size of 45 \edit{Added details on our specific random forests}.
+    Random forests are an ensemble of decision
+    trees~\citep{breiman01random-forest}. They consider multiple subsamples of
+    the training set, where each subsample is sampled with replacement from
+    the training set. For each subsample a decision tree classifier is
+    constructed by repeatedly making axis-parallel splits based on individual
+    features. In a random forest the split decision is taken based on a random
+    subset of features. To classify a new data point, the random forest takes
+    the weighted average of all classifications produced by each decision
+    tree. \edited{We used the \texttt{scikit-learn} \citep{pedregosa11sklearn}
+    implementation of random forests with 10 trees, the information entropy
+    split criterion and a minimum leaf size of 45}.
 
 \section{Accuracy tables}\label{app:accuracies}
   
-  This section contains tables of accuracy for our method applied to CDFS and ELAIS-S1. In \autoref{tab:cdfs-ba} and \autoref{tab:elais-ba} we list the balanced accuracies of classifiers on the cross-identification task for CDFS and ELAIS-S1 respectively, averaged over each quadrant. In \autoref{tab:cdfs-acc} and \autoref{tab:elais-acc} we list the balanced accuracies of classifiers on the cross-identification task for CDFS and ELAIS-S1 respectively, averaged over each quadrant.
+  This section contains tables of accuracy for our method applied to CDFS and
+  ELAIS-S1. In \autoref{tab:cdfs-ba} and \autoref{tab:elais-ba} we list the
+  balanced accuracies of classifiers on the cross-identification task for CDFS
+  and ELAIS-S1 respectively, averaged over each quadrant. In
+  \autoref{tab:cdfs-acc} and \autoref{tab:elais-acc} we list the balanced
+  accuracies of classifiers on the cross-identification task for CDFS and
+  ELAIS-S1 respectively, averaged over each quadrant.
 
   \begin{table*}
-    \caption{Cross-identification accuracies for different classification models on CDFS. The `Labeller' column states what set of training labels were used to train the method, and the `Classifier' column states what classification model was used. `CNN' is a convolutional neural network, `LR' is logistic regression, `RF' is random forests, and `Labels' is the accuracy of the label set itself. `Perfect' indicates that the true labels of the test set were used and hence represents an upper bound on cross-identification accuracy with our method. `NN' is a nearest-neighbours approach. Accuracies are evaluated against the expert label set, so `Norris' labels are 100 per cent accurate by definition. The standard deviation of accuracies evaluated across the four quadrants of CDFS (\autoref{fig:quadrants}) is also shown.}
+    \caption{Cross-identification accuracies for different classification
+    models on CDFS. The `Labeller' column states what set of training labels
+    were used to train the method, and the `Classifier' column states what
+    classification model was used. `CNN' is a convolutional neural network,
+    `LR' is logistic regression, `RF' is random forests, and `Labels' is the
+    accuracy of the label set itself. `Perfect' indicates that the true labels
+    of the test set were used and hence represents an upper bound on
+    cross-identification accuracy with our method. `NN' is a
+    nearest-neighbours approach. Accuracies are evaluated against the expert
+    label set, so `Norris' labels are 100 per cent accurate by definition. The
+    standard deviation of accuracies evaluated across the four quadrants of
+    CDFS (\autoref{fig:quadrants}) is also shown.}
     \label{tab:cdfs-acc}
     \begin{tabular}{ccccc}
       \hline
@@ -846,7 +1328,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \end{table*}
 
   \begin{table*}
-    \caption{Cross-identification accuracies for different classification models on ELAIS-S1. Columns and abbreviations are as in \autoref{tab:cdfs-acc}. Accuracies are evaluated against the expert label set derived from \citet{middelberg08} cross-identifications. The standard deviation of accuracies evaluated across models trained on the four quadrants of CDFS (\autoref{fig:quadrants}) is also shown.}
+    \caption{Cross-identification accuracies for different classification
+    models on ELAIS-S1. Columns and abbreviations are as in
+    \autoref{tab:cdfs-acc}. Accuracies are evaluated against the expert label
+    set derived from \citet{middelberg08} cross-identifications. The standard
+    deviation of accuracies evaluated across models trained on the four
+    quadrants of CDFS (\autoref{fig:quadrants}) is also shown.}
     \label{tab:elais-acc}
     \begin{tabular}{ccccc}
       \hline
