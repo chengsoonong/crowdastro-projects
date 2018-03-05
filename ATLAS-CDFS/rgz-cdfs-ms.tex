@@ -62,7 +62,8 @@
   C.~Wolf$^{1, 3}$,
   \newauthor
   H.~Andernach$^{7}$,
-  R.~P.~Norris$^{8, 9}$
+  R.~P.~Norris$^{8, 9}$,
+  S.~S.~Shabala$^{10}$
 \\
 % List of institutions
 $^{1}$Research School of Astronomy and Astrophysics, The Australian National University, Canberra, ACT 2611, Australia\\
@@ -73,7 +74,8 @@ $^{5}$Minnesota Institute for Astrophysics, University of Minnesota, 116 Church 
 $^{6}$International Centre for Radio Astronomy Research-M468, The University of Western Australia, 35 Stirling Hwy, Crawley, WA 6009, Australia\\
 $^{7}$Departamento de Astronom\'ia, DCNE, Universidad de Guanajuato, Apdo. Postal 144, CP 36000, Guanajuato, Gto., Mexico\\
 $^{8}$Western Sydney University, Locked Bag 1797, Penrith South, NSW 1797, Australia\\
-$^{9}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia
+$^{9}$CSIRO Astronomy \& Space Science, PO Box 76, Epping, NSW 1710, Australia\\
+$^{10}$School of Physical Sciences, University of Tasmania, Private Bag 37, Hobart, Tasmania 7001, Australia
 }
 
 % These dates will be filled out by the publisher
@@ -414,12 +416,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     by considering every pixel of the radio image as a candidate location as would be done in the original computer vision approach.
 
     Our assumptions impose an upper bound on how well we can cross-identify
-    radio sources. We estimate this upper bound in \autoref{sec:relation}.
+    radio sources. We estimate this upper bound in \autoref{sec:cdfs-results}.
 
   \subsection{Feature vector representation of infrared sources}
   \label{vector-representation-of-infrared-sources}
 
-    \edit{Simplified this paragraph and clarified why we chose these features; added linking to \autoref{cross-identification-as-binary-classification}.} Inputs to binary classifiers must be represented by an array of real values called feature vectors. We therefore need to choose a feature vector representation of our candidate host galaxies. Candidate hosts are sourced from the SWIRE catalogue (\autoref{sec:swire}). We represent each candidate host as 1034 real-valued features, combining the cutouts described in \autoref{cross-identification-as-binary-classification} and infrared ancillary data from the SWIRE catalogue. For a given candidate host, these features are:
+    \edit{Simplified this paragraph and clarified why we chose these features; added linking to \autoref{cross-identification-as-binary-classification}.} Inputs to binary classifiers must be represented by an array of real values called feature vectors. We therefore need to choose a feature vector representation of our candidate host galaxies. Candidate hosts are sourced from the SWIRE catalogue (\autoref{sec:swire}). We represent each candidate host with 1034 real-valued features, combining the cutouts described in \autoref{cross-identification-as-binary-classification} and infrared ancillary data from the SWIRE catalogue. For a given candidate host, these features are:
     \begin{itemize}
       \item the 6 logarithms of the ratios of fluxes of the candidate
         host at the four IRAC wavelengths;
@@ -432,7 +434,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         \times 48''$), centred on the candidate host.
     \end{itemize}
 
-    The infrared fluxes provide insight into the properties of the host galaxy of the radio emission. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace both galaxies with faint polycyclic aromatic hydrocarbon (PAH) emission and elliptical galaxies dominated by old stellar populations. The \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission is dominated by non-equilibrium emission of dust grains (PAH destruction
+    The infrared fluxes provide insight into the properties of the host galaxy of the radio component. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace both galaxies with faint polycyclic aromatic hydrocarbon (PAH) emission and elliptical galaxies dominated by old stellar populations. The \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission is dominated by non-equilibrium emission of dust grains (PAH destruction
     by the hard UV spectrum of AGN), while the \unit{8.0}{\micro\meter} flux traces strong PAH emission at low redshift \citep{Sajina2005}. The stellarity index represents how likely the object is to be a star rather than a galaxy \citep{surace05swire}.
 
     We use the pixels of each $32 \times 32$ radio image as independent features for all binary classifier models, with the convolutional neural network automatically extracting features that are relevant. Other features of the radio components may be used instead of the pixel values, but there has been limited research on extracting such features. \citet{proctor06} describes hand-selected features for radio doubles in FIRST, and \citet{aniyan17cnn} and Lukic et al. (in press) make use of deep convolutional neural networks which automatically extract features as part of classification. A more comprehensive investigation of features is a good avenue for potential improvement in our pipeline but this is beyond the scope of this initial study.
@@ -560,6 +562,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   measures and estimates of upper and lower bounds for cross-identification accuracy using our method.
 
   \subsection{Application to ATLAS-CDFS}
+  \label{sec:cdfs-results}
 
     \edit{Merged these sections.}
 
