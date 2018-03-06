@@ -222,13 +222,15 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
 \section{Data}\label{sec:data}
 
-  We use data from the citizen science project Radio Galaxy Zoo
-  \citep{banfield15}, the Australia Telescope Large Area Survey
-  \citep[ATLAS;][]{norris06,franzen15}, and the \emph{Spitzer} Wide-area
-  Infrared Extragalactic survey \citep[SWIRE;][]{lonsdale03swire,
-  surace05swire}. Radio Galaxy Zoo also includes data from the Faint Images of
-  the Radio Sky at Twenty-Centimeters \citep[FIRST;][]{white97first}. However,
-  here we focus only on Radio Galaxy Zoo data from ATLAS and SWIRE.
+  We use radio data from the Australia Telescope Large Area Survey
+  \citep[ATLAS;][]{norris06,franzen15}, infrared data from the \emph{Spitzer}
+  Wide-area Infrared Extragalactic survey \citep[SWIRE;][]{lonsdale03swire,
+  surace05swire}, and cross-identifications of these surveys from the citizen
+  science project Radio Galaxy Zoo \citep{banfield15}. Radio Galaxy Zoo also
+  includes cross-identifications of Faint Images of the Radio Sky at
+  Twenty-Centimeters \citep[FIRST;][]{white97first} and the All\emph{WISE}
+  survey \citep{cutri2013wiseexplanatory}, though we focus only on Radio
+  Galaxy Zoo data from ATLAS and SWIRE.
 
   \subsection{ATLAS}\label{sec:atlas}
     \begin{table}
@@ -252,10 +254,13 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
     cover the entire sky south of $+30$ deg and is expected to detect
-    approximately 70 million new radio sources. EMU will be conducted at the
-    same depth and resolution as ATLAS, so methods developed for processing
-    ATLAS data are expected to work for EMU. ATLAS is a wide-area radio survey
-    of the CDFS and ELAIS-S1 fields at 1.4~GHz with a sensitivity of 14 and
+    approximately 70 million new radio sources. \edited{95 per cent of these sources
+    will be single-component sources, but the remaining 5 per cent provide
+    considerable challenge to current automated cross-identification methods
+    \citep{norris11}.} EMU will be conducted at the same depth and resolution
+    as ATLAS, so methods developed for processing ATLAS data are expected to
+    work for EMU. ATLAS is a wide-area radio survey of the CDFS and ELAIS-S1
+    fields at 1.4~GHz with a sensitivity of 14 and
     \unit{17}{\micro\jansky}~beam$^{-1}$ on CDFS and ELAIS-S1 respectively.
     CDFS covers 3.6~deg$^2$ and contains 3034 radio components above a
     signal-to-noise ratio of 5. ELAIS-S1 covers 2.7~deg$^2$ and contains 2084
@@ -264,10 +269,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     8 arcsec respectively, with pixel sizes of 1.5 arcsec px$^{-1}$.
     \autoref{tab:atlas-cids} summarises catalogues that contain
     cross-identifications of radio components in ATLAS with host galaxies in
-    SWIRE. In the present work, we train methods on CDFS and test these
-    methods on both CDFS and ELAIS-S1.  This ensures our methods are
-    transferable to different areas of the sky observed by the same telescope
-    as will be the case for EMU.
+    SWIRE. In the present work, we train methods on
+    CDFS\footnote{\edited{Radio Galaxy Zoo only contains CDFS sources and so
+    we cannot train methods on ELAIS-S1.}} and test these methods on both CDFS
+    and ELAIS-S1. This ensures our methods are transferable to different
+    areas of the sky observed by the same telescope as will be the case for
+    EMU.
 
   \subsection{SWIRE}\label{sec:swire}
 
@@ -281,24 +288,22 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     Radio Galaxy Zoo asks volunteers to cross-identify radio components with
     their infrared host galaxies. There are a total of 2460 radio components
-    in Radio Galaxy Zoo sourced from ATLAS. These components are
+    in Radio Galaxy Zoo sourced from ATLAS \edited{observations of CDFS}. These components are
     cross-identified by Radio Galaxy Zoo participants with host galaxies
     detected in SWIRE. A more detailed description can be found in
-    \citet{banfield15} and a full description of how the Radio Galaxy Zoo Data
-    Release 1 catalogue used in this work\footnote{The Radio Galaxy Zoo Data
+    \citet{banfield15} and a full description of how the Radio Galaxy Zoo catalogue used in this work\footnote{The Radio Galaxy Zoo Data
     Release 1 catalogue will only include cross-identifications for which over
-    65 per cent of volunteers agree. However, we use all volunteer
-    cross-identifications for all sources.} is generated can be found in Wong
+    65 per cent of volunteers agree. However, we use a preliminary catalogue containing volunteer
+    cross-identifications for all components.} is generated can be found in Wong
     et al. (in prep).
 
-    The ATLAS~CDFS radio components that appear in Radio Galaxy Zoo include
-    both unresolved and resolved radio components from the third data release
-    of ATLAS by \citet{franzen15}.  Each radio component was fit with a
+    The ATLAS~CDFS radio components that appear in Radio Galaxy Zoo \edited{are drawn from a prerelease version of} the third data release
+    of ATLAS by \citet{franzen15}. In this release, each radio component was fit with a
     two-dimensional Gaussian. Depending on the residual of the fit, more than
-    one Gaussian may be fit to one region of radio emission.  Each of these
-    Gaussian fits is listed as a radio component in the ATLAS catalogue. The
+    one Gaussian may be fit to one region of radio emission. Each of these
+    Gaussian fits is listed as a radio component in the ATLAS component catalogue. The
     brightest radio component from the multiple Gaussian fit is called the
-    `primary component'. Each primary component found in the ATLAS DR3
+    `primary component'. Each primary component found in the ATLAS
     component catalogue appears in Radio Galaxy Zoo. Non-primary components
     may appear within the image of a primary component, but do not have their
     own entry in Radio Galaxy Zoo. We will henceforth only discuss the primary
@@ -311,19 +316,16 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \caption{An example of localising the host galaxy of a radio source using
         our method. This image is a radio image from ATLAS and is centred on
         $\alpha = 00^\text{h}33^\text{m}06.36^\text{s}, \delta =
-        -43^\circ{}10'30.1''$. Boxes represent $32 \times 32$ pixel windows
-        centred on various locations in the image. The image contained in each
-        window is used to represent the location that the window is centred
-        on. The probabilities of each patch coinciding with the host galaxy
-        would then be estimated by a classification model. The probabilities
-        shown are for illustration only. In this example, the centre window of
-        the image would be chosen as the location of the host galaxy, as the
-        window centred on it has the highest probability. \todo{Overlay radio over a greyscale IR image.}}
+        -43^\circ{}10'30.1''$. Boxes represent $32 \times 32$ pixel `windows'
+        centred on various locations in the image. \edited{Each window} is used to represent the location that the window is centred
+        on. The probabilities of each window coinciding with the host galaxy
+        would then be estimated by a \edited{binary classifier which maps windows to probabilities}. The probabilities
+        shown are for illustration only. In this example, \edited{the galaxy coincident with the centre window would be chosen as the host galaxy, as this
+        window has the highest probability}. \todo{Overlay radio over a greyscale IR image.}}
       \label{fig:windows}
     \end{figure}
 
-  \subsection{Cross-identification as binary
-  classification}\label{cross-identification-as-binary-classification}
+  \subsection{Cross-identification as binary classification}\label{cross-identification-as-binary-classification}
     \begin{figure}
       \centering
       % http://www.texample.net/tikz/examples/simple-flow-chart/
