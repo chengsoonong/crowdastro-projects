@@ -15,7 +15,7 @@
 \usepackage{tikz}
 \usepackage[algoruled]{algorithm2e}
 \usepackage[caption=false]{subfig}
-\usepackage[mediumspace,mediumqspace,Grey,squaren]{SIunits}
+\usepackage[mediumspace,mediumqspace,squaren]{SIunits}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1321,6 +1321,59 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   ELAIS-S1 respectively, averaged over each quadrant.
 
   \begin{table*}
+    \caption{Balanced accuracies for different binary classification models trained and tested on SWIRE objects in CDFS.
+    The `Labeller' column states what set of training labels
+    were used to train the classifier, and the `Classifier' column states what
+    classification model was used. `CNN' is a convolutional neural network,
+    `LR' is logistic regression and `RF' is random forests. Accuracies are evaluated against the expert
+    label set derived from \citet{norris06}. The standard deviation of balanced accuracies evaluated across the four quadrants of
+    CDFS (\autoref{fig:quadrants}) is also shown. The `compact' set refers to SWIRE
+    objects within $1'$ of a compact radio component, the `resolved' set refers to
+    SWIRE objects within $1'$ of a resolved radio component, and `all' is the union of these sets.}
+    \label{tab:cdfs-ba}
+    \begin{tabular}{ccccc}
+      \hline
+      Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
+       &  & (per cent) & (per cent) & (per cent)\\
+      \hline
+      Norris & LR & & & \\
+             & CNN & & & \\
+             & RF & & & \\
+      RGZ & LR & & & \\
+          & CNN & & & \\
+          & RF & & & \\
+      \hline
+    \end{tabular}
+  \end{table*}
+
+  \begin{table*}
+    \caption{Balanced accuracies for different binary classification models trained on SWIRE objects
+    in CDFS and tested on SWIRE objects in ELAIS-S1.
+    The `Labeller' column states what set of training labels
+    were used to train the classifier, and the `Classifier' column states what
+    classification model was used. `CNN' is a convolutional neural network,
+    `LR' is logistic regression and `RF' is random forests. Accuracies are evaluated against the expert
+    label set derived from \citet{middelberg08}. The standard deviation of balanced accuracies evaluated across the four quadrants of
+    CDFS (\autoref{fig:quadrants}) is also shown. The `compact' set refers to SWIRE
+    objects within $1'$ of a compact radio component, the `resolved' set refers to
+    SWIRE objects within $1'$ of a resolved radio component, and `all' is the union of these sets.}
+    \label{tab:elais-ba}
+    \begin{tabular}{ccccc}
+      \hline
+      Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
+       &  & (per cent) & (per cent) & (per cent)\\
+      \hline
+      Norris & LR & & & \\
+             & CNN & & & \\
+             & RF & & & \\
+      RGZ & LR & & & \\
+          & CNN & & & \\
+          & RF & & & \\
+      \hline
+    \end{tabular}
+  \end{table*}
+
+  \begin{table*}
     \caption{Cross-identification accuracies for different classification
     models on CDFS. The `Labeller' column states what set of training labels
     were used to train the method, and the `Classifier' column states what
@@ -1379,6 +1432,87 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \hline
     \end{tabular}
   \end{table*}
+
+\section{SWIRE object scores}\label{app:scores}
+  
+  This section contains scores predicted by our binary classifiers for each
+  SWIRE object within $1'$ of a radio component in CDFS and ELAIS-S1. Scores
+  for SWIRE~CDFS objects are shown in \autoref{tab:cdfs-scores} and scores for
+  SWIRE~ELAIS-S1 are shown in \autoref{tab:elais-scores}. For CDFS, the score
+  for an object in a quadrant is predicted by binary classifiers trained on
+  all other quadrants. For ELAIS-S1, we show the scores predicted by binary
+  classifiers trained on each CDFS quadrant. Note that these scores have
+  \emph{not} been weighted by Gaussians.
+
+  \begin{table*}
+    \caption{\todo{Scores for SWIRE~CDFS objects.}}
+    \label{tab:cdfs-scores}
+    \begin{tabular}{cccccc}
+      \hline
+      SWIRE & Expert host & RGZ host & LR(Norris) & LR(RGZ) & ... \\
+      \hline
+      SWIRE~123 & yes & no & 0.9 & 0.8 & ... \\
+      \hline
+    \end{tabular}
+  \end{table*}
+
+  \begin{table*}
+    \caption{\todo{Scores for SWIRE~ELAIS-S1 objects.}}
+    \label{tab:elais-scores}
+    \begin{tabular}{ccccc}
+      \hline
+      SWIRE & Expert host & LR(Norris) 0 & LR(Norris) 1 & ... \\
+      \hline
+      SWIRE~123 & yes & 0.9 & 0.8 & ... \\
+      \hline
+    \end{tabular}
+  \end{table*}
+
+\section{ATLAS component cross-identifications}\label{app:xids}
+  
+  This section contains cross-identifications predicted by our method for each
+  ATLAS radio component in CDFS and ELAIS-S1. Cross-identifications for
+  ATLAS~CDFS components are shown in \autoref{tab:cdfs-xids} and
+  cross-identifications for ATLAS~ELAIS-S1 are shown in
+  \autoref{tab:elais-xids}. For CDFS, the cross-identification for a component
+  in a quadrant is predicted using our method with binary classifiers trained
+  on all other quadrants. For ELAIS-S1, we show the cross-identifications
+  predicted by our method using binary classifiers trained on each CDFS
+  quadrant. For CDFS, we also show the Radio Galaxy Zoo consensus, which is a
+  proxy for the difficulty of cross-identifying a component (Wong et al. in
+  prep).
+
+  \begin{table*}
+    \caption{\todo{Cross-identifications for ATLAS~CDFS components.}}
+    \label{tab:cdfs-xids}
+    \begin{tabular}{ccccccc}
+      \hline
+      ATLAS & Expert SWIRE & RGZ SWIRE & RGZ Consensus & LR(Norris) & LR(RGZ) & ... \\
+      \hline
+      ATLAS~C123 & SWIRE~123 & SWIRE~124 & 0.5 & SWIRE~123 & SWIRE~125 & ... \\
+      \hline
+    \end{tabular}
+  \end{table*}
+
+  \begin{table*}
+    \caption{\todo{Cross-identifications for ATLAS~ELAIS-S1 components.}}
+    \label{tab:elais-xids}
+    \begin{tabular}{cccccc}
+      \hline
+      ATLAS & Expert SWIRE & LR(Norris) 0 & LR(Norris) 1 & ... \\
+      \hline
+      ATLAS~E321 & SWIRE~321 & SWIRE~321 & SWIRE~325 & ... \\
+      \hline
+    \end{tabular}
+  \end{table*}
+
+\section{Cross-identification figures}\label{app:examples}
+
+    This section contains figures of cross-identifications of each ATLAS radio component in CDFS and ELAIS-S1.
+
+    \begin{figure*}
+      \caption{\todo[Figures]}
+    \end{figure*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
