@@ -29,6 +29,7 @@
 \newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
 \newcommand{\edited}[1]{{\bf {#1}}}
+% \newcommand{\edited}[1]{#1}
 \newcommand{\edit}[1]{{\bf Edit:~{#1}}}
 
 \newcommand{\underset}[2]{\mathop{#2}\limits_{#1}}
@@ -129,12 +130,13 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
 \section{Introduction}\label{introduction}
 
-  \begin{figure}
-  \begin{center}
-    \includegraphics[width=0.75\linewidth]{images/fig1.png}
-    \caption{Key definitions of radio emission regions used throughout this paper.}\label{fig:definitions}
-  \end{center}
-  \end{figure}
+    \begin{figure*}
+        \centering
+        \subfloat[Two compact components, each a compact source.]{\includegraphics[width=0.30\linewidth]{images/cdfs_100_compact.png}}\quad
+        \subfloat[A resolved component and resolved source.]{\includegraphics[width=0.30\linewidth]{images/elais_57_resolved.png}}\quad
+        \subfloat[Three resolved components comprising a resolved source.]{\includegraphics[width=0.30\linewidth]{images/cdfs_185_resolved.png}}
+        \caption{\label{fig:definitions} Examples showing key definitions of radio emission regions used throughout this paper.}
+    \end{figure*}
 
   Next generation radio telescopes such as the Australian SKA Pathfinder
   \citep[ASKAP;][]{johnston07} and Apertif \citep{verheijen08} will conduct
@@ -195,7 +197,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   be developed to automatically cross-identify surveys}. Machine learning
   describes a class of methods that learn approximations to functions. \edited{If
   cross-identification can be cast as a function approximation problem, then machine learning will allow data
-  sets such as Radio Galaxy Zoo to be generalised to work on new data.}
+  sets such as Radio Galaxy Zoo to be generalised to work on new data. Data sets from
+  citizen scientists have already been used to train machine learning methods.
+  Some astronomical examples can be found in \citet{marshall15citizenscience}.}
 
   In this paper we \edited{cast cross-identification as a function
   approximation problem by} applying an approach from computer vision
@@ -310,9 +314,22 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     components.
 
   \section{Method}\label{sec:method}
+    % \begin{figure}
+    %   \centering
+    %   \includegraphics[width=\columnwidth]{images/fig2-jkb.png}
+    %   \caption{An example of \edited{finding} the host galaxy of a radio source using
+    %     our method. This image is a radio image from ATLAS and is centred on
+    %     $\alpha = 00^\text{h}33^\text{m}06.36^\text{s}, \delta =
+    %     -43^\circ{}10'30.1''$. Boxes represent $32 \times 32$ pixel `windows'
+    %     centred on various locations in the image. \edited{Each window is used to represent the location that the window is centred
+    %     on. The scores of each window would then be calculated by a binary classifier}. The scores
+    %     shown are for illustration only. In this example, \edited{the galaxy coincident with the centre window would be chosen as the host galaxy, as this
+    %     window has the highest score}. \todo{Overlay radio over a greyscale IR image.}}
+    %   \label{fig:windows}
+    % \end{figure}
     \begin{figure}
       \centering
-      \includegraphics[width=\columnwidth]{images/fig2-jkb.png}
+      \includegraphics[width=\columnwidth]{images/figure_example_of_method.pdf}
       \caption{An example of \edited{finding} the host galaxy of a radio source using
         our method. This image is a radio image from ATLAS and is centred on
         $\alpha = 00^\text{h}33^\text{m}06.36^\text{s}, \delta =
@@ -324,7 +341,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \label{fig:windows}
     \end{figure}
 
-  \subsection{Cross-identification as binary classification}\label{cross-identification-as-binary-classification}
+  \subsection{Cross-identification as binary classification}\label{sec:xid-as-binary-classification}
     \begin{figure}
       \centering
       % http://www.texample.net/tikz/examples/simple-flow-chart/
@@ -522,19 +539,29 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     We make a number of assumptions to relate the cross-identification task to
     the galaxy classification task:
-    \begin{itemize}
-      \item \edited{For any radio component, the $2' \times 2'$ image centred on the component} \begin{itemize}
+    \begin{enumerate}
+      \item \edited{For any radio component, the $2' \times 2'$ image centred on the component} \begin{enumerate}
           \item \edited{contains components of only one radio source, and}
           \item \edited{contains all components of this source.}
-        \end{itemize}
+        \end{enumerate}
       \item The host galaxy of a radio component is within the 1~arcmin \edited{search radius around} the
         component.
       \item The host galaxy of a radio component is closer on the sky to the
         radio component than the host galaxy of any other radio component.
       \item The host galaxy appears in the SWIRE catalogue.
-    \end{itemize}
+    \end{enumerate}
     These assumptions limit the effectiveness of our approach, regardless of
-    how accurate our binary classifier may be.
+    how accurate our binary classifier may be. \edited{Examples of radio sources that break these assumptions are:}
+    \begin{enumerate}
+      \item \mbox{}
+        \begin{enumerate}
+          \item \edited{A radio source less than $1'$ away from another radio source.}
+          \item \edited{A radio source with an angular size greater than $2'$.}
+        \end{enumerate}
+      \item \edited{A radio source with a component greater than $1'$ away from the host galaxy.}
+      \item \edited{A radio double with another host galaxy between a component and the true host galaxy.}
+      \item \edited{An infrared-faint radio source \citep[][as in]{collier14irfaint}.}
+    \end{enumerate}
 
     \edited{The main limitations are problems of scale in choosing the
     candidate search radius and the size of the windows
@@ -576,7 +603,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \subsection{Feature vector representation of infrared sources}
   \label{vector-representation-of-infrared-sources}
 
-    \edited{Inputs to binary classifiers must be represented by an array of real values called feature vectors.} We therefore need to choose a feature vector representation of our candidate host galaxies. Candidate hosts are sourced from the SWIRE catalogue (\autoref{sec:swire}). We represent each candidate host with 1034 real-valued features, \edited{combining the windows described in \autoref{cross-identification-as-binary-classification} with ancillary infrared data from the SWIRE catalogue}. For a given candidate host, these features are:
+    \edited{Inputs to binary classifiers must be represented by an array of real values called feature vectors.} We therefore need to choose a feature vector representation of our candidate host galaxies. Candidate hosts are sourced from the SWIRE catalogue (\autoref{sec:swire}). We represent each candidate host with 1034 real-valued features, \edited{combining the windows described in \autoref{sec:xid-as-binary-classification} with ancillary infrared data from the SWIRE catalogue}. For a given candidate host, these features are:
     \begin{itemize}
       \item the 6 logarithms of the ratios of fluxes of the candidate
         host at the four IRAC wavelengths;
@@ -675,17 +702,18 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     \edited{The Radio Galaxy Zoo and \citet{norris06} cross-identification
     catalogues must be converted to binary labels for infrared objects so that
-    they can be used to train binary classifiers.} One problem is that there is
-    no clear way to capture radio morphology information in binary
-    classification of infrared objects. Another problem is that there is no
-    way to indicate \emph{which} radio object an infrared object is associated
-    with, only that it is associated with \emph{some} radio object. We ignore
-    these problems for this paper and make the na\"ive assumption that any
-    \edited{infrared object not identified as a host galaxy in a catalogue is not a host galaxy at all.}
-    This is not ideal as it discards information about whether a
-    candidate host is not a host galaxy, or whether it was just not
-    acknowledged as a host galaxy in the catalogue, but this ambiguity can be
-    treated as a source of label noise and will not strongly affect training.
+    they can be used to train binary classifiers. There are two problems with this conversion:
+    \begin{itemize}
+      \item We can only say that an object is \emph{a} host galaxy, not which radio object it is associated with, and
+      \item We cannot disambiguate between non-host objects and host galaxies that were not in the catalogue.
+    \end{itemize}
+    
+    We use the Gaussian weighting described in \autoref{sec:xid-as-binary-classification} to address the first issue.
+    The second issue is known as a `positive-unlabelled' classification problem, which is
+    a binary classification problem where we only observe labels for the
+    positive class. We treat unlabelled objects as negative examples following
+    \citet{menon15cpe}. That is, we make the na\"ive assumption that any
+    infrared object not identified as a host galaxy in a catalogue is not a host galaxy at all.}
 
     We then generate positive labels from a cross-identification catalogue.
     We decide that if an infrared object is listed in the catalogue, then it
@@ -1204,7 +1232,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   and so we expect the performance to be improved by further experimentation
   and model selection. Our method provides a useful framework for generalising
   cross-identification catalogues to other areas of the sky from the same
-  radio survey and can be incorporated into existing methods.
+  radio survey and can be incorporated into existing methods. \edited{We have
+  shown that citizen science can provide a useful dataset for training machine
+  learning methods in the radio domain.}
 
 \section{Acknowledgements}
 
@@ -1285,7 +1315,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       candidate host in SWIRE, i.e. the flux ratios, stellarity indices, and
       distance. The dropout layer randomly sets $25\%$ of its inputs to zero
       during training to prevent overfitting. Diagram based on \url{
-      https://github.com/dnouri/nolearn}.}
+      https://github.com/dnouri/nolearn}. \todo{Explain the numbers.}}
       \label{fig:cnn}
     \end{figure}
 
