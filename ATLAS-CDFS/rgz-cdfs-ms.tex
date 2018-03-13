@@ -314,30 +314,18 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     components.
 
   \section{Method}\label{sec:method}
-    % \begin{figure}
-    %   \centering
-    %   \includegraphics[width=\columnwidth]{images/fig2-jkb.png}
-    %   \caption{An example of \edited{finding} the host galaxy of a radio source using
-    %     our method. This image is a radio image from ATLAS and is centred on
-    %     $\alpha = 00^\text{h}33^\text{m}06.36^\text{s}, \delta =
-    %     -43^\circ{}10'30.1''$. Boxes represent $32 \times 32$ pixel `windows'
-    %     centred on various locations in the image. \edited{Each window is used to represent the location that the window is centred
-    %     on. The scores of each window would then be calculated by a binary classifier}. The scores
-    %     shown are for illustration only. In this example, \edited{the galaxy coincident with the centre window would be chosen as the host galaxy, as this
-    %     window has the highest score}. \todo{Overlay radio over a greyscale IR image.}}
-    %   \label{fig:windows}
-    % \end{figure}
     \begin{figure}
       \centering
       \includegraphics[width=\columnwidth]{images/figure_example_of_method.pdf}
       \caption{An example of \edited{finding} the host galaxy of a radio source using
-        our method. This image is a radio image from ATLAS and is centred on
-        $\alpha = 00^\text{h}33^\text{m}06.36^\text{s}, \delta =
-        -43^\circ{}10'30.1''$. Boxes represent $32 \times 32$ pixel `windows'
-        centred on various locations in the image. \edited{Each window is used to represent the location that the window is centred
-        on. The scores of each window would then be calculated by a binary classifier}. The scores
-        shown are for illustration only. In this example, \edited{the galaxy coincident with the centre window would be chosen as the host galaxy, as this
-        window has the highest score}. \todo{Overlay radio over a greyscale IR image.}}
+        our method. Boxes represent `windows'
+        centred on \edited{some candidate host galaxies, circled. Each window is used to represent the candidate that the window is centred
+        on. The scores of each candidate would be calculated by a binary classifier using the window as input,
+        and these scores are shown below each window}. The scores
+        shown are for illustration only. In this example,
+        \edited{the galaxy coincident with the centre window would be chosen as the host galaxy, as this
+        window has the highest score. The background image is a \unit{3.6}{\micro\meter} image from SWIRE.
+        The contours show ATLAS radio data and increase geometrically from a signal-to-noise ratio of 4.}}
       \label{fig:windows}
     \end{figure}
 
@@ -509,7 +497,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         This radio source breaks the assumption that there are no other radio
         sources within 1~arcmin of the source. Another radio source is visible
         to the upper-left. Host galaxies found by Radio Galaxy Zoo volunteers
-        are shown by crosses.}
+        are shown by crosses. \edited{The background image
+        is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio
+        data and increase geometrically from a signal-to-noise ratio of 4.}}
       \label{fig:broken-isolation}
     \end{figure}
 
@@ -523,17 +513,19 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         is visible in the chosen radius. As one of the \edited{components} of the radio source
         is outside of the image, a volunteer (or automated algorithm) looking at
         the $3'$-wide image may be unable to determine that this is a radio
-        double or locate the host galaxy.}
+        double or locate the host galaxy. \edited{The background image
+        is a \unit{3.4}{\micro\meter} image from \emph{WISE}. The contours show FIRST radio
+        data and increase geometrically from a signal-to-noise ratio of 4.}}
       \label{fig:broken-contains}
     \end{figure}
         \begin{figure}
       \centering
       \includegraphics[width=\linewidth]{images/CI2363_fig.pdf}
-      \caption{A radio image centred on $\alpha =
-        03^\text{h}26^\text{m}39.12^\text{s}$, $\delta = -28^\circ{}07'58.80''$.        %ARG0003sky
-        This is an example of a radio source where the window centred on the
+      \caption{An example of a radio source where the window centred on the
         host galaxy, shown as a rectangle, does not contain enough radio
-        information to correctly identify the galaxy as the host.}
+        information to correctly identify the galaxy as the host. \edited{The background image
+        is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio
+        data and increase geometrically from a signal-to-noise ratio of 4.}}
       \label{fig:broken-window-size}
     \end{figure}
 
@@ -560,7 +552,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         \end{enumerate}
       \item \edited{A radio source with a component greater than $1'$ away from the host galaxy.}
       \item \edited{A radio double with another host galaxy between a component and the true host galaxy.}
-      \item \edited{An infrared-faint radio source \citep[][as in]{collier14irfaint}.}
+      \item \edited{An infrared-faint radio source \citep[as in][]{collier14irfaint}.}
     \end{enumerate}
 
     \edited{The main limitations are problems of scale in choosing the
