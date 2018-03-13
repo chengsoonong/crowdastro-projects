@@ -116,7 +116,7 @@
 \usepackage[a4paper]{geometry}
 
 % Fix several errors with LaTeX2e, including 2-column floats out of order
-\usepackage{fixltx2e}
+% \usepackage{fixltx2e}
 
 % Include hyperref, so we can have clickable links
 \usepackage{hyperref}	% Hyperlinks
@@ -1537,7 +1537,7 @@ $\reset@font\displaystyle##$\hfil\cr>\cr\approx\cr}}}
 \def\table{\def\baselinestretch{1}%
   \let\@makecaption=\SFB@maketablecaption%
   \@float{table}\fstyle@table}
-\let\endtable\end@float
+\def\endtable{\end@float}
 \@namedef{table*}{\def\baselinestretch{1}\st@rredfloattrue
   \let\@makecaption=\SFB@maketablecaption%
   \@dblfloat{table}\centering\fstyle@table}
@@ -1553,7 +1553,7 @@ $\reset@font\displaystyle##$\hfil\cr>\cr\approx\cr}}}
 \def\figure{\def\baselinestretch{1}%
   \let\@makecaption=\SFB@makefigurecaption%
   \@float{figure}\fstyle@figure}
-\let\endfigure\end@float
+\def\endfigure{\end@float}
 \@namedef{figure*}{\def\baselinestretch{1}\st@rredfloattrue
   \let\@makecaption=\SFB@makefigurecaption%
   \@dblfloat{figure}\centering\fstyle@figure}

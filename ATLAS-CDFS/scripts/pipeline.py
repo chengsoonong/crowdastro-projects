@@ -1140,9 +1140,7 @@ def train_all(
                 labeller,
                 dataset_name,
                 q, **kwargs)
-            for q in range(4)] for dataset_name in sorted(SET_NAMES)
-                               # We only want resolved/compact-trained classifiers.
-                               if 'resolved' in dataset_name or 'compact' in dataset_name}
+            for q in range(4)] for dataset_name in sorted(SET_NAMES)}
 
 
 def predict_all(
