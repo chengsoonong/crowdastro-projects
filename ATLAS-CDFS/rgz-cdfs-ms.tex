@@ -819,7 +819,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       the density of points on the plot estimated by a Gaussian kernel density
       estimate. The solid lines indicate the best linear fit; these fits have
       $R^2 = 0.92$ for logistic regression and $R^2 = 0.87$ for random
-      forests. We did not include convolutional neural networks in this test,
+      forests.
+      \edited{The dashed line shows the line where X-ID accuracy and GCT balanced accuracy are equal.}
+       We did not include convolutional neural networks in this test,
       as training them is very computationally expensive. There are 640 trials shown per classification model. These results
       exclude binary classifiers with balanced accuracies less than 51 per cent, as
       these are essentially random.
