@@ -94,17 +94,17 @@ $^{10}$School of Natural Sciences, University of Tasmania, Private Bag 37, Hobar
 
 % Abstract of the paper
 \begin{abstract}
-  Radio source host galaxy cross-identification is the problem of determining
-  the host galaxies of radio sources. While this is possible by hand, manual
-  cross-identification is intractable for wide-area radio surveys like the
-  Evolutionary Map of the Universe (EMU). \edited{Automated
+  We consider the problem of determining the host galaxies of radio sources by
+  cross-identification. This has traditionally been done by eye and expert
+  judgement, a method that will be intractable for wide-area radio surveys
+  like the Evolutionary Map of the Universe (EMU). \edited{Automated
   cross-identification will be critical for these future surveys, and machine
   learning may provide the tools to develop such methods. We apply a standard
   approach from computer vision to cross-identification, introducing one
-  possible way of automating this problem and exploring the pros and cons of
+  possible way of automating this problem, and explore the pros and cons of
   this approach}. We apply our method to the $1.4$~GHz Australian Telescope
   Large Area Survey (ATLAS) observations of the \emph{Chandra} Deep Field
-  South (CDFS) and the ESO Large Area ISO Survey South 1 (ELAIS-S1) fields,
+  South (CDFS) and the ESO Large Area ISO Survey South 1 (ELAIS-S1) fields by
   cross-identifying them with the \emph{Spitzer} Wide-area Infrared
   Extragalactic (SWIRE) survey. We train our method with two sets of
   data: expert cross-identifications of CDFS from the initial ATLAS data
@@ -113,7 +113,7 @@ $^{10}$School of Natural Sciences, University of Tasmania, Private Bag 37, Hobar
   with the nearest galaxy performs comparably to our more complex machine learning methods, though our estimated best-case performance is near 100 per cent.
   ATLAS contains 87 radio sources that have been cross-identified by experts,
   so our method does not see enough
-  complex examples to learn to accurately cross-identify them. Much larger
+  complex examples to learn how to cross-identify them accurately. Much larger
   datasets are therefore required for training methods like ours. We also show
   that training our method on Radio Galaxy Zoo cross-identifications gives
   comparable results to training our method on expert cross-identifications,
@@ -150,7 +150,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   radio emission regions with observations of their host galaxy in surveys at
   other wavelengths.
 
-  Cross-identification of the host with extended radio emission can be a
+  In the presence of extended radio emission cross-identification of the host can be a
   difficult task. \edited{Radio emission may extend far from the host galaxy
   and emission regions from a single physical object may appear disconnected
   due to interferometry `resolving out' diffuse structure. As a result, the
@@ -213,14 +213,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \autoref{sec:method} we discuss how we cast the radio host galaxy
   cross-identification problem as a machine learning problem. In
   \autoref{sec:results} we present results of applying our method to ATLAS
-  observations of the \emph{Chandra} Deep Field South (CDFS) and in
-  \autoref{sec:elais} we apply the cross-identifiers trained on CDFS to the
-  ESO Large Area ISO Survey South 1 (ELAIS-S1) field. Our data, code and results are
+  observations of the \emph{Chandra} Deep Field South (CDFS) and the ESO Large Area ISO Survey South 1 (ELAIS-S1) field. Our data, code and results are
   available at \url{https://radiogalaxyzoo.github.io/atlas-xid}.
 
   \edited{Throughout this paper, a `radio source' refers to all radio emission observed from
   a physical entity, and a `radio component' refers to a single connected
-  region of radio emission. Multiple components may comprise a single
+  region of radio emission. Multiple components may arise from a single
   source. A `compact' source is composed of a \edited{single unresolved component} and we
   assume that all unresolved components are compact sources. \edited{We define a resolved component in \autoref{eq:compact}.} An `extended'
   source is a non-compact source, i.e. resolved single-component sources and
@@ -261,7 +259,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     ATLAS is a pilot survey for the EMU \citep{norris11} survey, which will
     cover the entire sky south of $+30$ deg and is expected to detect
     approximately 70 million new radio sources. \edited{95 per cent of these sources
-    will be single-component sources, but the remaining 5 per cent provide
+    will be single-component sources, but the remaining 5 per cent pose a
     considerable challenge to current automated cross-identification methods
     \citep{norris11}.} EMU will be conducted at the same depth and resolution
     as ATLAS, so methods developed for processing ATLAS data are expected to
@@ -284,9 +282,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
   \subsection{SWIRE}\label{sec:swire}
 
-    SWIRE \citep{lonsdale03swire, surace05swire} is a wide-area infrared
+    SWIRE is a wide-area infrared
     survey at the four IRAC wavelengths 3.6, 4.5, 5.8, and
-    \unit{8.0}{\micro\meter} \citep{lonsdale03swire}. It covers eight fields, including CDFS and ELAIS-S1. SWIRE is the source of infrared
+    \unit{8.0}{\micro\meter} \citep{onsdale03swire, surace05swire}. It covers eight fields, including CDFS and ELAIS-S1. SWIRE is the source of infrared
     observations for cross-identification with ATLAS. SWIRE has catalogued 221,~535
     infrared objects in CDFS and 186,~059 infrared objects in ELAIS-S1 above a signal-to-noise ratio of 5.
 
@@ -308,7 +306,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     two-dimensional Gaussian. Depending on the residual of the fit, more than
     one Gaussian may be fit to one region of radio emission. Each of these
     Gaussian fits is listed as a radio component in the ATLAS component catalogue. The
-    brightest radio component from the multiple Gaussian fit is called the
+    brightest radio component from the multiple-Gaussian fit is called the
     `primary component'. \edited{If there was only one Gaussian fit then this Gaussian is the primary component}. Each primary component found in the ATLAS
     component catalogue appears in Radio Galaxy Zoo. Non-primary components
     may appear within the image of a primary component, but do not have their
@@ -320,8 +318,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \centering
       \includegraphics[width=\columnwidth]{images/figure_example_of_method.pdf}
       \caption{An example of \edited{finding} the host galaxy of a radio source using
-        our sliding window method. Boxes represent `windows'
-        centred on \edited{candidate host galaxies, which are circled. Each window is used to represent the candidate that the window is centred
+        our sliding-window method. Boxes represent `windows'
+        centred on \edited{candidate host galaxies, which are circled. The pixels in each window are used to represent the candidate that the window is centred
         on. The scores of each candidate would be calculated by a binary classifier using the window as input,
         and these scores are shown below each window}. The scores
         shown are for illustration only. In this example,
@@ -366,7 +364,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         input we accept a radio \edited{component. If the component is compact, we assume it is a compact source and select
         the nearest infrared object as the host galaxy. If the component is
         resolved, we use the binary classifier to score all nearby infrared objects
-        and select the highest scored object as the host galaxy. Compact and resolved components are defined in \autoref{eq:compact}.}}
+        and select the highest-scored object as the host galaxy. Compact and resolved components are defined in \autoref{eq:compact}.}}
       \label{fig:flowchart}
     \end{figure}
 
@@ -386,12 +384,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     be formalised as follows: given a radio image centred on a radio
     component, locate the host galaxy of the source containing this radio
     component. This is a standard computer vision problem called `object
-    detection', and we apply a common technique called a `sliding window'
+    detection', and we apply a common technique called a `sliding-window'
     \citep{rowley1996facedetection}}.
 
-    \edited{In sliding window object detection, we want to find an object in an image.
+    \edited{In sliding-window object detection, we want to find an object in an image.
     We develop a function to score each location in the image such that the
-    highest scored location coincides with the desired object. Square image
+    highest-scored location coincides with the desired object. Square image
     cutouts called `windows' are taken centred on each location and these
     windows are used to represent that location in our scoring function. To
     find the infrared host galaxy, we choose the location with the highest
@@ -411,13 +409,13 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{algorithm}
         \KwData{\\\quad{}A $2 \times 2$ arcmin radio image of a radio component%
                 \\\quad{}A set of infrared candidate host galaxies $\mathcal G$%
-                \\\quad{}A binary classifier $f : \mathbb R^d \to \mathbb{R}$}
+                \\\quad{}A binary classifier $f : \mathbb R^k \to \mathbb{R}$}
         \KwResult{A galaxy $g \in \mathcal G$}
 
         $max \leftarrow -\infty$\;
         $host \leftarrow \emptyset$\;
         \For{$g \in \mathcal G$}{
-          $x \leftarrow$ a $d$-dimensional vector representation of $g$ (\autoref{vector-representation-of-infrared-sources})\;
+          $x \leftarrow$ a $k$-dimensional vector representation of $g$ (\autoref{vector-representation-of-infrared-sources})\;
           $d \leftarrow$ distance between $g$ and the radio component\;
           $score \leftarrow f(x) \times \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{d^2}{2\sigma^2}\right);\quad \stepcounter{equation}\hfill(\theequation)$
           \BlankLine
@@ -443,7 +441,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     represents host galaxies, the negative class represents non-host galaxies,
     and to cross-identify a radio component we find the candidate host galaxy
     maximising the positive class probability. In other words,
-    the binary classifier is exactly the sliding window scoring function. We therefore split
+    the binary classifier is exactly the sliding-window scoring function. We therefore split
     cross-identification into two separate tasks: the `galaxy
     classification task' where, given a candidate host galaxy, we wish to
     determine whether it is a host galaxy of \emph{any} radio component; and
@@ -452,7 +450,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     is a traditional machine learning problem which results in a binary
     classifier. To avoid ambiguity and recognise that the values output by a
     binary classifier are not true probabilities, we will refer to the outputs
-    of the binary classifier as `scores' in line with the sliding window approach
+    of the binary classifier as `scores' in line with the sliding-window approach
     described above. The cross-identification task maximises over scores
     output by this classifier. Our approach is illustrated in
     \autoref{fig:windows} and described in \autoref{alg:xid}. We refer to the
@@ -544,10 +542,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     We make a number of assumptions to relate the cross-identification task to
     the galaxy classification task:
     \begin{enumerate}
-      \item \edited{For any radio component, the $2' \times 2'$ image centred on the component} \begin{enumerate}
-          \item \edited{contains components of only one radio source, and}
-          \item \edited{contains all components of this source.}
-        \end{enumerate}
+      \item \edited{For any radio component, the $2' \times 2'$ image centred on the component contains components of only one radio source.}
+      \item \edited{For any radio component, the $2' \times 2'$ image centred on the component contains all components of this source.}
       \item The host galaxy of a radio component is within the 1~arcmin \edited{search radius around} the
         component.
       \item The host galaxy of a radio component is closer on the sky to the
@@ -557,11 +553,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     These assumptions limit the effectiveness of our approach, regardless of
     how accurate our binary classifier may be. \edited{Examples of radio sources that break these respective assumptions are:}
     \begin{enumerate}
-      \item \mbox{}
-        \begin{enumerate}
-          \item \edited{A radio source less than $1'$ away from another radio source.}
-          \item \edited{A radio source with an angular size greater than $2'$.}
-        \end{enumerate}
+      \item \edited{A radio source less than $1'$ away from another radio source.}
+      \item \edited{A radio source with an angular size greater than $2'$.}
       \item \edited{A radio source with a component greater than $1'$ away from the host galaxy.}
       \item \edited{A two-component radio source with another host galaxy between a component and the true host galaxy.}
       \item \edited{An infrared-faint radio source \citep[as in][]{collier14irfaint}.}
@@ -571,8 +564,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     candidate search radius and the size of the windows
     representing candidates. If the search radius is too small, we may not
     consider the host galaxy as a candidate. If the search radius is too
-    large, we may consider multiple host galaxies (though this is somewhat
-    mediated by the Gaussian multiplier). If the window is too small, radio
+    large, we may consider multiple host galaxies (though this is mostly
+    mitigated by the Gaussian weighting). If the window is too small, radio
     emission may extend past the edges of the window and we may miss critical
     information required to identify the galaxy as a host galaxy. If the
     window is too large, then irrelevant information will be included and it
@@ -853,7 +846,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{figure*}
     \centering
     \includegraphics[]{images/cdfs-grid-new.pdf}
-    \caption{Performance of our method with logistic regression (`LR'), convolutional neural networks (`CNN') and random forest (`RF') binary classifiers. `Norris' indicates the performance of binary classifiers trained on the expert labels and `RGZ' indicates the performance of binary classifiers trained on the Radio Galaxy Zoo labels. One point is shown per binary classifier per testing quadrant. The training and testing sets have been split into compact and resolved objects, with results on compact objects shown on the left and results on resolved objects shown on the right. \edited{Shown for comparison is the accuracy of the Radio Galaxy Zoo consensus cross-identifications on the cross-identification task, shown as `Labels'.} The cross-identification accuracy attained by a perfect binary classifier is shown by a solid green line, and the cross-identification accuracy of a nearest-neighbours approach is shown by a dashed grey line. The standard deviation of these accuracies across the four CDFS quadrants is shown by the shaded area. Note that the pipeline shown in \autoref{fig:flowchart} is not used for these results. \label{fig:ba}}
+    \caption{Performance of our method with logistic regression (`LR'), convolutional neural networks (`CNN') and random forest (`RF') binary classifiers. `Norris' indicates the performance of binary classifiers trained on the expert labels and `RGZ' indicates the performance of binary classifiers trained on the Radio Galaxy Zoo labels. One point is shown per binary classifier per testing quadrant. The training and testing sets have been split into compact (left) and resolved (right) objects. \edited{Shown for comparison is the accuracy of the Radio Galaxy Zoo consensus cross-identifications on the cross-identification task, shown as `Labels'.} The cross-identification accuracy attained by a perfect binary classifier is shown by a solid green line, and the cross-identification accuracy of a nearest-neighbours approach is shown by a dashed grey line. The standard deviation of these accuracies across the four CDFS quadrants is shown by the shaded area. Note that the pipeline shown in \autoref{fig:flowchart} is not used for these results. \label{fig:ba}}
     \end{figure*}
 
     \begin{figure}
@@ -991,13 +984,10 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \includegraphics[]{images/elais-grid-new.pdf}
   \caption{Performance of different classification models trained on CDFS and tested on
   resolved and compact sources in ELAIS-S1. Points represent classification models
-  trained on different quadrants of CDFS, with markers and axes as in
+  trained on different quadrants of CDFS, with markers, lines and axes as in
   \autoref{fig:ba}. The balanced acccuracy of expert-trained random forest
   binary classifiers falls below the axis and the corresponding mean accuracy is
-  shown by an arrow. The solid green line indicates the cross-identification
-  accuracy of a `perfect' classifier; this is almost 100 per cent. The grey
-  dashed line indicates the cross-identification accuracy of
-  nearest-neighbours.
+  shown by an arrow. The estimated best attainable accuracy is almost 100 per cent.
     \label{fig:elais-ba}}
   \end{figure*}
 
@@ -1096,7 +1086,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   to cast radio host galaxy cross-identification as a machine learning task
   for which standard methods can be applied. These methods can then be trained
   with a variety of label sets derived from cross-identification catalogues.
-  While we have not outperformed nearest-neighbours, we have demonstrated that
+  While our methods have not outperformed nearest-neighbours, we have demonstrated that
   for a very accurate binary classifier, good cross-identification results can
   be obtained using our method. Future work could combine multiple catalogues
   or physical priors to boost performance.
@@ -1157,7 +1147,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   select relevant radio data and hence relax the assumption that a $1'$-wide
   radio image represents just one, whole radio source. Finally, our assumption
   that the host galaxy is detefcted in infrared is technically not needed, as
-  the sliding window approach we have employed will still work even if there
+  the sliding-window approach we have employed will still work even if there
   are no detected host galaxies --- instead of classifying candidate hosts,
   simply classify each pixel in the radio image. The downside of removing
   candidate hosts is that we are no longer able to reliably incorporate host
