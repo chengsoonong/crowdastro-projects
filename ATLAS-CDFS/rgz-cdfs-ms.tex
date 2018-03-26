@@ -16,6 +16,7 @@
 \usepackage[algoruled]{algorithm2e}
 \usepackage[caption=false]{subfig}
 \usepackage[mediumspace,mediumqspace,squaren]{SIunits}
+\usepackage{pdflscape}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -105,13 +106,13 @@ $^{10}$School of Natural Sciences, University of Tasmania, Private Bag 37, Hobar
   Large Area Survey (ATLAS) observations of the \emph{Chandra} Deep Field
   South (CDFS) and the ESO Large Area ISO Survey South 1 (ELAIS-S1) fields,
   cross-identifying them with the \emph{Spitzer} Wide-area Infrared
-  Extragalactic (SWIRE) survey. We train our method with two sets of training
+  Extragalactic (SWIRE) survey. We train our method with two sets of
   data: expert cross-identifications of CDFS from the initial ATLAS data
   release and crowdsourced cross-identifications of CDFS from Radio Galaxy
-  Zoo. \edited{We found that while the estimated best-case performance from
-  applying this method is near 100 per cent, a nearest-neighbour approach
-  outperforms our trained methods. This is likely due to ATLAS containing a
-  low number of extended radio sources and so our method does not see enough
+  Zoo. \edited{We found that a simple strategy of cross-identifying a radio component
+  with the nearest galaxy performs comparably to our more complex machine learning methods, though our estimated best-case performance is near 100 per cent.
+  ATLAS contains 87 radio sources that have been cross-identified by experts,
+  so our method does not see enough
   complex examples to learn to accurately cross-identify them. Much larger
   datasets are therefore required for training methods like ours. We also show
   that training our method on Radio Galaxy Zoo cross-identifications gives
@@ -133,9 +134,10 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{figure*}
         \centering
         \subfloat[Two compact components, each a compact source.]{\includegraphics[width=0.30\linewidth]{images/cdfs_100_compact.png}}\quad
-        \subfloat[A resolved component and resolved source.]{\includegraphics[width=0.30\linewidth]{images/elais_57_resolved.png}}\quad
-        \subfloat[Three resolved components comprising a resolved source.]{\includegraphics[width=0.30\linewidth]{images/cdfs_185_resolved.png}}
-        \caption{\label{fig:definitions} Examples showing key definitions of radio emission regions used throughout this paper.}
+        \subfloat[One resolved component and resolved source.]{\includegraphics[width=0.30\linewidth]{images/elais_57_resolved.png}}\quad
+        \subfloat[Three resolved components comprising one resolved source.]{\includegraphics[width=0.30\linewidth]{images/cdfs_185_resolved.png}}
+        \caption{\label{fig:definitions} Examples showing key definitions of radio emission regions used throughout this paper.
+                 Compact and resolved components are defined by \autoref{eq:compact}.}
     \end{figure*}
 
   Next generation radio telescopes such as the Australian SKA Pathfinder
@@ -175,8 +177,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   radio surveys \citep{norris17surveys}.
 
   Automated algorithms have been developed for cross-identification.
-  \citet{fan15} developed a method of cross-identification using Bayesian
-  hypothesis testing, fitting a three-component model to extended radio
+  \citet{fan15} applied Bayesian
+  hypothesis testing to this problem, fitting a three-component model to extended radio
   sources. This was achieved under the assumption that extended radio sources
   are composed of a core radio component and two lobe components. The core
   radio component is coincident with the host galaxy, so cross-identification
@@ -194,7 +196,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \citep{norris17unexpected}.
 
   \edited{One possibility is that machine learning techniques can
-  be developed to automatically cross-identify surveys}. Machine learning
+  be developed to automatically cross-identify catalogues drawn from new surveys}. Machine learning
   describes a class of methods that learn approximations to functions. \edited{If
   cross-identification can be cast as a function approximation problem, then machine learning will allow data
   sets such as Radio Galaxy Zoo to be generalised to work on new data. Data sets from
@@ -213,14 +215,14 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \autoref{sec:results} we present results of applying our method to ATLAS
   observations of the \emph{Chandra} Deep Field South (CDFS) and in
   \autoref{sec:elais} we apply the cross-identifiers trained on CDFS to the
-  ESO Large Area ISO Survey South 1 (ELAIS-S1) field. Our data and code are
+  ESO Large Area ISO Survey South 1 (ELAIS-S1) field. Our data, code and results are
   available at \url{https://radiogalaxyzoo.github.io/atlas-xid}.
 
   \edited{Throughout this paper, a `radio source' refers to all radio emission observed from
   a physical entity, and a `radio component' refers to a single connected
-  observation of radio emission. Multiple components may comprise a single
-  source. A `compact' source is composed of a single compact component and we
-  assume that all unresolved components are compact sources. An `extended'
+  region of radio emission. Multiple components may comprise a single
+  source. A `compact' source is composed of a \edited{single unresolved component} and we
+  assume that all unresolved components are compact sources. \edited{We define a resolved component in \autoref{eq:compact}.} An `extended'
   source is a non-compact source, i.e. resolved single-component sources and
   multi-component sources. \autoref{fig:definitions} illustrates these definitions.}
 
@@ -231,7 +233,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   Wide-area Infrared Extragalactic survey \citep[SWIRE;][]{lonsdale03swire,
   surace05swire}, and cross-identifications of these surveys from the citizen
   science project Radio Galaxy Zoo \citep{banfield15}. Radio Galaxy Zoo also
-  includes cross-identifications of Faint Images of the Radio Sky at
+  includes cross-identifications of sources in Faint Images of the Radio Sky at
   Twenty-Centimeters \citep[FIRST;][]{white97first} and the All\emph{WISE}
   survey \citep{cutri2013wiseexplanatory}, though we focus only on Radio
   Galaxy Zoo data from ATLAS and SWIRE.
@@ -285,8 +287,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     SWIRE \citep{lonsdale03swire, surace05swire} is a wide-area infrared
     survey at the four IRAC wavelengths 3.6, 4.5, 5.8, and
     \unit{8.0}{\micro\meter} \citep{lonsdale03swire}. It covers eight fields, including CDFS and ELAIS-S1. SWIRE is the source of infrared
-    observations for cross-identification with ATLAS. SWIRE catalogues 221~535
-    infrared objects in CDFS and 186~059 infrared objects in ELAIS-S1 above a signal-to-noise ratio of 5.
+    observations for cross-identification with ATLAS. SWIRE has catalogued 221,~535
+    infrared objects in CDFS and 186,~059 infrared objects in ELAIS-S1 above a signal-to-noise ratio of 5.
 
   \subsection{Radio Galaxy Zoo}\label{sec:rgz}
 
@@ -307,7 +309,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     one Gaussian may be fit to one region of radio emission. Each of these
     Gaussian fits is listed as a radio component in the ATLAS component catalogue. The
     brightest radio component from the multiple Gaussian fit is called the
-    `primary component'. Each primary component found in the ATLAS
+    `primary component'. \edited{If there was only one Gaussian fit then this Gaussian is the primary component}. Each primary component found in the ATLAS
     component catalogue appears in Radio Galaxy Zoo. Non-primary components
     may appear within the image of a primary component, but do not have their
     own entry in Radio Galaxy Zoo. We will henceforth only discuss the primary
@@ -318,16 +320,21 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \centering
       \includegraphics[width=\columnwidth]{images/figure_example_of_method.pdf}
       \caption{An example of \edited{finding} the host galaxy of a radio source using
-        our method. Boxes represent `windows'
-        centred on \edited{some candidate host galaxies, circled. Each window is used to represent the candidate that the window is centred
+        our sliding window method. Boxes represent `windows'
+        centred on \edited{candidate host galaxies, which are circled. Each window is used to represent the candidate that the window is centred
         on. The scores of each candidate would be calculated by a binary classifier using the window as input,
         and these scores are shown below each window}. The scores
         shown are for illustration only. In this example,
         \edited{the galaxy coincident with the centre window would be chosen as the host galaxy, as this
         window has the highest score. The background image is a \unit{3.6}{\micro\meter} image from SWIRE.
-        The contours show ATLAS radio data and increase geometrically from a signal-to-noise ratio of 4.}}
+        The contours show ATLAS radio data and increase geometrically from a signal-to-noise ratio of 4. The dashed circle
+        shows the $1'$ radius from which candidate host galaxies are selected. For clarity, not all candidate host galaxies are shown.}}
       \label{fig:windows}
     \end{figure}
+
+  \edited{The aim of this paper is to express cross-identification in a form that
+  will allow us to apply standard machine learning tools and methods. We use an approach from computer vision
+  to cast cross-identification as binary classification.}
 
   \subsection{Cross-identification as binary classification}\label{sec:xid-as-binary-classification}
     \begin{figure}
@@ -359,41 +366,18 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         input we accept a radio \edited{component. If the component is compact, we assume it is a compact source and select
         the nearest infrared object as the host galaxy. If the component is
         resolved, we use the binary classifier to score all nearby infrared objects
-        and select the highest scored object as the host galaxy.}}
+        and select the highest scored object as the host galaxy. Compact and resolved components are defined in \autoref{eq:compact}.}}
       \label{fig:flowchart}
     \end{figure}
 
-    \begin{algorithm}
-        \KwData{\\\quad{}A $2 \times 2$ arcmin radio image of a radio component%
-                \\\quad{}A set of infrared candidate host galaxies $\mathcal G$%
-                \\\quad{}A binary classifier $f : \mathbb R^d \to \mathbb{R}$}
-        \KwResult{A galaxy $g \in \mathcal G$}
-
-        $max \leftarrow -\infty$\;
-        $host \leftarrow \emptyset$\;
-        \For{$g \in \mathcal G$}{
-          $x \leftarrow$ a $d$-dimensional vector representation of $g$ (\autoref{vector-representation-of-infrared-sources})\;
-          $d \leftarrow$ distance between $g$ and the radio component\;
-          $score \leftarrow f(x) \times \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{d^2}{2\sigma^2}\right)$\;
-          \If{$score > max$}{
-            $max \leftarrow score$\;
-            $host \leftarrow g$\;
-          }
-        }
-
-        \KwRet{$host$}
-        \caption{Cross-identifying a radio component given an image of the component, a catalogue of infrared candidate host galaxies and a binary classifier.
-          \edited{$\sigma$ is a parameter of the method.}}
-        \label{alg:xid}
-    \end{algorithm}
-
     We propose a two-step method for host galaxy cross-identification
-    \edited{which we will derive now. Given a radio component, we want to find
-    the corresponding host galaxy as a human would. The input is a $2' \times
-    2'$ radio\footnote{Other wavelengths --- notably infrared --- might be
-    useful, but we defer this for now as it complicates the task. Infrared
-    information is instead incorporated separately in our method.} image of
-    the sky centred on a radio component. \edited{We chose a $2' \times 2'$ image to match} the size of the images used
+    \edited{which we will describe now}. Given a radio component, we want to find
+    the corresponding host galaxy. The input is a $2' \times
+    2'$ radio image of
+    the sky centred on a radio component \edited{and potentially other information about
+    objects in the image (such as the redshift or infrared colour)}. \edited{Images at other wavelengths (notably infrared) might be
+    useful, but we defer this for now as it complicates the task.
+    \edited{We chose a $2' \times 2'$ image to match} the size of the images used
     by Radio Galaxy Zoo. To avoid solving the separate task of identifying
     which radio components are associated with the same source, we assume
     that each radio image represents a single extended
@@ -406,33 +390,60 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \citep{rowley1996facedetection}}.
 
     \edited{In sliding window object detection, we want to find an object in an image.
-    We develop a function to score each location in the image
-    such that the highest scored location coincides with the desired object. Square image
+    We develop a function to score each location in the image such that the
+    highest scored location coincides with the desired object. Square image
     cutouts called `windows' are taken centred on each location and these
-    windows are used to represent that location in our scoring function.
-    To find the object, we choose the location with the highest score. To improve the
-    efficiency of this process when applied to cross-identification, we
-    only consider windows coincident with infrared sources --- otherwise we have to
-    score every pixel in the image\footnote{This approach
-    implicitly assumes that host galaxies are always visible in the infrared,
-    an assumption we discuss in \autoref{sec:limitations}.}. We call these
-    infrared sources `candidate host galaxies'. Using candidate host
-    galaxies instead of pixels also allows us to include ancillary information
-    about the candidate host galaxies, such as their infrared colours and
-    redshifts. We refer to the maximum distance a candidate host galaxy can be from
-    a radio component as the `search radius' and take this radius to be $1$ arcmin.}
+    windows are used to represent that location in our scoring function. To
+    find the infrared host galaxy, we choose the location with the highest
+    score. To improve the efficiency of this process when applied to
+    cross-identification, we only consider windows coincident with infrared
+    sources detected in SWIRE. We call these infrared sources `candidate
+    host galaxies'. For this paper, there is no use in scoring
+    locations without infrared sources as that would not lead to a host identification
+    anyway. Using candidate host galaxies instead of pixels also
+    allows us to include ancillary information about the candidate host
+    galaxies, such as their infrared colours and redshifts. We refer to the
+    maximum distance a candidate host galaxy can be separated from a radio component as
+    the `search radius' and take this radius to be $1$ arcmin. To score each
+    candidate host galaxy we use a `binary classifier', which we will define
+    now.}
 
-    \edited{A common method in machine learning is `binary
-    classification', where objects are to be assigned to one of two classes,
+    \begin{algorithm}
+        \KwData{\\\quad{}A $2 \times 2$ arcmin radio image of a radio component%
+                \\\quad{}A set of infrared candidate host galaxies $\mathcal G$%
+                \\\quad{}A binary classifier $f : \mathbb R^d \to \mathbb{R}$}
+        \KwResult{A galaxy $g \in \mathcal G$}
+
+        $max \leftarrow -\infty$\;
+        $host \leftarrow \emptyset$\;
+        \For{$g \in \mathcal G$}{
+          $x \leftarrow$ a $d$-dimensional vector representation of $g$ (\autoref{vector-representation-of-infrared-sources})\;
+          $d \leftarrow$ distance between $g$ and the radio component\;
+          $score \leftarrow f(x) \times \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{d^2}{2\sigma^2}\right);\quad \stepcounter{equation}\hfill(\theequation)$
+          \BlankLine
+          \If{$score > max$}{
+            $max \leftarrow score$\;
+            $host \leftarrow g$\;
+          }
+        }
+
+        \KwRet{$host$}
+        \caption{Cross-identifying a radio component given a radio image of the component, a catalogue of infrared candidate host galaxies and a binary classifier.
+          \edited{$\sigma$ is a parameter of the method.}}
+        \label{alg:xid}
+    \end{algorithm}
+
+    \edited{Binary classification is a common method in machine learning
+    where objects are to be assigned to one of two classes,
     called the `positive' and `negative' classes. This assignment is
     represented by the probability that an object is in the positive class. A
-    \emph{binary classifier} is a function mapping from an object to such a
+    `binary classifier' is a function mapping from an object to such a
     probability. Our formulation of cross-identification is equivalent to
     binary classification of candidate host galaxies: the positive class
     represents host galaxies, the negative class represents non-host galaxies,
     and to cross-identify a radio component we find the candidate host galaxy
-    maximising the positive class probability\footnote{In other words,
-    the binary classifier is exactly the sliding window scoring function.}. We therefore split
+    maximising the positive class probability. In other words,
+    the binary classifier is exactly the sliding window scoring function. We therefore split
     cross-identification into two separate tasks: the `galaxy
     classification task' where, given a candidate host galaxy, we wish to
     determine whether it is a host galaxy of \emph{any} radio component; and
@@ -474,9 +485,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     infrared object to the radio component as the host galaxy. In the limit
     where $\sigma \to \infty$, we maximise the score output by the
     classifier as above. We take $\sigma = 30''$ as this was the best value
-    found by a grid search. \edited{Note that this width will depend on both
-    the density of radio sources on the sky and the angular separation of the
-    host galaxy and its components.}
+    found by a grid search. \edited{Note that the optimum width will depend on
+    the density of radio sources on the sky, the angular separation of the
+    host galaxy and its radio components and the angular resolution of the survey.}
 
     \edited{We can improve upon this method by cross-identifying compact radio sources
     separately to extended sources, as compact sources are much easier to
@@ -492,7 +503,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{figure}
       \centering
       \includegraphics[width=\linewidth]{images/CI0077C1_fig.pdf}
-      \caption{$2'$-wide radio image centred on ATLAS3\textunderscore{}J033402.87-282405.8C.
+      \caption{A $2'$-wide radio image centred on ATLAS3\textunderscore{}J033402.87-282405.8C.
         %(ARG0003r2v)
         This radio source breaks the assumption that there are no other radio
         sources within 1~arcmin of the source. Another radio source is visible
@@ -505,9 +516,20 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     \begin{figure}
       \centering
+      \includegraphics[width=\linewidth]{images/CI2363_fig.pdf}
+      \caption{An example of a radio source where the window centred on the
+        host galaxy, shown as a rectangle, does not contain enough radio
+        information to correctly identify the galaxy as the host. \edited{The background image
+        is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio
+        data and increase geometrically from a signal-to-noise ratio of 4.}}
+      \label{fig:broken-window-size}
+    \end{figure}
+
+    \begin{figure}
+      \centering
       \includegraphics[width=\linewidth]{images/FIRSTJ151227_fig.pdf}
       \caption{A $8'$-wide radio image from FIRST, centred on
-        FIRSTJ151227.2+454026. The $3'$-wide red box indicates the boundaries of
+        FIRST\ J151227.2+454026. The $3'$-wide red box indicates the boundaries of
         the image of this radio component shown to volunteers in Radio Galaxy
         Zoo. This radio source breaks our assumption that the whole radio source
         is visible in the chosen radius. As one of the \edited{components} of the radio source
@@ -517,16 +539,6 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         is a \unit{3.4}{\micro\meter} image from \emph{WISE}. The contours show FIRST radio
         data and increase geometrically from a signal-to-noise ratio of 4.}}
       \label{fig:broken-contains}
-    \end{figure}
-        \begin{figure}
-      \centering
-      \includegraphics[width=\linewidth]{images/CI2363_fig.pdf}
-      \caption{An example of a radio source where the window centred on the
-        host galaxy, shown as a rectangle, does not contain enough radio
-        information to correctly identify the galaxy as the host. \edited{The background image
-        is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio
-        data and increase geometrically from a signal-to-noise ratio of 4.}}
-      \label{fig:broken-window-size}
     \end{figure}
 
     We make a number of assumptions to relate the cross-identification task to
@@ -543,7 +555,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \item The host galaxy appears in the SWIRE catalogue.
     \end{enumerate}
     These assumptions limit the effectiveness of our approach, regardless of
-    how accurate our binary classifier may be. \edited{Examples of radio sources that break these assumptions are:}
+    how accurate our binary classifier may be. \edited{Examples of radio sources that break these respective assumptions are:}
     \begin{enumerate}
       \item \mbox{}
         \begin{enumerate}
@@ -551,7 +563,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
           \item \edited{A radio source with an angular size greater than $2'$.}
         \end{enumerate}
       \item \edited{A radio source with a component greater than $1'$ away from the host galaxy.}
-      \item \edited{A radio double with another host galaxy between a component and the true host galaxy.}
+      \item \edited{A two-component radio source with another host galaxy between a component and the true host galaxy.}
       \item \edited{An infrared-faint radio source \citep[as in][]{collier14irfaint}.}
     \end{enumerate}
 
@@ -566,7 +578,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     window is too large, then irrelevant information will be included and it
     may be difficult or computationally expensive to score. We chose a
     window size of $32 \times 32$ pixels, corresponding to approximately $48'' \times 48''$ in
-    ATLAS. This is shown as red rectangles in \autoref{fig:windows} and
+    ATLAS. This is shown as squares in \autoref{fig:windows} and
     \autoref{fig:broken-window-size}. These kinds of size problems are
     difficult even for non-automated methods as radio sources can be extremely
     wide --- for example, Radio Galaxy Zoo found a radio giant that spanned
@@ -579,15 +591,15 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     In weighting the scores by a Gaussian function of angular
     separation, we implicitly assume that the host galaxy of a radio component
     is closer to that radio component than any other host galaxy. If this
-    assumption fails then the incorrect host galaxy may be identified, though
+    assumption is not true then the incorrect host galaxy may be identified, though
     this is rare.
 
-    We only need the assumption that the host galaxy appears in SWIRE to
+    We only need to require that the host galaxy appears in SWIRE to
     incorporate galaxy-specific features
     (\autoref{vector-representation-of-infrared-sources}) and to improve
     efficiency. Our method is applicable even when host galaxies are not detected in
     the infrared by considering every pixel of the radio image as a candidate
-    location as would be done in the original computer vision approach.
+    location as would be done in the original computer vision approach. \edited{If the host galaxy location does not correspond to an infrared source, the radio source would be classified as infrared-faint.}
 
     Our assumptions impose an upper bound on how well we can cross-identify
     radio sources. We estimate this upper bound in \autoref{sec:cdfs-results}.
@@ -595,10 +607,10 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \subsection{Feature vector representation of infrared sources}
   \label{vector-representation-of-infrared-sources}
 
-    \edited{Inputs to binary classifiers must be represented by an array of real values called feature vectors.} We therefore need to choose a feature vector representation of our candidate host galaxies. Candidate hosts are sourced from the SWIRE catalogue (\autoref{sec:swire}). We represent each candidate host with 1034 real-valued features, \edited{combining the windows described in \autoref{sec:xid-as-binary-classification} with ancillary infrared data from the SWIRE catalogue}. For a given candidate host, these features are:
+    \edited{Inputs to binary classifiers must be represented by an array of real values called feature vectors.} We therefore need to choose a feature vector representation of our candidate host galaxies. Candidate hosts are sourced from the SWIRE catalogue (\autoref{sec:swire}). We represent each candidate host with 1034 real-valued features, \edited{combining the windows centred on each candidate (\autoref{sec:xid-as-binary-classification}) with ancillary infrared data from the SWIRE catalogue}. For a given candidate host, these features are:
     \begin{itemize}
-      \item the 6 logarithms of the ratios of fluxes of the candidate
-        host at the four IRAC wavelengths;
+      \item the 6 base-10 logarithms of the ratios of fluxes of the candidate
+        host at the four IRAC wavelengths \edited{(the `colours' of the candidate)};
       \item the flux of the host at \unit{3.6}{\micro\meter};
       \item the stellarity index of the host at both 3.6 and
         \unit{4.5}{\micro\meter};
@@ -608,26 +620,26 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         \times 48''$), centred on the candidate host \edited{(the window)}.
     \end{itemize}
 
-    The infrared fluxes provide insight into the properties \edited{of the candidate
-    host galaxy}. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace
-    both galaxies with faint polycyclic aromatic hydrocarbon (PAH) emission
+    The infrared colours provide insight into the properties \edited{of the candidate
+    host galaxy} \citep{grant11polarised}. The 3.6 and \unit{4.5}{\micro\meter} fluxes trace
+    both galaxies with faint polycyclic aromatic hydrocarbon (PAH) emission \edited{(i.e. late-type, usually star-forming galaxies)}
     and elliptical galaxies dominated by old stellar populations. The
     \unit{5.8}{\micro\meter} flux selects galaxies where the infrared emission
-    is dominated by non-equilibrium emission of dust grains (PAH destruction
-    by the hard UV spectrum of \edited{active galactic nuclei}),
+    is dominated by non-equilibrium emission of dust grains \edited{due to active galactic nuclei},
     while the \unit{8.0}{\micro\meter} flux
     traces strong PAH emission at low redshift \citep{Sajina2005}. The
-    stellarity index represents how likely the object is to be a star rather
-    than a galaxy \citep{surace05swire} \edited{and is estimated by a neural network in
-    \texttt{SExtractor} \citep{bertin96sextractor}}.
+    stellarity index \edited{is a value in the SWIRE catalogue that represents how likely the object is to be a star rather
+    than a galaxy \citep{surace05swire}. It was estimated by a neural network in
+    \texttt{SExtractor} \citep{bertin96sextractor}}. \todo{Why do we care about these for hostiness?
+    What does the flux at 3.6 trace? (The flux at 3.6 is just the brightness of the galaxy.)}
 
-    We use the pixels of each $32 \times 32$ radio window as independent
+    We use the $32 \times 32$ pixels of each radio window as independent
     features for all binary classification models, with the convolutional neural
     network automatically extracting features that are relevant. Other
     features of the radio components may be used instead of just relying on the pixel values,
-    but there has been limited research on extracting such features.
+    but there has been limited research on extracting such features:
     \citet{proctor06} describes hand-selected features for radio doubles in
-    FIRST, and \citet{aniyan17cnn} and Lukic et al. (in press) make use of
+    FIRST, and \citet{aniyan17cnn} and \citet{lukic18compact} make use of
     deep convolutional neural networks which automatically extract features as
     part of classification. A more comprehensive investigation of features is
     a good avenue for potential improvement in our pipeline but this is beyond
@@ -641,18 +653,27 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     probabilistic binary classification model. It is linear in the feature
     space and outputs the probability that the input has a positive
     label~\citep[Chap. 4]{bishop06ml}. Convolutional neural networks (CNN) are
-    a biologically-inspired prediction model for prediction with image inputs.
+    biologically-inspired prediction models with image inputs.
     They have recently produced good results on large image-based datasets in
-    astronomy \citep[e.g.][Lukic et al. in press]{dieleman15cnn}. Random
+    astronomy \citep[e.g.]{lukic18compact, dieleman15cnn}. Random
     forests are an ensemble of decision trees~\citep{breiman01random-forest}.
     They consider multiple subsamples of the training set, where each
     bootstrap subsample is sampled with replacement from the training set. To
     classify a new data point, the random forest takes the weighted average of
     all classifications produced by each decision tree.
 
-    Further details and background of these models are in \aref{app:models}.
+    Further details and background of these models are presented in \aref{app:models}.
 
   \subsection{Labels}\label{sec:labels}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\columnwidth]{images/snr_cutoff_cumulative.pdf}
+      \caption{Cumulative number of radio components ($N$) in the expert (Norris) and Radio Galaxy
+        Zoo (RGZ) training sets with different signal-to-noise ratios (SNR).}
+      \label{fig:distribution-cutoffs}
+    \end{figure}
+
     \begin{figure}
       \centering
       \includegraphics[width=\columnwidth, trim={0cm 0.5cm 0cm 0.5cm}, clip]{images/quadrants.pdf}
@@ -666,7 +687,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{table}
       \caption{Number of compact and resolved radio objects in each CDFS
       quadrant. Radio Galaxy Zoo (RGZ) has more cross-identifications than the
-      expert catalogue provides as it uses a deeper data release of ATLAS, and
+      expert catalogue \citep{norris06} provides as it uses a deeper data release of ATLAS, and
       so has more objects in each quadrant for training.}
       \label{tab:radio-count}
       \begin{tabular}{lcccc}
@@ -684,20 +705,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \end{tabular}
     \end{table}
 
-    \begin{figure}
-      \centering
-      \includegraphics[width=\columnwidth]{images/snr_cutoff_cumulative.pdf}
-      \caption{Number of radio components ($N$) in the expert (Norris) and Radio Galaxy
-        Zoo (RGZ) training sets with different signal-to-noise (SNR) cutoffs.}
-      \label{fig:distribution-cutoffs}
-    \end{figure}
-
     \edited{The Radio Galaxy Zoo and \citet{norris06} cross-identification
     catalogues must be converted to binary labels for infrared objects so that
-    they can be used to train binary classifiers. There are two problems with this conversion:
+    they can be used to train binary classifiers. There are two challenges with this conversion:
     \begin{itemize}
       \item We can only say that an object is \emph{a} host galaxy, not which radio object it is associated with, and
-      \item We cannot disambiguate between non-host objects and host galaxies that were not in the catalogue.
+      \item We cannot disambiguate between non-host infrared objects and host galaxies that were not in the cross-identification catalogue.
     \end{itemize}
     
     We use the Gaussian weighting described in \autoref{sec:xid-as-binary-classification} to address the first issue.
@@ -705,12 +718,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     a binary classification problem where we only observe labels for the
     positive class. We treat unlabelled objects as negative examples following
     \citet{menon15cpe}. That is, we make the na\"ive assumption that any
-    infrared object not identified as a host galaxy in a catalogue is not a host galaxy at all.}
+    infrared object in the SWIRE catalogue not identified as a host galaxy in a cross-identification catalogue is not a host galaxy at all.}
 
-    We then generate positive labels from a cross-identification catalogue.
+    We first generate positive labels from a cross-identification catalogue.
     We decide that if an infrared object is listed in the catalogue, then it
     is assigned a positive label as a host galaxy. We then assign every other galaxy a negative label. This has some problems
-    --- an example is that if the catalogue did not include a radio
+    --- an example is that if the cross-identification catalogue did not include a radio
     object (e.g.~it was below the signal-to-noise ratio) then the host galaxy
     of that radio object would receive a negative label. This occurs with
     \citet{norris06} cross-identifications, as these are associated with the
@@ -736,7 +749,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     into four quadrants for training and testing. The quadrants were divided
     with a common corner at $\alpha = 03^\text{h}31^\text{m}12^\text{s},
     \delta = -28^\circ{}06'00''$ as shown in \autoref{fig:quadrants}. For
-    each trial, one quadrant was used to draw test examples and the other
+    each trial, one quadrant was used to extract test examples and the other
     three quadrants were used for training examples.
 
     We further divided the radio components into compact and resolved. Compact
@@ -745,6 +758,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     cross-identification to attain high accuracy on this set. A radio component was
     considered resolved if
     \begin{equation}
+      \label{eq:compact}
         \ln \left(
           \frac{S_{\text{int}}}
                {S_{\text{peak}}}
@@ -776,7 +790,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     Radio Galaxy Zoo catalogue.
 
     Each binary classifier was trained on the training examples and used to
-    \edited{score the test examples. These scores were thresholded to generate labels which could be directly
+    \edited{score the test examples. These scores were thresholded to generate labels which could be directly compared
     to the expert labels. We then computed the `balanced accuracy' of these predicted labels.} Balanced
     accuracy is the average of the accuracy on the positive class and the
     accuracy on the negative class, and is not sensitive to class imbalance.
@@ -836,15 +850,15 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \label{fig:positives}}
     \end{figure}
 
-    \begin{figure}
+    \begin{figure*}
     \centering
-    \includegraphics[width=\columnwidth]{images/cdfs-grid-new.pdf}
+    \includegraphics[]{images/cdfs-grid-new.pdf}
     \caption{Performance of our method with logistic regression (`LR'), convolutional neural networks (`CNN') and random forest (`RF') binary classifiers. `Norris' indicates the performance of binary classifiers trained on the expert labels and `RGZ' indicates the performance of binary classifiers trained on the Radio Galaxy Zoo labels. One point is shown per binary classifier per testing quadrant. The training and testing sets have been split into compact and resolved objects, with results on compact objects shown on the left and results on resolved objects shown on the right. \edited{Shown for comparison is the accuracy of the Radio Galaxy Zoo consensus cross-identifications on the cross-identification task, shown as `Labels'.} The cross-identification accuracy attained by a perfect binary classifier is shown by a solid green line, and the cross-identification accuracy of a nearest-neighbours approach is shown by a dashed grey line. The standard deviation of these accuracies across the four CDFS quadrants is shown by the shaded area. Note that the pipeline shown in \autoref{fig:flowchart} is not used for these results. \label{fig:ba}}
-    \end{figure}
+    \end{figure*}
 
     \begin{figure}
       \centering
-      \includegraphics[width=0.9\columnwidth]{images/cdfs_cross_identification_grid.pdf}
+      \includegraphics[]{images/cdfs_cross_identification_grid.pdf}
       \caption{Performance of our approach using different binary classifiers on the cross-identification task. Markers and lines are as in \autoref{fig:ba}. The blue solid line indicates the performance of a random binary classifier and represents the minimum accuracy we expect to obtain. The standard deviation of this accuracy across 25 trials and 4 quadrants is shaded. The accuracy of Radio Galaxy Zoo on the cross-identification task is below the axis and is instead marked by an arrow with the mean accuracy. Note that the pipeline shown in \autoref{fig:flowchart} is used here, \edited{so compact objects are cross-identified in the same way regardless of binary classifier model}. \label{fig:cross-id-accuracy}}
     \end{figure}
 
@@ -972,9 +986,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 \subsection{Application to ATLAS-ELAIS-S1}
   \label{sec:elais}
 
-  \begin{figure}
+  \begin{figure*}
   \centering
-  \includegraphics[width=\columnwidth]{images/elais-grid-new.pdf}
+  \includegraphics[]{images/elais-grid-new.pdf}
   \caption{Performance of different classification models trained on CDFS and tested on
   resolved and compact sources in ELAIS-S1. Points represent classification models
   trained on different quadrants of CDFS, with markers and axes as in
@@ -985,11 +999,11 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   dashed line indicates the cross-identification accuracy of
   nearest-neighbours.
     \label{fig:elais-ba}}
-  \end{figure}
+  \end{figure*}
 
   \begin{figure}
     \centering
-    \includegraphics[width=0.9\columnwidth]{images/elais_cross_identification_grid.pdf}
+    \includegraphics[]{images/elais_cross_identification_grid.pdf}
     \caption{Performance of different classifiers trained on CDFS and tested
     on ELAIS-S1. Markers are as in \autoref{fig:cross-id-accuracy} and
     horizontal lines are as in \autoref{fig:elais-ba}. Note that the pipeline
@@ -1001,12 +1015,11 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
   \begin{figure}
     \centering
-    \includegraphics[width=\columnwidth, clip,
-                     trim={0 2cm 0 1cm}]{images/accuracies-flux-snr.pdf}
+    \includegraphics[trim={0cm 1cm 0cm 0.5cm}, clip]{images/accuracies-flux-snr.pdf}
     \caption{(a) Balanced accuracies of classifiers trained and tested on CDFS
       with different signal-to-noise ratio (SNR) cutoffs for the test set. A
       SWIRE object is included in the test set if it is within $1'$ of a radio
-      component with greater SNR than the cutoff. Different coloured lines
+      component with greater SNR than the cutoff. Lines of different colour
       indicate different classifier/training labels combinations, where LR is
       logistic regression, RF is random forests, CNN is convolutional neural
       networks, and Norris and RGZ are the expert and Radio Galaxy Zoo label
@@ -1016,7 +1029,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       objects associated with a radio object with greater SNR than the cutoff.
       The grey dashed line shows the SNR level at which the number of SWIRE
       objects above the cutoff is equal for CDFS and ELAIS-S1. This cutoff level
-      is approximately $34$ times the RMS.}
+      is approximately at a SNR of $34$.}
     \label{fig:accuracies-flux}
   \end{figure}
 
@@ -1107,8 +1120,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   data sets to be applicable to EMU.
 
   The accuracies of our trained cross-identification methods generally fall
-  far below the best possible accuracy attainable using our approach,
-  indicated by the green lines in Figures \ref{fig:cross-id-accuracy} and
+  far below the estimated best possible accuracy attainable using our approach,
+  indicated by the green-shaded areas in Figures \ref{fig:cross-id-accuracy} and
   \ref{fig:elais-cross-id-accuracy}. The balanced accuracies attained by our
   binary classifiers indicate that there is significant room for improvement
   in classification. The classification accuracy could be improved by better
@@ -1116,7 +1129,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   neural networks. There is a huge variety of ways to build a convolutional
   neural network, and we have only investigated one architecture. For an
   exploration of different convolutional neural network architectures applied
-  to radio astronomy, see Lukic et al. (in press). Convolutional neural
+  to radio astronomy, see \citet{lukic18compact}. Convolutional neural
   networks generally require more training data than other machine learning
   models and we have only trained our networks on a few hundred sources. We
   would expect performance on the classification task to greatly increase
@@ -1125,7 +1138,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   Another problem is that of the window size used to select radio features.
   Increasing window size would increase computational expense, but provide
   more information to the models. Results are also highly sensitive to how
-  large the window size is compared to the size of the radio galaxy we are
+  large the window size is compared to the size of the radio source we are
   trying to cross-identify, with large angular sizes requiring large window
   sizes to ensure that the features contain all the information needed to
   localise the host galaxy. An ideal implementation of our method would most
@@ -1135,21 +1148,21 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   Larger training sets, better model selection, and larger window sizes would
   improve performance, but only so far: we would still be bounded above by the
   estimated `perfect' classifier accuracy. From this point, the performance
-  can only be improved by improving upon our broken assumptions. We detailed
+  can only be improved by addressing our broken assumptions. We detailed
   these assumptions in \autoref{sec:limitations}, and we will discuss here how
-  these could be resolved. Our assumption that the host galaxy is contained
+  \edited{our method could be adapted to avoid these assumptions}. Our assumption that the host galaxy is contained
   within the search radius could be improved by dynamically choosing the
-  search radius, perhaps based on the angular extent of the galaxy, or the
+  search radius, perhaps based on the angular extent of the radio emission, or the
   redshift of candidate hosts. Radio morphology information may allow us to
   select relevant radio data and hence relax the assumption that a $1'$-wide
   radio image represents just one, whole radio source. Finally, our assumption
-  that the host galaxy is visible in infrared is technically not needed, as
+  that the host galaxy is detefcted in infrared is technically not needed, as
   the sliding window approach we have employed will still work even if there
-  are no visible host galaxies --- instead of classifying candidate hosts,
+  are no detected host galaxies --- instead of classifying candidate hosts,
   simply classify each pixel in the radio image. The downside of removing
   candidate hosts is that we are no longer able to reliably incorporate host
   galaxy information such as colour and redshift, though this could be
-  resolved by treating pixels as potentially invisible candidate hosts with
+  resolved by treating pixels as potentially undetected candidate hosts with
   noisy features.
 
   We observe that Radio Galaxy Zoo-trained methods perform comparably to
@@ -1182,15 +1195,15 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   components in CDFS. On no such component do all classifiers agree.
   This raises the possibility of using the level of disagreement of an
   ensemble of binary classifiers as a measure of the difficulty of cross-identifying a radio component,
-  analogous to the consensus level for Radio Galaxy Zoo volunteers.}
+  analogous to the consensus level for Radio Galaxy Zoo volunteers. Other examples are shown in \autoref{app:examples}.}
 
   Our methods can be easily incorporated into other cross-identification
-  methods or used as an extra data source for source identification. For
+  methods or used as an extra data source for source detection. For
   example, the scores output by our binary classifiers could be used to
   disambiguate between candidate host
   galaxies selected by model-based algorithms, or used to weight candidate
-  host galaxies while a source identifier attempts to associate radio
-  components. Our method can also be extended using other data sources; for
+  host galaxies while a source detector attempts to associate radio
+  components. Our method can also be extended using other data sources: for
   example, information from source identification algorithms could be
   incorporated into the feature set of candidate host galaxies.
 
@@ -1247,10 +1260,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   Laboratory/California Institute of Technology, funded by the National
   Aeronautics and Space Administration. The National Radio Astronomy
   Observatory is a facility of the National Science Foundation operated under
-  cooperative agreement by Associated Universities, Inc. This research has
-  made use of the NASA/IPAC Extragalactic Database (NED) which is operated by
-  the Jet Propulsion Laboratory, California Institute of Technology, under
-  contract with the National Aeronautics and Space Administration. The figures
+  cooperative agreement by Associated Universities, Inc. The figures
   in this work made use of Astropy, a community-developed core Python package
   for Astronomy \citep{astropy}. The Australia Telescope Compact Array is part
   of the Australia Telescope, which is funded by the Commonwealth of Australia
@@ -1304,17 +1314,18 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     \begin{figure}
       \includegraphics[width=\linewidth]{images/cnn_model_graph}
-      \caption{Architecture of our CNN. The concatenate layer flattens the
-      output of the previous layer and adds the 10 features derived from the
-      candidate host in SWIRE, i.e. the flux ratios, stellarity indices, and
-      distance. The dropout layer randomly sets $25\%$ of its inputs to zero
-      during training to prevent overfitting. Diagram based on \url{
-      https://github.com/dnouri/nolearn}. \todo{Explain the numbers.}}
+      \caption{Architecture of our CNN. \edited{Parenthesised numbers indicate
+      the size of output layers as a tuple (width, height, depth).} The
+      concatenate layer flattens the output of the previous layer and adds the
+      10 features derived from the candidate host in SWIRE, i.e. the flux
+      ratios, stellarity indices, and distance. The dropout layer randomly
+      sets $25\%$ of its inputs to zero during training to prevent
+      overfitting. Diagram based on \url{ https://github.com/dnouri/nolearn}.}
       \label{fig:cnn}
     \end{figure}
 
     CNNs have recently produced good results on large image-based datasets in
-    astronomy \citep[e.g.][; Lukic et al. in prep]{dieleman15cnn}. We employ
+    astronomy \citep[e.g.]{lukic18compact, dieleman15cnn}. We employ
     only a simple CNN model in this paper as a proof of concept that CNNs may
     be used for class probability prediction on radio images. The model
     architecture we use is shown in \autoref{fig:cnn}.
@@ -1356,17 +1367,17 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     SWIRE objects within $1'$ of a resolved radio component, and `all' is the union of these sets.}
     \label{tab:cdfs-ba}
     \begin{tabular}{ccccc}
-      \hline
-      Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
-       &  & (per cent) & (per cent) & (per cent)\\
-      \hline
-      Norris & LR & & & \\
-             & CNN & & & \\
-             & RF & & & \\
-      RGZ & LR & & & \\
-          & CNN & & & \\
-          & RF & & & \\
-      \hline
+    \hline
+    Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
+     &  & (per cent) & (per cent) & (per cent)\\
+    \hline
+    Norris & LR & $91.5 \pm 1.0$ & $93.2 \pm 1.0$ & $93.0 \pm 1.2$\\
+    Norris & CNN & $92.6 \pm 0.7$ & $91.2 \pm 0.5$ & $92.0 \pm 0.6$\\
+    Norris & RF & $96.7 \pm 1.5$ & $91.0 \pm 4.5$ & $96.0 \pm 2.5$\\
+    RGZ & LR & $89.5 \pm 0.8$ & $90.5 \pm 1.7$ & $90.2 \pm 0.8$\\
+    RGZ & CNN & $89.4 \pm 0.6$ & $89.6 \pm 1.3$ & $89.4 \pm 0.5$\\
+    RGZ & RF & $94.5 \pm 0.2$ & $95.8 \pm 0.4$ & $94.7 \pm 0.3$\\
+    \hline
     \end{tabular}
   \end{table*}
 
@@ -1385,14 +1396,14 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{tabular}{ccccc}
       \hline
       Labeller & Classifier & Mean `Compact' accuracy & Mean `Resolved' accuracy & Mean `All' accuracy\\
-       &  & (per cent) & (per cent) & (per cent)\\
+        &  & (per cent) & (per cent) & (per cent)\\
       \hline
-      Norris & LR & & & \\
-             & CNN & & & \\
-             & RF & & & \\
-      RGZ & LR & & & \\
-          & CNN & & & \\
-          & RF & & & \\
+      Norris & LR & $94.6 \pm 0.4$ & $93.3 \pm 2.0$ & $95.3 \pm 0.1$\\
+       & CNN & $94.8 \pm 0.2$ & $92.8 \pm 0.5$ & $94.4 \pm 0.2$\\
+       & RF & $85.9 \pm 3.8$ & $70.0 \pm 2.8$ & $86.6 \pm 3.2$\\
+      RGZ & LR & $91.8 \pm 0.3$ & $91.9 \pm 0.5$ & $92.0 \pm 0.2$\\
+       & CNN & $90.1 \pm 0.3$ & $91.1 \pm 0.9$ & $90.2 \pm 0.3$\\
+       & RF & $95.1 \pm 0.1$ & $95.2 \pm 0.0$ & $95.2 \pm 0.3$\\
       \hline
     \end{tabular}
   \end{table*}
@@ -1468,29 +1479,74 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   classifiers trained on each CDFS quadrant. Note that these scores have
   \emph{not} been weighted by Gaussians.
 
-  \begin{table*}
+  The columns of the score tables are defined as follows:
+  \begin{itemize}
+    \item \emph{SWIRE} --- SWIRE designation for candidate host galaxy.
+    \item \emph{RA} --- 
+    \item \emph{Dec} --- 
+    \item \emph{Expert host} --- 
+    \item \emph{RGZ host} --- 
+    \item \emph{CNN(Norris / All)} --- 
+    \item \emph{CNN(Norris / Compact)} --- 
+    \item \emph{CNN(Norris / Resolved)} --- 
+    \item \emph{CNN(RGZ / All)} --- 
+    \item \emph{CNN(RGZ / Compact)} --- 
+    \item \emph{CNN(RGZ / Resolved)} --- 
+    \item \emph{LR(Norris / All)} --- 
+    \item \emph{LR(Norris / Compact)} --- 
+    \item \emph{LR(Norris / Resolved)} --- 
+    \item \emph{LR(RGZ / All)} --- 
+    \item \emph{LR(RGZ / Compact)} --- 
+    \item \emph{LR(RGZ / Resolved)} --- 
+    \item \emph{RF(Norris / All)} --- 
+    \item \emph{RF(Norris / Compact)} --- 
+    \item \emph{RF(Norris / Resolved)} --- 
+    \item \emph{RF(RGZ / All)} --- 
+    \item \emph{RF(RGZ / Compact)} --- 
+    \item \emph{RF(RGZ / Resolved)} --- 
+  \end{itemize}
+
+  \begin{table}
     \caption{\todo{Scores for SWIRE~CDFS objects.}}
     \label{tab:cdfs-scores}
-    \begin{tabular}{cccccc}
+    \begin{tabular}{ccccccccccccccccccccccc}
       \hline
-      SWIRE & Expert host & RGZ host & LR(Norris) & LR(RGZ) & ... \\
+SWIRE & RA & Dec & Expert host & RGZ host & CNN(Norris / All) & CNN(Norris / Compact) & CNN(Norris / Resolved) & CNN(RGZ / All) & CNN(RGZ / Compact) & CNN(RGZ / Resolved) & LR(Norris / All) & LR(Norris / Compact) & LR(Norris / Resolved) & LR(RGZ / All) & LR(RGZ / Compact) & LR(RGZ / Resolved) & RF(Norris / All) & RF(Norris / Compact) & RF(Norris / Resolved) & RF(RGZ / All) & RF(RGZ / Compact) & RF(RGZ / Resolved) \\
       \hline
-      SWIRE~123 & yes & no & 0.9 & 0.8 & ... \\
+SWIRE3\textunderscore{}J032603.15-284708.5 & 51.5132 & -28.7857 & yes & no & 0.5838 & 0.4697 & 0.4848 & 0.3754 & 0.3881 & 0.3404 & 0.2489 & 0.0009 & 0.1557 & 0.2939 & 0.0007 & 0.1174 & 0.8922 & 0.8018 & 0.8732 & 0.7167 & 0.6599 & 0.7801 \\
+SWIRE3\textunderscore{}J032603.39-284010.1 & 51.5142 & -28.6695 & no & no & 0.0373 & 0.5814 & 0.4878 & 0.7896 & 0.7616 & 0.4668 & 0.0183 & 0.1646 & 0.1480 & 0.7637 & 0.7065 & 0.6070 & 0.0000 & 0.0000 & 0.0000 & 0.1629 & 0.0519 & 0.1275 \\
+SWIRE3\textunderscore{}J032603.44-284210.1 & 51.5144 & -28.7028 & no & no & 0.0232 & 0.4891 & 0.5101 & 0.4319 & 0.4298 & 0.3474 & 0.0155 & 0.0164 & 0.0815 & 0.3714 & 0.5626 & 0.2488 & 0.0000 & 0.0734 & 0.0000 & 0.1315 & 0.2116 & 0.4150 \\
+SWIRE3\textunderscore{}J032603.44-284222.2 & 51.5143 & -28.7062 & no & no & 0.0006 & 0.4164 & 0.5216 & 0.0400 & 0.0444 & 0.0276 & 0.0005 & 0.0006 & 0.0175 & 0.0460 & 0.0810 & 0.0299 & 0.2656 & 0.1418 & 0.0000 & 0.7631 & 0.8166 & 0.5378 \\
+SWIRE3\textunderscore{}J032603.45-284748.4 & 51.5144 & -28.7968 & no & no & 0.0014 & 0.4914 & 0.4865 & 0.1904 & 0.1895 & 0.1467 & 0.0013 & 0.0037 & 0.0160 & 0.1792 & 0.0663 & 0.1821 & 0.0000 & 0.0000 & 0.0000 & 0.0255 & 0.0000 & 0.0000 \\
+SWIRE3\textunderscore{}J032603.50-284637.0 & 51.5146 & -28.777 & no & no & 0.0074 & 0.4144 & 0.5382 & 0.1418 & 0.1515 & 0.1166 & 0.0047 & 0.0010 & 0.0337 & 0.1284 & 0.2198 & 0.0694 & 0.0720 & 0.0000 & 0.0000 & 0.6240 & 0.6681 & 0.6704 \\
+SWIRE3\textunderscore{}J032603.60-284627.4 & 51.515 & -28.7743 & no & no & 0.0012 & 0.4578 & 0.5165 & 0.0850 & 0.0904 & 0.0484 & 0.0008 & 0.0006 & 0.0374 & 0.1053 & 0.1424 & 0.0807 & 0.1231 & 0.0876 & 0.0000 & 0.8517 & 0.7532 & 0.7019 \\
+SWIRE3\textunderscore{}J032603.63-283840.5 & 51.5151 & -28.6446 & no & no & 0.0021 & 0.4153 & 0.5577 & 0.1678 & 0.1746 & 0.1323 & 0.0021 & 0.0073 & 0.0386 & 0.1482 & 0.0403 & 0.1210 & 0.0000 & 0.0532 & 0.0000 & 0.0000 & 0.0302 & 0.0000 \\
+SWIRE3\textunderscore{}J032603.66-283822.8 & 51.5153 & -28.6397 & no & no & 0.0001 & 0.4752 & 0.5009 & 0.0864 & 0.0861 & 0.0613 & 0.0001 & 0.0004 & 0.0038 & 0.0854 & 0.0447 & 0.0514 & 0.0000 & 0.0000 & 0.0000 & 0.0000 & 0.0000 & 0.0000 \\
+SWIRE3\textunderscore{}J032603.75-284014.1 & 51.5156 & -28.6706 & no & no & 0.0547 & 0.3408 & 0.5388 & 0.4889 & 0.5242 & 0.7301 & 0.0542 & 0.2712 & 0.2318 & 0.5026 & 0.5631 & 0.5032 & 0.0595 & 0.0545 & 0.0000 & 0.4289 & 0.0789 & 0.1420 \\
       \hline
     \end{tabular}
-  \end{table*}
+  \end{table}
 
-  \begin{table*}
+  \begin{table}
     \caption{\todo{Scores for SWIRE~ELAIS-S1 objects.}}
     \label{tab:elais-scores}
-    \begin{tabular}{ccccc}
+    \begin{tabular}{ccccccccccccccccccccccc}
       \hline
-      SWIRE & Expert host & LR(Norris) 0 & LR(Norris) 1 & ... \\
+SWIRE & RA & Dec & Expert host & RGZ host & CNN(Norris / All) & CNN(Norris / Compact) & CNN(Norris / Resolved) & CNN(RGZ / All) & CNN(RGZ / Compact) & CNN(RGZ / Resolved) & LR(Norris / All) & LR(Norris / Compact) & LR(Norris / Resolved) & LR(RGZ / All) & LR(RGZ / Compact) & LR(RGZ / Resolved) & RF(Norris / All) & RF(Norris / Compact) & RF(Norris / Resolved) & RF(RGZ / All) & RF(RGZ / Compact) & RF(RGZ / Resolved) \\
       \hline
-      SWIRE~123 & yes & 0.9 & 0.8 & ... \\
+SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & yes & no & 0.9537 & 0.8638 & 0.5552 & 0.9195 & 0.9037 & 0.9371 & 0.9722 & 0.9955 & 0.8769 & 0.9933 & 0.9934 & 0.9658 & 0.8824 & 0.9664 & 0.7950 & 0.8078 & 0.9227 & 0.7677 \\
+SWIRE3\textunderscore{}J002926.14-440249.0 & 7.35895 & -44.047 & no & no & 0.7361 & 0.8752 & 0.5640 & 0.7740 & 0.7474 & 0.7952 & 0.4669 & 0.0111 & 0.4249 & 0.3926 & 0.2220 & 0.5947 & 0.2077 & 0.0000 & 0.1613 & 0.1876 & 0.0852 & 0.4546 \\
+SWIRE3\textunderscore{}J002926.52-440247.0 & 7.36052 & -44.0464 & no & no & 0.3390 & 0.8338 & 0.5556 & 0.7275 & 0.6894 & 0.7197 & 0.2264 & 0.0254 & 0.2389 & 0.6275 & 0.3033 & 0.6812 & 0.1347 & 0.0857 & 0.0399 & 0.3582 & 0.4854 & 0.5347 \\
+SWIRE3\textunderscore{}J002926.63-440301.1 & 7.36097 & -44.0503 & no & no & 0.2108 & 0.8251 & 0.5623 & 0.3434 & 0.3306 & 0.3292 & 0.0603 & 0.0007 & 0.0734 & 0.0688 & 0.0141 & 0.1581 & 0.0917 & 0.0000 & 0.0399 & 0.2846 & 0.1245 & 0.2833 \\
+SWIRE3\textunderscore{}J002927.13-440232.6 & 7.36306 & -44.0424 & no & no & 0.0339 & 0.8479 & 0.5669 & 0.5853 & 0.5148 & 0.5159 & 0.0248 & 0.0334 & 0.0301 & 0.5735 & 0.5065 & 0.5265 & 0.1977 & 0.1507 & 0.0000 & 0.3334 & 0.6593 & 0.3995 \\
+SWIRE3\textunderscore{}J002927.28-440245.3 & 7.36368 & -44.0459 & no & no & 0.0406 & 0.8345 & 0.5540 & 0.2702 & 0.2340 & 0.2133 & 0.0173 & 0.0016 & 0.0359 & 0.1056 & 0.0492 & 0.1456 & 0.0000 & 0.0000 & 0.0000 & 0.0000 & 0.0000 & 0.0287 \\
+SWIRE3\textunderscore{}J002927.44-440238.5 & 7.36437 & -44.044 & no & no & 0.0116 & 0.8267 & 0.5746 & 0.2228 & 0.2182 & 0.2028 & 0.0064 & 0.0049 & 0.0187 & 0.1981 & 0.1534 & 0.1493 & 0.0000 & 0.0000 & 0.0000 & 0.1565 & 0.1634 & 0.1284 \\
+SWIRE3\textunderscore{}J002928.08-440230.3 & 7.36701 & -44.0418 & no & no & 0.0024 & 0.8626 & 0.5791 & 0.2297 & 0.1963 & 0.1549 & 0.0020 & 0.0005 & 0.0239 & 0.1337 & 0.1001 & 0.1310 & 0.0000 & 0.0000 & 0.0358 & 0.0000 & 0.0000 & 0.0190 \\
+SWIRE3\textunderscore{}J002928.11-440312.7 & 7.36713 & -44.0535 & no & no & 0.0011 & 0.8159 & 0.5514 & 0.0377 & 0.0384 & 0.0271 & 0.0008 & 0.0013 & 0.0119 & 0.0280 & 0.0361 & 0.0205 & 0.1171 & 0.0000 & 0.0000 & 0.0873 & 0.0383 & 0.0000 \\
+SWIRE3\textunderscore{}J002928.80-440306.8 & 7.37003 & -44.0519 & no & no & 0.0003 & 0.8405 & 0.5668 & 0.0236 & 0.0226 & 0.0136 & 0.0004 & 0.0014 & 0.0095 & 0.0339 & 0.0408 & 0.0136 & 0.0000 & 0.0000 & 0.0000 & 0.1114 & 0.1480 & 0.1584 \\
       \hline
     \end{tabular}
-  \end{table*}
+  \end{table}
 
 \section{ATLAS component cross-identifications}\label{app:xids}
   
@@ -1509,11 +1565,20 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \begin{table*}
     \caption{\todo{Cross-identifications for ATLAS~CDFS components.}}
     \label{tab:cdfs-xids}
-    \begin{tabular}{ccccccc}
+    \begin{tabular}{ccccccccccccccccccccccccccccccccccccccccccccccccc}
       \hline
-      ATLAS & Expert SWIRE & RGZ SWIRE & RGZ Consensus & LR(Norris) & LR(RGZ) & ... \\
+ATLAS & RA & Dec & CID & Zooniverse ID & Norris & Norris RA & Norris Dec & RGZ & RGZ RA & RGZ Dec & RGZ radio consensus & RGZ IR consensus & CNN(Norris / Compact) & CNN(Norris / Compact) RA & CNN(Norris / Compact) Dec & CNN(Norris / Resolved) & CNN(Norris / Resolved) RA & CNN(Norris / Resolved) Dec & CNN(RGZ / Compact) & CNN(RGZ / Compact) RA & CNN(RGZ / Compact) Dec & CNN(RGZ / Resolved) & CNN(RGZ / Resolved) RA & CNN(RGZ / Resolved) Dec & LR(Norris / Compact) & LR(Norris / Compact) RA & LR(Norris / Compact) Dec & LR(Norris / Resolved) & LR(Norris / Resolved) RA & LR(Norris / Resolved) Dec & LR(RGZ / Compact) & LR(RGZ / Compact) RA & LR(RGZ / Compact) Dec & LR(RGZ / Resolved) & LR(RGZ / Resolved) RA & LR(RGZ / Resolved) Dec & RF(Norris / Compact) & RF(Norris / Compact) RA & RF(Norris / Compact) Dec & RF(Norris / Resolved) & RF(Norris / Resolved) RA & RF(Norris / Resolved) Dec & RF(RGZ / Compact) & RF(RGZ / Compact) RA & RF(RGZ / Compact) Dec & RF(RGZ / Resolved) & RF(RGZ / Resolved) RA & RF(RGZ / Resolved) Dec \\
       \hline
-      ATLAS~C123 & SWIRE~123 & SWIRE~124 & 0.5 & SWIRE~123 & SWIRE~125 & ... \\
+ATLAS3\textunderscore{}J032602.82-284708.1C & 51.511734 & -28.785575 & CI0412 & ARG0003rb2 & SWIRE3\textunderscore{}J032603.15-284708.5 & 51.5132 & -28.7857 & -99 & None & None & 0.4516 & 0.3214 & SWIRE3\textunderscore{}J032602.36-284711.5 & 51.5098 & -28.7865 & SWIRE3\textunderscore{}J032602.36-284711.5 & 51.5098 & -28.7865 & SWIRE3\textunderscore{}J032602.36-284711.5 & 51.5098 & -28.7865 & SWIRE3\textunderscore{}J032602.36-284711.5 & 51.5098 & -28.7865 & SWIRE3\textunderscore{}J032604.58-284650.9 & 51.5191 & -28.7808 & SWIRE3\textunderscore{}J032602.08-284713.1 & 51.5087 & -28.787 & SWIRE3\textunderscore{}J032602.36-284711.5 & 51.5098 & -28.7865 & SWIRE3\textunderscore{}J032602.36-284711.5 & 51.5098 & -28.7865 & SWIRE3\textunderscore{}J032603.15-284708.5 & 51.5132 & -28.7857 & SWIRE3\textunderscore{}J032602.36-284711.5 & 51.5098 & -28.7865 & SWIRE3\textunderscore{}J032602.36-284711.5 & 51.5098 & -28.7865 & SWIRE3\textunderscore{}J032602.36-284711.5 & 51.5098 & -28.7865 \\
+ATLAS3\textunderscore{}J032615.49-284629.4C & 51.564555 & -28.774847 & CI0614 & ARG0003rfr & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & 0.2941 & 0.8000 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 & SWIRE3\textunderscore{}J032615.41-284630.7 & 51.5642 & -28.7752 \\
+ATLAS3\textunderscore{}J032615.55-280559.8C & 51.564799 & -28.099955 & CI0320 & ARG0003r8s & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & 0.5625 & 0.8333 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 & SWIRE3\textunderscore{}J032615.52-280559.8 & 51.5647 & -28.1 \\
+ATLAS3\textunderscore{}J032617.35-280710.2C & 51.572279 & -28.119491 & CI0059C1 & ARG0003r2j & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 & 0.4146 & 1.0000 & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 & SWIRE3\textunderscore{}J032615.86-280628.8 & 51.5661 & -28.108 & SWIRE3\textunderscore{}J032615.16-280742.2 & 51.5632 & -28.1284 & SWIRE3\textunderscore{}J032615.86-280628.8 & 51.5661 & -28.108 & SWIRE3\textunderscore{}J032618.84-280722.6 & 51.5785 & -28.123 & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 & SWIRE3\textunderscore{}J032617.89-280707.2 & 51.5746 & -28.1187 \\
+ATLAS3\textunderscore{}J032625.13-280909.8C & 51.604711 & -28.152731 & CI0409 & ARG0003raz & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & 0.3158 & 0.6667 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032624.50-280905.9 & 51.6021 & -28.1517 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 & SWIRE3\textunderscore{}J032625.19-280910.1 & 51.605 & -28.1528 \\
+ATLAS3\textunderscore{}J032629.10-280650.1C & 51.621251 & -28.113924 & CI0963 & ARG0003ro4 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032626.74-280636.7 & 51.6114 & -28.1102 & 0.3333 & 1.0000 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 & SWIRE3\textunderscore{}J032629.13-280650.7 & 51.6214 & -28.1141 \\
+ATLAS3\textunderscore{}J032629.61-284052.7C & 51.623385 & -28.681315 & CI0304 & ARG0003r8e & SWIRE3\textunderscore{}J032629.54-284055.8 & 51.6231 & -28.6822 & SWIRE3\textunderscore{}J032629.54-284055.8 & 51.6231 & -28.6822 & 0.2676 & 1.0000 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 & SWIRE3\textunderscore{}J032629.54-284051.9 & 51.6231 & -28.6811 \\
+ATLAS3\textunderscore{}J032629.92-284753.5C & 51.624653 & -28.798195 & CI0120 & ARG0003r3w & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & 1.0000 & 0.8571 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032630.12-284751.2 & 51.6255 & -28.7976 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 & SWIRE3\textunderscore{}J032629.81-284754.4 & 51.6242 & -28.7985 \\
+ATLAS3\textunderscore{}J032630.66-283657.3C & 51.62777 & -28.615917 & CI0172C1 & ARG0003r55 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032628.56-283744.8 & 51.619 & -28.6291 & 0.3611 & 0.7308 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 & SWIRE3\textunderscore{}J032630.64-283658.0 & 51.6277 & -28.6161 \\
+ATLAS3\textunderscore{}J032634.59-282022.8C & 51.644117 & -28.339678 & CI0757 & ARG0003rj2 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032631.96-281941.0 & 51.6332 & -28.3281 & 0.5781 & 0.5405 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 & SWIRE3\textunderscore{}J032634.58-282022.8 & 51.6441 & -28.3397 \\
       \hline
     \end{tabular}
   \end{table*}
@@ -1521,11 +1586,20 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   \begin{table*}
     \caption{\todo{Cross-identifications for ATLAS~ELAIS-S1 components.}}
     \label{tab:elais-xids}
-    \begin{tabular}{cccccc}
+    \begin{tabular}{ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc}
       \hline
-      ATLAS & Expert SWIRE & LR(Norris) 0 & LR(Norris) 1 & ... \\
+ATLAS & RA & Dec & CID & Zooniverse ID & Middelberg & Middelberg RA & Middelberg Dec & RGZ & RGZ RA & RGZ Dec & RGZ radio consensus & RGZ IR consensus & CNN(Norris / All) & CNN(Norris / All) RA & CNN(Norris / All) Dec & CNN(Norris / Compact) & CNN(Norris / Compact) RA & CNN(Norris / Compact) Dec & CNN(Norris / Resolved) & CNN(Norris / Resolved) RA & CNN(Norris / Resolved) Dec & CNN(RGZ / All) & CNN(RGZ / All) RA & CNN(RGZ / All) Dec & CNN(RGZ / Compact) & CNN(RGZ / Compact) RA & CNN(RGZ / Compact) Dec & CNN(RGZ / Resolved) & CNN(RGZ / Resolved) RA & CNN(RGZ / Resolved) Dec & LR(Norris / All) & LR(Norris / All) RA & LR(Norris / All) Dec & LR(Norris / Compact) & LR(Norris / Compact) RA & LR(Norris / Compact) Dec & LR(Norris / Resolved) & LR(Norris / Resolved) RA & LR(Norris / Resolved) Dec & LR(RGZ / All) & LR(RGZ / All) RA & LR(RGZ / All) Dec & LR(RGZ / Compact) & LR(RGZ / Compact) RA & LR(RGZ / Compact) Dec & LR(RGZ / Resolved) & LR(RGZ / Resolved) RA & LR(RGZ / Resolved) Dec & RF(Norris / All) & RF(Norris / All) RA & RF(Norris / All) Dec & RF(Norris / Compact) & RF(Norris / Compact) RA & RF(Norris / Compact) Dec & RF(Norris / Resolved) & RF(Norris / Resolved) RA & RF(Norris / Resolved) Dec & RF(RGZ / All) & RF(RGZ / All) RA & RF(RGZ / All) Dec & RF(RGZ / Compact) & RF(RGZ / Compact) RA & RF(RGZ / Compact) Dec & RF(RGZ / Resolved) & RF(RGZ / Resolved) RA & RF(RGZ / Resolved) Dec \\
       \hline
-      ATLAS~E321 & SWIRE~321 & SWIRE~321 & SWIRE~325 & ... \\
+J002925.68-440256.8 & 7.35702083333 & -44.049125 & C0375 &  & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 & SWIRE3\textunderscore{}J002925.73-440256.2 & 7.35721 & -44.049 \\
+J002938.19-432946.7 & 7.40915416667 & -43.4963111111 & C0832 &  & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002937.50-432945.4 & 7.40627 & -43.4959 & SWIRE3\textunderscore{}J002937.50-432945.4 & 7.40627 & -43.4959 & SWIRE3\textunderscore{}J002937.50-432945.4 & 7.40627 & -43.4959 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 & SWIRE3\textunderscore{}J002938.07-432947.9 & 7.40866 & -43.4967 \\
+J002940.13-440309.2 & 7.41724583333 & -44.0525583333 & C0374 &  & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 & SWIRE3\textunderscore{}J002940.19-440309.6 & 7.41749 & -44.0527 \\
+J002943.14-440812.3 & 7.42978333333 & -44.1367638889 & C0302 &  & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 & SWIRE3\textunderscore{}J002943.15-440813.6 & 7.4298 & -44.1371 \\
+J002944.51-433627.8 & 7.43547916667 & -43.6077388889 & C0727 &  & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 & SWIRE3\textunderscore{}J002944.36-433630.2 & 7.43484 & -43.6084 \\
+J002945.31-432148.5 & 7.43881666667 & -43.363475 & C0943.1 &  & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 \\
+J002946.14-432149.1 & 7.44227083333 & -43.3636416667 & C0943 &  & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 & SWIRE3\textunderscore{}J002945.64-432149.3 & 7.44019 & -43.3637 \\
+J002949.89-440541.4 & 7.457875 & -44.0948416667 & C0345 &  &  & None & None &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.44-440546.1 & 7.46437 & -44.0962 & SWIRE3\textunderscore{}J002951.44-440546.1 & 7.46437 & -44.0962 & SWIRE3\textunderscore{}J002951.44-440546.1 & 7.46437 & -44.0962 & SWIRE3\textunderscore{}J002951.44-440546.1 & 7.46437 & -44.0962 & SWIRE3\textunderscore{}J002951.44-440546.1 & 7.46437 & -44.0962 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002949.13-440536.5 & 7.45473 & -44.0935 & SWIRE3\textunderscore{}J002949.13-440536.5 & 7.45473 & -44.0935 & SWIRE3\textunderscore{}J002949.13-440536.5 & 7.45473 & -44.0935 \\
+J002951.13-432354.3 & 7.4630625 & -43.398425 & C0924 &  & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 & SWIRE3\textunderscore{}J002951.14-432355.3 & 7.46309 & -43.3987 \\
+J002951.19-440556.6 & 7.46332083333 & -44.0990638889 & C0342 &  & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 &  & None & None & 0.0000 & 0.0000 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.44-440546.1 & 7.46437 & -44.0962 & SWIRE3\textunderscore{}J002951.51-440617.1 & 7.46463 & -44.1048 & SWIRE3\textunderscore{}J002951.51-440617.1 & 7.46463 & -44.1048 & SWIRE3\textunderscore{}J002951.44-440546.1 & 7.46437 & -44.0962 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 & SWIRE3\textunderscore{}J002951.26-440556.4 & 7.4636 & -44.099 \\
       \hline
     \end{tabular}
   \end{table*}
