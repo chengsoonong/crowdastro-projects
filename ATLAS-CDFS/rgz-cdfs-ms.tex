@@ -216,8 +216,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   observations of the \emph{Chandra} Deep Field South (CDFS) and the ESO Large Area ISO Survey South 1 (ELAIS-S1) field. Our data, code and results are
   available at \url{https://radiogalaxyzoo.github.io/atlas-xid}.
 
-  \edited{Throughout this paper, a `radio source' refers to all radio emission observed from
-  a physical entity, and a `radio component' refers to a single connected
+  \edited{Throughout this paper, a `radio source' refers to all radio emission observed associated with a single host galaxy, and a `radio component' refers to a single, contiguous
   region of radio emission. Multiple components may arise from a single
   source. A `compact' source is composed of a \edited{single unresolved component} and we
   assume that all unresolved components are compact sources. \edited{We define a resolved component in \autoref{eq:compact}.} An `extended'
@@ -442,11 +441,11 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     and to cross-identify a radio component we find the candidate host galaxy
     maximising the positive class probability. In other words,
     the binary classifier is exactly the sliding-window scoring function. We therefore split
-    cross-identification into two separate tasks: the `galaxy
+    cross-identification into two separate tasks: the `candidate
     classification task' where, given a candidate host galaxy, we wish to
     determine whether it is a host galaxy of \emph{any} radio component; and
     the `cross-identification task' where, given a specific radio
-    component, we wish to find its host galaxy. The galaxy classification task
+    component, we wish to find its host galaxy. The candidate classification task
     is a traditional machine learning problem which results in a binary
     classifier. To avoid ambiguity and recognise that the values output by a
     binary classifier are not true probabilities, we will refer to the outputs
@@ -471,7 +470,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     with dependence on radio object would be impossible to train. We
     need multiple positive examples (i.e. host galaxies) to train a binary classifier, but
     for any specific radio component there is only one host galaxy. As a
-    result, the galaxy classification task aims to answer the general question
+    result, the candidate classification task aims to answer the general question
     of whether a given galaxy is the host galaxy of \emph{any} radio
     component, while the cross-identification task attempts to cross-identify
     a \emph{specific} radio component. To distinguish between candidate host
@@ -488,7 +487,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     host galaxy and its radio components and the angular resolution of the survey.}
 
     \edited{We can improve upon this method by cross-identifying compact radio sources
-    separately to extended sources, as compact sources are much easier to
+    separately from extended sources, as compact sources are much easier to
     cross-identify. For a compact source, the nearest SWIRE object may be
     identified as the host galaxy (a \emph{nearest-neighbours} approach), or a
     more complex method such as likelihood ratios may be applied
@@ -540,7 +539,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \end{figure}
 
     We make a number of assumptions to relate the cross-identification task to
-    the galaxy classification task:
+    the candidate classification task:
     \begin{enumerate}
       \item \edited{For any radio component, the $2' \times 2'$ image centred on the component contains components of only one radio source.}
       \item \edited{For any radio component, the $2' \times 2'$ image centred on the component contains all components of this source.}
@@ -771,7 +770,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     Candidate hosts were selected from the SWIRE catalogue. For a given subset
     of radio components, all SWIRE objects within 1~arcmin of all radio
     components in the subset were added to the associated SWIRE subset. In results
-    for the galaxy classification task, we refer to SWIRE objects
+    for the candidate classification task, we refer to SWIRE objects
     within 1~arcmin of a compact radio component as part of the `compact set',
     and SWIRE objects within 1~arcmin of a resolved radio component as part of
     the `resolved set'.
@@ -787,7 +786,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     to the expert labels. We then computed the `balanced accuracy' of these predicted labels.} Balanced
     accuracy is the average of the accuracy on the positive class and the
     accuracy on the negative class, and is not sensitive to class imbalance.
-    The galaxy classification task has highly imbalanced classes --- in our
+    The candidate classification task has highly imbalanced classes --- in our
     total set of SWIRE objects within 1~arcmin of an ATLAS object, only 4 per
     cent have positive labels. \edited{Our threshold was chosen to maximise the balanced
     accuracy on predicted labels of the training set.} Only examples within 1~arcmin of ATLAS objects
@@ -818,8 +817,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{figure}
       \centering
       \includegraphics[width=\columnwidth]{images/gct-to-xid.pdf}
-      \caption{Balanced accuracy on the galaxy classification task (GCT) plotted
-      against accuracy on the cross-identification task (X-ID). `RF' indicates
+      \caption{Balanced accuracy on the candidate classification task plotted
+      against accuracy on the cross-identification task. `RF' indicates
       results from random forests, and `LR' indicates results from logistic
       regression. Binary classifiers were trained on random, small subsets of the
       training data to artificially restrict their accuracies. Colour shows
@@ -827,8 +826,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       estimate. The solid lines indicate the best linear fit; these fits have
       $R^2 = 0.92$ for logistic regression and $R^2 = 0.87$ for random
       forests.
-      \edited{The dashed line shows the line where X-ID accuracy and GCT balanced accuracy are equal.}
-       We did not include convolutional neural networks in this test,
+      \edited{The dashed line shows the line where cross-identification accuracy and candidate classification accuracy are equal.}
+      We did not include convolutional neural networks in this test,
       as training them is very computationally expensive. There are 640 trials shown per classification model. These results
       exclude binary classifiers with balanced accuracies less than 51 per cent, as
       these are essentially random.
@@ -838,8 +837,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{figure}
       \centering
       \includegraphics[width=\columnwidth]{images/positives.pdf}
-      \caption{ATLAS3~J032929.61-281938.9. Radio Galaxy Zoo host galaxies
-      are marked by crosses. SWIRE candidate host galaxies are circles coloured by \edited{the score output by a logistic regression binary classifier. The scores are thresholded to obtain labels, as when we compute balanced accuracy.} Orange circles have been assigned a `positive' label by a logistic regression binary classifier and white otherwise.
+      \caption{Predicted host galaxies in the candidate classification task for ATLAS3~J032929.61-281938.9. Radio Galaxy Zoo host galaxies
+      are marked by crosses. SWIRE candidate host galaxies are circles coloured by \edited{the score output by a logistic regression binary classifier. The scores are thresholded to obtain labels, as when we compute balanced accuracy.} Orange circles have been assigned a `positive' label by a logistic regression binary classifier and white otherwise. \edited{Note that there are more predicted host galaxies than there are radio components, so not all of the predicted host galaxies would be assigned as host galaxies in the cross-identification task.}
       \label{fig:positives}}
     \end{figure}
 
@@ -867,9 +866,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \end{figure*}
 
     \edited{We can assess trained binary classifiers either by their performance on
-    the galaxy classification task or by their performance on the
+    the candidate classification task or by their performance on the
     cross-identification task when used in our method. Both performances are
-    useful: performance on the galaxy classification task provides a robust
+    useful: performance on the candidate classification task provides a robust
     and simple way to compare binary classifiers without the limitations of
     our specific formulation, and performance on the cross-identification task
     can be compared with other cross-identification methods. We therefore
@@ -878,12 +877,12 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     accuracy measures are correlated and we show this correlation in
     \autoref{fig:gct-to-xid}. Fitting a line of best fit with \texttt{scipy}
     gives $R^2 = 0.92$ for logistic regression and $R^2 = 0.87$ for random
-    forests. While performance on the galaxy classification task is correlated
+    forests. While performance on the candidate classification task is correlated
     with performance on the cross-identification task, balanced accuracy does
     not completely capture the effectiveness of a binary classifier applied to
     the cross-identification task. \edited{This is because while our binary
     classifiers output real-valued scores, these scores are thresholded to
-    compute the balanced accuracy}. In the galaxy classification
+    compute the balanced accuracy}. In the candidate classification
     task, the binary classifier only needs to ensure that host galaxies are
     \edited{scored higher} than non-host galaxies. This means
     \edited{that after thresholding} there can be
@@ -895,14 +894,14 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     as hosts.}
 
     In \autoref{fig:ba} we plot \edited{the balanced accuracies of our classification models
-    on the galaxy classification task and the cross-identification
+    on the candidate classification task and the cross-identification
     accuracies of our method using each of these models. Results are shown for both
     the resolved and compact sets.} For comparison, we also plot the cross-identification accuracy of Radio Galaxy
     Zoo and a nearest-neighbours approach, as well as estimates for upper and
     lower limits on the cross-identification accuracy. \edited{We estimate the upper limit on performance by assigning all
     true host galaxies a score of 1 and
     assigning all other candidate host galaxies a score of 0. This
-    is equivalent to `perfectly' solving the galaxy classification task and so
+    is equivalent to `perfectly' solving the candidate classification task and so
     represents the best possible cross-identification performance achievable
     with our method. We estimate the lower limit on performance by \edited{
     assigning random scores to each candidate host galaxy}. We expect any
@@ -950,7 +949,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     method may be useful provided that a good binary classifier can be
     trained. The most obvious place for improvement is in feature selection:
     we use pixels of radio images directly and these are likely not conducive
-    to good performance on the galaxy classification task. Convolutional
+    to good performance on the candidate classification task. Convolutional
     neural networks, which are able to extract features from images,
     \emph{should} work better, but these require far more training data than
     the other methods we have applied and the small size of ATLAS thus limits their performance.
@@ -1031,7 +1030,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   determine how accurate our method is. If our method generalises well across
   different parts of the sky, then we expect CDFS-trained classifiers to have
   comparable performance between ELAIS-S1 and CDFS}. In \autoref{fig:elais-ba}
-  we plot the performance of CDFS-trained classification models on the galaxy classification task and
+  we plot the performance of CDFS-trained classification models on the candidate classification task and
   the performance of our method on the cross-identification task using these models. We also plot
   the cross-identification accuracy of a nearest-neighbours approach\footnote{\edited{We cannot
   directly compare our method applied to ELAIS-S1 with Radio Galaxy Zoo, as
