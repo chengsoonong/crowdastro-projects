@@ -29,9 +29,8 @@
 \newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng TODO:~{#1}}]} }
 \newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
-\newcommand{\edited}[1]{{\bf {#1}}}
-% \newcommand{\edited}[1]{#1}
-\newcommand{\edit}[1]{{\bf Edit:~{#1}}}
+% \newcommand{\edited}[1]{{\bf {#1}}}
+\newcommand{\edited}[1]{#1}
 
 \newcommand{\underset}[2]{\mathop{#2}\limits_{#1}}
 
@@ -283,7 +282,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
     SWIRE is a wide-area infrared
     survey at the four IRAC wavelengths 3.6, 4.5, 5.8, and
-    \unit{8.0}{\micro\meter} \citep{onsdale03swire, surace05swire}. It covers eight fields, including CDFS and ELAIS-S1. SWIRE is the source of infrared
+    \unit{8.0}{\micro\meter} \citep{lonsdale03swire, surace05swire}. It covers eight fields, including CDFS and ELAIS-S1. SWIRE is the source of infrared
     observations for cross-identification with ATLAS. SWIRE has catalogued 221,~535
     infrared objects in CDFS and 186,~059 infrared objects in ELAIS-S1 above a signal-to-noise ratio of 5.
 
@@ -622,8 +621,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     traces strong PAH emission at low redshift \citep{Sajina2005}. The
     stellarity index \edited{is a value in the SWIRE catalogue that represents how likely the object is to be a star rather
     than a galaxy \citep{surace05swire}. It was estimated by a neural network in
-    \texttt{SExtractor} \citep{bertin96sextractor}}. \todo{Why do we care about these for hostiness?
-    What does the flux at 3.6 trace? (The flux at 3.6 is just the brightness of the galaxy.)}
+    \texttt{SExtractor} \citep{bertin96sextractor}}.
 
     We use the $32 \times 32$ pixels of each radio window as independent
     features for all binary classification models, with the convolutional neural
