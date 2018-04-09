@@ -111,8 +111,7 @@ $^{10}$School of Natural Sciences, University of Tasmania, Private Bag 37, Hobar
   Zoo. \edited{We found that a simple strategy of cross-identifying a radio component
   with the nearest galaxy performs comparably to our more complex machine learning methods, though our estimated best-case performance is near 100 per cent.
   ATLAS contains 87 complex radio sources that have been cross-identified by experts,
-  so our method does not see enough
-  complex examples to learn how to cross-identify them accurately. Much larger
+  so there are not enough complex examples to learn how to cross-identify them accurately. Much larger
   datasets are therefore required for training methods like ours. We also show
   that training our method on Radio Galaxy Zoo cross-identifications gives
   comparable results to training our method on expert cross-identifications,
@@ -151,16 +150,15 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
   In the presence of extended radio emission cross-identification of the host can be a
   difficult task. \edited{Radio emission may extend far from the host galaxy
-  and emission regions from a single physical object may appear disconnected
-  due to interferometry `resolving out' diffuse structure. As a result, the
+  and emission regions from a single physical object may appear disconnected. As a result, the
   observed structure of a radio source may have a complex relationship
   with the corresponding host galaxy, and cross-identification in radio is
   much more difficult than cross-identification at shorter wavelengths.} Small surveys
   containing a few thousand sources such as the Australia Telescope Large Area Survey
   \citep[ATLAS;][]{norris06, middelberg08} can be cross-identified manually,
-  but this is impractical for larger surveys. New approaches must be found.
+  but this is impractical for larger surveys.
 
-  One approach to cross-identification is crowdsourcing, where volunteers
+  One approach to cross-identification of large numbers of sources is crowdsourcing, where volunteers
   cross-identify radio sources with their host galaxy. This is the premise of Radio Galaxy
   Zoo\footnote{\url{https://radio.galaxyzoo.org}} \citep{banfield15}, a
   citizen science project hosted on the Zooniverse platform \citep{lintott08}.
@@ -283,8 +281,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     SWIRE is a wide-area infrared
     survey at the four IRAC wavelengths 3.6, 4.5, 5.8, and
     \unit{8.0}{\micro\meter} \citep{lonsdale03swire, surace05swire}. It covers eight fields, including CDFS and ELAIS-S1. SWIRE is the source of infrared
-    observations for cross-identification with ATLAS. SWIRE has catalogued 221,~535
-    infrared objects in CDFS and 186,~059 infrared objects in ELAIS-S1 above a signal-to-noise ratio of 5.
+    observations for cross-identification with ATLAS. SWIRE has catalogued 221,535
+    infrared objects in CDFS and 186,059 infrared objects in ELAIS-S1 above a signal-to-noise ratio of 5.
 
   \subsection{Radio Galaxy Zoo}\label{sec:rgz}
 
@@ -316,7 +314,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \centering
       \includegraphics[width=\columnwidth]{images/figure_example_of_method.pdf}
       \caption{An example of \edited{finding} the host galaxy of a radio source using
-        our sliding-window method. The background image is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio data and increase geometrically from a signal-to-noise ratio of 4. Boxes represent `windows'
+        our sliding-window method. The background image is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio data and start at $4\sigma$, increasing geometrically by a factor of 2. Boxes represent `windows'
         centred on \edited{candidate host galaxies, which are circled. The pixels in each window are used to represent the candidate that the window is centred
         on. The scores of each candidate would be calculated by a binary classifier using the window as input,
         and these scores are shown below each window}. The scores
@@ -505,8 +503,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         sources within 1~arcmin of the source. Another radio source is visible
         to the upper-left. Host galaxies found by Radio Galaxy Zoo volunteers
         are shown by crosses. \edited{The background image
-        is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio
-        data and increase geometrically from a signal-to-noise ratio of 4.}}
+        is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio data and start at $4\sigma$, increasing geometrically by a factor of 2.}}
       \label{fig:broken-isolation}
     \end{figure}
 
@@ -516,8 +513,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
       \caption{An example of a radio source where the window centred on the
         host galaxy, shown as a rectangle, does not contain enough radio
         information to correctly identify the galaxy as the host. \edited{The background image
-        is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio
-        data and increase geometrically from a signal-to-noise ratio of 4.}}
+        is a \unit{3.6}{\micro\meter} image from SWIRE. The contours show ATLAS radio data and start at $4\sigma$, increasing geometrically by a factor of 2.}}
       \label{fig:broken-window-size}
     \end{figure}
 
@@ -533,7 +529,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
         the $3'$-wide image may be unable to determine that this is a radio
         double or locate the host galaxy. \edited{The background image
         is a \unit{3.4}{\micro\meter} image from \emph{WISE}. The contours show FIRST radio
-        data and increase geometrically from a signal-to-noise ratio of 4.}}
+        data, starting at $4\sigma$ and increasing geometrically by a factor of 2.}}
       \label{fig:broken-contains}
     \end{figure}
 
@@ -542,8 +538,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{enumerate}
       \item \edited{For any radio component, the $2' \times 2'$ image centred on the component contains components of only one radio source.}
       \item \edited{For any radio component, the $2' \times 2'$ image centred on the component contains all components of this source.}
-      \item The host galaxy of a radio component is within the 1~arcmin \edited{search radius around} the
-        component.
+      \item The host galaxy of a radio component is within the 1~arcmin \edited{search radius around the component, measured from the centre of the Gaussian fit}.
       \item The host galaxy of a radio component is closer on the sky to the
         radio component than the host galaxy of any other radio component.
       \item The host galaxy appears in the SWIRE catalogue.
@@ -835,7 +830,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     \begin{figure}
       \centering
       \includegraphics[width=\columnwidth]{images/positives.pdf}
-      \caption{Predicted host galaxies in the candidate classification task for ATLAS3~J032929.61-281938.9. Radio Galaxy Zoo host galaxies
+      \caption{Predicted host galaxies in the candidate classification task for ATLAS3~J032929.61-281938.9. \edited{The background image is an ATLAS radio image.} Radio Galaxy Zoo host galaxies
       are marked by crosses. SWIRE candidate host galaxies are circles coloured by \edited{the score output by a logistic regression binary classifier. The scores are thresholded to obtain labels, as when we compute balanced accuracy.} Orange circles have been assigned a `positive' label by a logistic regression binary classifier and white otherwise. \edited{Note that there are more predicted host galaxies than there are radio components, so not all of the predicted host galaxies would be assigned as host galaxies in the cross-identification task.}
       \label{fig:positives}}
     \end{figure}
@@ -1196,8 +1191,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     patch of sky is a feasible option for training machine learning methods
     for wide-area radio surveys;
     \item Performance was comparable to nearest-neighbours even on resolved
-    sources, showing that nearest-neighbours is useful for largely unresolved
-    datasets such as ATLAS and EMU;
+    sources, showing that nearest-neighbours is useful for datasets consisting
+    mostly of unresolved sources such as ATLAS and EMU;
     \item Radio Galaxy Zoo-trained models performed comparably to
     expert-trained models and outperformed Radio Galaxy Zoo, showing that
     crowdsourced labels are useful for training machine learning methods for
@@ -1327,10 +1322,10 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
   This section contains tables of accuracy for our method applied to CDFS and
   ELAIS-S1. In \autoref{tab:cdfs-ba} and \autoref{tab:elais-ba} we list the
   balanced accuracies of classifiers on the cross-identification task for CDFS
-  and ELAIS-S1 respectively, averaged over each quadrant. In
+  and ELAIS-S1 respectively, averaged over each set of training quadrants. In
   \autoref{tab:cdfs-acc} and \autoref{tab:elais-acc} we list the balanced
   accuracies of classifiers on the cross-identification task for CDFS and
-  ELAIS-S1 respectively, averaged over each quadrant.
+  ELAIS-S1 respectively, averaged over each set of training quadrants.
 
   \begin{table*}
     \caption{Balanced accuracies for different binary classification models trained and tested on SWIRE objects in CDFS.
@@ -1360,15 +1355,9 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
   \begin{table*}
     \caption{Balanced accuracies for different binary classification models trained on SWIRE objects
-    in CDFS and tested on SWIRE objects in ELAIS-S1.
-    The `Labeller' column states what set of training labels
-    were used to train the classifier, and the `Classifier' column states what
-    classification model was used. `CNN' is a convolutional neural network,
-    `LR' is logistic regression and `RF' is random forests. Accuracies are evaluated against the expert
-    label set derived from \citet{middelberg08}. The standard deviation of balanced accuracies evaluated across the four quadrants of
-    CDFS (\autoref{fig:quadrants}) is also shown. The `compact' set refers to SWIRE
-    objects within $1'$ of a compact radio component, the `resolved' set refers to
-    SWIRE objects within $1'$ of a resolved radio component, and `all' is the union of these sets.}
+    in CDFS and tested on SWIRE objects in ELAIS-S1. Columns and abbreviations are as in \autoref{tab:cdfs-ba}. Accuracies are evaluated against the expert
+    label set derived from \citet{middelberg08}. The standard deviations of balanced accuracies of models trained on the four subsets of
+    CDFS (\autoref{fig:quadrants}) are also shown.}
     \label{tab:elais-ba}
     \begin{tabular}{ccccc}
       \hline
@@ -1598,7 +1587,7 @@ J002951.19-440556.6 & 7.4633 & -44.0991 & C0342 &  & J002951.26-440556.4 & 7.463
 
       \subfloat[]{\includegraphics{images/examples_all/example_sorted_4_264.pdf}}%
       \subfloat[]{\includegraphics{images/examples_all/example_sorted_5_207.pdf}}
-      \caption{\label{fig:examples} Examples of resolved sources with high disagreement between cross-identifiers. The contours show ATLAS radio data and increase geometrically from a signal-to-noise ratio of 4. The background image is the \unit{3.6}{\micro\meter} SWIRE image. Binary classifier model/training set combinations are denoted $C(S)$ where $C$ is the binary classifier model and $S$ is the training set. `LR' is logistic regression, `CNN' is convolutional neural networks, and `RF' is random forests. `Norris' refers to the expert labels and `RGZ' refers to the Radio Galaxy Zoo labels. The cross-identification made by nearest-neighbours is shown by `NN'. More examples are available electronically.}
+      \caption{\label{fig:examples} Examples of resolved sources with high disagreement between cross-identifiers. The contours show ATLAS radio data and start at $4\sigma$, increasing geometrically by a factor of 2. The background image is the \unit{3.6}{\micro\meter} SWIRE image. Binary classifier model/training set combinations are denoted $C(S)$ where $C$ is the binary classifier model and $S$ is the training set. `LR' is logistic regression, `CNN' is convolutional neural networks, and `RF' is random forests. `Norris' refers to the expert labels and `RGZ' refers to the Radio Galaxy Zoo labels. The cross-identification made by nearest-neighbours is shown by `NN'. An additional 464 examples are available in the supplementary information.}
     \end{figure*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
