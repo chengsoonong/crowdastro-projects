@@ -1229,7 +1229,7 @@ def unserialise_cross_identifications(
     if quadrants is None:
         quadrants = [0, 1, 2, 3]
     if dataset_names is None:
-        dataset_names = [n for n in sorted(SET_NAMES) if 'resolved' in n or 'compact' in n]
+        dataset_names = [n for n in sorted(SET_NAMES)]
     for quadrant in quadrants:
         for dataset_name in dataset_names:
             filename = '{}_{}_{}.h5'.format(base_path, quadrant, dataset_name)
@@ -1245,9 +1245,7 @@ def unserialise_predictions(
     if quadrants is None:
         quadrants = [0, 1, 2, 3]
     if dataset_names is None:
-        # Only include predictions that are for resolved or compact subsets.
-        # We don't care about predictions for other sets.
-        dataset_names = [n for n in sorted(SET_NAMES) if 'resolved' in n or 'compact' in n]
+        dataset_names = [n for n in sorted(SET_NAMES)]
     for quadrant in quadrants:
         for dataset_name in dataset_names:
             filename = '{}_{}_{}.h5'.format(base_path, quadrant, dataset_name)
