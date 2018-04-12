@@ -50,6 +50,8 @@ def print_table(field='cdfs'):
 
     predictions_map = collections.defaultdict(dict) # SWIRE -> predictor -> probability
     swire_coords_map = {}
+    swire_expert_map = {}
+    swire_rgz_map = {}
     known_predictors = set()
 
     for classifier, predictions_ in [['LR', lr_predictions], ['CNN', cnn_predictions], ['RF', rf_predictions]]:
@@ -64,14 +66,18 @@ def print_table(field='cdfs'):
             if field == 'cdfs':
                 swire_names_ = swire_names[swire_test_sets[:, pipeline.SET_NAMES['RGZ'], predictions.quadrant]]
                 swire_coords_ = swire_coords[swire_test_sets[:, pipeline.SET_NAMES['RGZ'], predictions.quadrant]]
+                swire_labels_ = swire_labels[swire_test_sets[:, pipeline.SET_NAMES['RGZ'], predictions.quadrant]]
             else:
                 swire_names_ = swire_names[swire_test_sets[:, 0, 0]]
                 swire_coords_ = swire_coords[swire_test_sets[:, 0, 0]]
+                swire_labels_ = swire_labels[swire_test_sets[:, 0, 0]]
             assert predictions.probabilities.shape[0] == len(swire_names_), \
                 'expected {}, got {}'.format(predictions.probabilities.shape[0], len(swire_names_))
-            for name, coords, prediction in zip(swire_names_, swire_coords_, predictions.probabilities):
+            for name, coords, prediction, label in zip(swire_names_, swire_coords_, predictions.probabilities, swire_labels_):
                 predictions_map[name][predictor_name] = prediction
                 swire_coords_map[name] = coords
+                swire_expert_map[name] = label[0]
+                swire_rgz_map[name] = label[1]
             known_predictors.add(predictor_name)
 
     known_predictors = sorted(known_predictors)
@@ -79,20 +85,24 @@ def print_table(field='cdfs'):
     swires = sorted(predictions_map)
     ras = []
     decs = []
+    is_expert_host = []
+    is_rgz_host = []
     predictor_columns = collections.defaultdict(list)
     for swire in swires:
         for predictor in known_predictors:
             predictor_columns[predictor].append(predictions_map[swire].get(predictor, ''))
         ras.append(swire_coords_map[swire][0])
         decs.append(swire_coords_map[swire][1])
+        is_expert_host.append(['no', 'yes'][swire_expert_map[swire]])
+        is_rgz_host.append(['no', 'yes'][swire_rgz_map[swire]])
 
     table = astropy.table.Table(
-        data=[swires, ras, decs] + [predictor_columns[p] for p in known_predictors],
-        names=['SWIRE', 'RA', 'Dec'] + known_predictors)
-    table.write('/Users/alger/data/Crowdastro/predicted_swire_table_{}_30_10_17.csv'.format(field), format='csv')
+        data=[swires, ras, decs, is_expert_host, is_rgz_host] + [predictor_columns[p] for p in known_predictors],
+        names=['SWIRE', 'RA', 'Dec', 'Expert host', 'RGZ host'] + known_predictors)
+    table.write('/Users/alger/data/Crowdastro/predicted_swire_table_{}_21_03_18.csv'.format(field), format='csv')
     for p in known_predictors:
         table[p].format = '{:.4f}'
-    table.write('/Users/alger/data/Crowdastro/predicted_swire_table_{}_30_10_17.tex'.format(field), format='latex')
+    table.write('/Users/alger/data/Crowdastro/predicted_swire_table_{}_21_03_18.tex'.format(field), format='latex')
 
 
 if __name__ == '__main__':

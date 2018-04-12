@@ -29,8 +29,8 @@
 \newcommand{\cheng}[1]{ {\color{teal}[{\bf Cheng TODO:~{#1}}]} }
 \newcommand{\matthew}[2]{ {\color{white!20!violet}[{\bf TODO(#1):~{#2}}]} }
 \newcommand{\todo}[1]{ {\color{red}[{\bf TODO:~{#1}}]} }
-\newcommand{\edited}[1]{{\bf {#1}}}
-% \newcommand{\edited}[1]{#1}
+% \newcommand{\edited}[1]{{\bf {#1}}}
+\newcommand{\edited}[1]{#1}
 
 \newcommand{\underset}[2]{\mathop{#2}\limits_{#1}}
 
@@ -94,8 +94,7 @@ $^{10}$School of Natural Sciences, University of Tasmania, Private Bag 37, Hobar
 % Abstract of the paper
 \begin{abstract}
   We consider the problem of determining the host galaxies of radio sources by
-  cross-identification. This has traditionally been done by eye and expert
-  judgement, a method that will be intractable for wide-area radio surveys
+  cross-identification. This has traditionally been done manually, which will be intractable for wide-area radio surveys
   like the Evolutionary Map of the Universe (EMU). \edited{Automated
   cross-identification will be critical for these future surveys, and machine
   learning may provide the tools to develop such methods. We apply a standard
@@ -109,12 +108,12 @@ $^{10}$School of Natural Sciences, University of Tasmania, Private Bag 37, Hobar
   data: expert cross-identifications of CDFS from the initial ATLAS data
   release and crowdsourced cross-identifications of CDFS from Radio Galaxy
   Zoo. \edited{We found that a simple strategy of cross-identifying a radio component
-  with the nearest galaxy performs comparably to our more complex machine learning methods, though our estimated best-case performance is near 100 per cent.
+  with the nearest galaxy performs comparably to our more complex methods, though our estimated best-case performance is near 100 per cent.
   ATLAS contains 87 complex radio sources that have been cross-identified by experts,
   so there are not enough complex examples to learn how to cross-identify them accurately. Much larger
   datasets are therefore required for training methods like ours. We also show
   that training our method on Radio Galaxy Zoo cross-identifications gives
-  comparable results to training our method on expert cross-identifications,
+  comparable results to training on expert cross-identifications,
   demonstrating the value of crowdsourced training data.}
 \end{abstract}
 
@@ -215,8 +214,8 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
 
   \edited{Throughout this paper, a `radio source' refers to all radio emission observed associated with a single host galaxy, and a `radio component' refers to a single, contiguous
   region of radio emission. Multiple components may arise from a single
-  source. A `compact' source is composed of a \edited{single unresolved component} and we
-  assume that all unresolved components are compact sources. \edited{We define a resolved component in \autoref{eq:compact}.} An `extended'
+  source. A `compact' source is composed of a \edited{single unresolved component. \autoref{eq:compact} shows the definition of a resolved component. We
+  assume that all unresolved components are compact sources, i.e. we assume that each unresolved component has its own host galaxy\footnote{\edited{This will be incorrect if the unresolved components are actually compact lobes or hotspots, but determining which components correspond to unique radio sources is outside the scope of this paper.}}.} An `extended'
   source is a non-compact source, i.e. resolved single-component sources or a
   multi-component source. \autoref{fig:definitions} illustrates these definitions.}
 
@@ -951,11 +950,7 @@ methods: statistical -- techniques: miscellaneous -- galaxies: active -- radio c
     Scores reported for a given object were predicted by binary
     classifiers tested on the quadrant containing that object. The reported scores are not weighted.}
 
-    In \autoref{fig:examples} we show 6 of the 16 resolved sources where the
-    incorrect cross-identification was selected by random forests trained on
-    expert labels. The remaining 10 resolved sources are shown in \aref{app:examples}.
-    In most cases the incorrect galaxy selected was also selected by
-    nearest-neighbours.
+    In \autoref{fig:examples} we show 5 resolved sources where the most classifiers disagreed on the correct cross-identification.
 
 \subsection{Application to ATLAS-ELAIS-S1}
   \label{sec:elais}
@@ -1587,7 +1582,7 @@ J002951.19-440556.6 & 7.4633 & -44.0991 & C0342 &  & J002951.26-440556.4 & 7.463
 
       \subfloat[]{\includegraphics{images/examples_all/example_sorted_4_264.pdf}}%
       \subfloat[]{\includegraphics{images/examples_all/example_sorted_5_207.pdf}}
-      \caption{\label{fig:examples} Examples of resolved sources with high disagreement between cross-identifiers. The contours show ATLAS radio data and start at $4\sigma$, increasing geometrically by a factor of 2. The background image is the \unit{3.6}{\micro\meter} SWIRE image. Binary classifier model/training set combinations are denoted $C(S)$ where $C$ is the binary classifier model and $S$ is the training set. `LR' is logistic regression, `CNN' is convolutional neural networks, and `RF' is random forests. `Norris' refers to the expert labels and `RGZ' refers to the Radio Galaxy Zoo labels. The cross-identification made by nearest-neighbours is shown by `NN'. An additional 464 examples are available in the supplementary information.}
+      \caption{\label{fig:examples} Examples of resolved sources with high disagreement between cross-identifiers. The contours show ATLAS radio data and start at $4\sigma$, increasing geometrically by a factor of 2. The background image is the \unit{3.6}{\micro\meter} SWIRE image. Binary classifier model/training set combinations are denoted $C(S)$ where $C$ is the binary classifier model and $S$ is the training set. `LR' is logistic regression, `CNN' is convolutional neural networks, and `RF' is random forests. `Norris' refers to the expert labels and `RGZ' refers to the Radio Galaxy Zoo labels. The cross-identification made by nearest-neighbours is shown by `NN'. The complete set of figures for 469 examples is available in the supplementary information.}
     \end{figure*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

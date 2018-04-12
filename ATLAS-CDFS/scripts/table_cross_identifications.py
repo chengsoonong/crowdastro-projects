@@ -203,8 +203,8 @@ def print_table(field='cdfs'):
                'RGZ radio consensus', 'RGZ IR consensus'] + [k for p in known_predictors for k in (p, p + ' RA', p + ' Dec')])
     table['RGZ radio consensus'].format = '{:.4f}'
     table['RGZ IR consensus'].format = '{:.4f}'
-    table.write('/Users/alger/data/Crowdastro/predicted_cross_ids_table_12_10_17_{}.csv'.format(field), format='csv')
-    table.write('/Users/alger/data/Crowdastro/predicted_cross_ids_table_12_10_17_{}.tex'.format(field), format='latex')
+    table.write('/Users/alger/data/Crowdastro/predicted_cross_ids_table_21_03_18_{}.csv'.format(field), format='csv')
+    table.write('/Users/alger/data/Crowdastro/predicted_cross_ids_table_21_03_18_{}.tex'.format(field), format='latex')
 
 
 if __name__ == '__main__':

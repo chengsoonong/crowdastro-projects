@@ -22,14 +22,37 @@ import logging
 import re
 
 import astropy.io.ascii
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy
 import scipy.spatial
 
-import configure_plotting
 import pipeline
 
-configure_plotting.configure()
+INCHES_PER_PT = 1.0 / 72.27
+COLUMN_WIDTH_PT = 240.0
+FONT_SIZE_PT = 8.0
+
+pgf_with_latex = {
+    "pgf.texsystem": "pdflatex",
+    "text.usetex": True,
+    "font.family": "serif",
+    "font.serif": [],
+    "font.sans-serif": [],
+    "font.monospace": [],
+    "axes.labelsize": FONT_SIZE_PT,
+    "font.size": FONT_SIZE_PT,
+    "legend.fontsize": FONT_SIZE_PT,
+    "xtick.labelsize": FONT_SIZE_PT,
+    "ytick.labelsize": FONT_SIZE_PT,
+    "figure.figsize": (COLUMN_WIDTH_PT * INCHES_PER_PT, 0.8 * COLUMN_WIDTH_PT * INCHES_PER_PT),
+    "pgf.preamble": [
+        r"\usepackage[utf8x]{inputenc}",
+        r"\usepackage[T1]{fontenc}",
+    ]
+}
+matplotlib.rcParams.update(pgf_with_latex)
+
 log = logging.getLogger(__name__)
 
 titlemap = {
@@ -332,7 +355,7 @@ def plot(field='cdfs'):
     print('Best: {} +- {}'.format(best_acc, best_stdev))
     print('Random: {} +- {}'.format(random_acc, random_stdev))
 
-    plt.figure(figsize=(5, 4))
+    plt.figure()
     colours = ['grey', 'magenta', 'blue', 'orange', 'grey']
     markers = ['o', '^', 'x', 's', '*']
     handles = {}
@@ -372,7 +395,7 @@ def plot(field='cdfs'):
                     x_offset = 2
 
                 if classifier == 'Label' and labeller == 'RGZ':
-                    plt.annotate('{:.1%}'.format(numpy.mean(ys) / 100), (x_offset, 72.5), ha='center', va='bottom', fontsize='small')
+                    plt.annotate('{:.1%}'.format(numpy.mean(ys) / 100), (x_offset, 72.5), ha='center', va='bottom')
                     plt.arrow(x_offset, 72.5, 0, -1.5, head_width=0.05, head_length=1, ec='k', fc='k')
 
                 xs = [x_offset] * len(ys)
@@ -381,18 +404,19 @@ def plot(field='cdfs'):
                 ax.set_ylim((70, 100))
                 ax.set_xticks([0, 1])
                 ax.set_xticklabels(['Norris', 'RGZ'])
+                ax.set_yticklabels(['{}\%'.format(x) for x in range(70, 101, 5)])
                 handles[j] = plt.scatter(xs, ys, color=colours[j], marker=markers[j], zorder=2, edgecolor='k', linewidth=1)
-            if k == 0:  # 22
-                plt.xlabel('Labels')
-            plt.ylabel('Accuracy (per cent)'.format(titlemap[set_name]))
+            # if k == 0:  # 22
+            #     plt.xlabel('Labels')
+            plt.ylabel('Cross-identification\naccuracy (per cent)'.format(titlemap[set_name]))
 
-            ax.title.set_fontsize(16)
-            ax.xaxis.label.set_fontsize(12)
-            ax.yaxis.label.set_fontsize(9)
-            for tick in ax.get_xticklabels() + ax.get_yticklabels():
-                tick.set_fontsize(10)
+            # ax.title.set_fontsize(16)
+            # ax.xaxis.label.set_fontsize(12)
+            # ax.yaxis.label.set_fontsize(9)
+            # for tick in ax.get_xticklabels() + ax.get_yticklabels():
+            #     tick.set_fontsize(10)
 
-            ax.grid(which='major', axis='y', color='#EEEEEE')
+            ax.grid(which='major', axis='y', color='#DDDDDD')
 
     # Print the table.
     print('\\hline')
@@ -417,13 +441,14 @@ def plot(field='cdfs'):
                     labeller_classifier_to_accuracies[labeller, classifier, 'All']).mean() * 100,
                 numpy.array(
                     labeller_classifier_to_accuracies[labeller, classifier, 'All']).std() * 100))
+    plt.gca().tick_params(axis='both', which='major', direction='out', length=5)
+    plt.gca().tick_params(axis='y', which='minor', direction='out', length=3)
+    plt.gca().minorticks_on()
 
-    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + (['Labels'] if field == 'cdfs' else []), 'lower center', ncol=4, fontsize=10)
-    plt.subplots_adjust(bottom=0.25, hspace=0.25)
-    plt.savefig('../images/{}_cross_identification_grid.pdf'.format(field),
-                bbox_inches='tight', pad_inches=0)
-    plt.savefig('../images/{}_cross_identification_grid.png'.format(field),
-                bbox_inches='tight', pad_inches=0)
+    plt.figlegend([handles[j] for j in sorted(handles)], ['LR', 'CNN', 'RF'] + (['Labels'] if field == 'cdfs' else []), 'lower center', ncol=4)
+    plt.subplots_adjust(bottom=0.25, hspace=0.25, left=0.3)
+    plt.savefig('../images/{}_cross_identification_grid.pdf'.format(field))
+    plt.savefig('../images/{}_cross_identification_grid.png'.format(field))
 
 
 if __name__ == '__main__':
